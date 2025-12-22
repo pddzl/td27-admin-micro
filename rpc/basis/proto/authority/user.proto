@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+import "common.proto";
+
+package basis.authority.user;
+
+option go_package = "types/authority/user_pb";
+
+message CreateUserReq {
+  string username = 1;
+  string password = 2;
+  string phone = 3;
+  string email = 4;
+  bool active = 5;
+  uint64 role_id = 6;
+}
+
+service User {
+  rpc DeleteUser(basis.common.IdReq) returns (basis.common.SuccessResp);
+  rpc CreateUser(CreateUserReq) returns (basis.common.SuccessResp);
+}

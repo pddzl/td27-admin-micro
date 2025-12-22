@@ -1,0 +1,30 @@
+Name: basis.rpc
+ListenOn: 0.0.0.0:8080
+Etcd:
+  Hosts:
+  - 127.0.0.1:2379
+  Key: basis.rpc
+
+Mode: dev
+
+Log:
+  ServiceName: basis
+  Mode: file            # console | file | volume
+  Path: logs             # log directory
+  Level: info             # debug | info | warn | error | fatal
+  KeepDays: 7             # days to keep logs
+  Rotation: daily         # daily | size
+  MaxSize: 5            # MB, only for size rotation
+  Compress: true          # gzip old logs
+
+DataBase:
+#  Type: mysql
+  Host: 127.0.0.1
+  Port: 3306
+  DBName: td27
+  Config: 'charset=utf8mb4&parseTime=True&loc=Local'
+  Username: root
+  Password: td27admin
+  MaxOpenConn: 50
+  MaxIdleConn: 10
+  ConnMaxLifetime: 3600

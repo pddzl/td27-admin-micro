@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+import "common.proto";
+
+package basis.authority.role;
+
+option go_package = "types/authority/role_pb";
+
+message CreateUserReq {
+  string username = 1;
+  string password = 2;
+  string phone = 3;
+  string email = 4;
+  bool active = 5;
+  uint64 role_id = 6;
+}
+
+message RoleEntity {}
+
+service Role {
+  rpc FindRoleById(basis.common.IdReq) returns (RoleEntity);
+  rpc DeleteRole(basis.common.IdReq) returns (basis.common.SuccessResp);
+  rpc CreateRole(CreateUserReq) returns (basis.common.SuccessResp);
+}

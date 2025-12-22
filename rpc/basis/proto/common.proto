@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package basis.common;
+
+option go_package = "types/common_pb";
+
+message IdReq {
+  uint64 id = 1;
+}
+
+message PageReq {
+  uint32 page = 1;
+  uint32 page_size = 2;
+}
+
+message SuccessResp {
+  bool success = 1;
+}
+
+message Empty {}
