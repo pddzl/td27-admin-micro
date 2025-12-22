@@ -1,6 +1,8 @@
 package authority
 
-import "github.com/zeromicro/go-zero/core/stores/sqlx"
+import (
+	"gorm.io/gorm"
+)
 
 var _ AuthorityMenuModel = (*customAuthorityMenuModel)(nil)
 
@@ -9,7 +11,6 @@ type (
 	// and implement the added methods in customAuthorityMenuModel.
 	AuthorityMenuModel interface {
 		authorityMenuModel
-		withSession(session sqlx.Session) AuthorityMenuModel
 	}
 
 	customAuthorityMenuModel struct {
@@ -18,12 +19,8 @@ type (
 )
 
 // NewAuthorityMenuModel returns a model for the database table.
-func NewAuthorityMenuModel(conn sqlx.SqlConn) AuthorityMenuModel {
+func NewAuthorityMenuModel(conn *gorm.DB) AuthorityMenuModel {
 	return &customAuthorityMenuModel{
 		defaultAuthorityMenuModel: newAuthorityMenuModel(conn),
 	}
-}
-
-func (m *customAuthorityMenuModel) withSession(session sqlx.Session) AuthorityMenuModel {
-	return NewAuthorityMenuModel(sqlx.NewSqlConnFromSession(session))
 }

@@ -1,18 +1,11 @@
 package svc
 
 import (
-	"fmt"
-	"github.com/go-sql-driver/mysql"
-	"go.uber.org/zap"
+	"basis/internal/model/authority"
 	"log"
 
 	"basis/internal/config"
 	"basis/internal/initialization"
-	"basis/internal/model/authority"
-
-	"github.com/zeromicro/go-zero/core/stores/sqlx"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
 )
 
 type ServiceContext struct {

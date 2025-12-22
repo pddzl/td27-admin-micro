@@ -1,6 +1,8 @@
 package authority
 
-import "github.com/zeromicro/go-zero/core/stores/sqlx"
+import (
+	"gorm.io/gorm"
+)
 
 var _ AuthorityRoleModel = (*customAuthorityRoleModel)(nil)
 
@@ -9,7 +11,6 @@ type (
 	// and implement the added methods in customAuthorityRoleModel.
 	AuthorityRoleModel interface {
 		authorityRoleModel
-		withSession(session sqlx.Session) AuthorityRoleModel
 	}
 
 	customAuthorityRoleModel struct {
@@ -18,12 +19,8 @@ type (
 )
 
 // NewAuthorityRoleModel returns a model for the database table.
-func NewAuthorityRoleModel(conn sqlx.SqlConn) AuthorityRoleModel {
+func NewAuthorityRoleModel(conn *gorm.DB) AuthorityRoleModel {
 	return &customAuthorityRoleModel{
 		defaultAuthorityRoleModel: newAuthorityRoleModel(conn),
 	}
-}
-
-func (m *customAuthorityRoleModel) withSession(session sqlx.Session) AuthorityRoleModel {
-	return NewAuthorityRoleModel(sqlx.NewSqlConnFromSession(session))
 }
