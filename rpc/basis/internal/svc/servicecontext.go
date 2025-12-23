@@ -35,5 +35,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
 		Config:            c,
 		AuthorityUserRepo: authority.NewAuthorityUserModel(conn),
+		AuthorityRoleRepo: authority.NewAuthorityRoleModel(conn),
 	}
 }

@@ -5,22 +5,22 @@ import (
 	"errors"
 	"fmt"
 
+	"gorm.io/gorm"
+
 	"basis/internal/model"
 	"basis/internal/pkg"
-
-	"gorm.io/gorm"
 )
 
 type (
 	authorityUserModel interface {
 		List(ctx context.Context, page int, pageSize int) ([]AuthorityUserPlusRoleNameDTO, int64, error)
 		Insert(ctx context.Context, data *AuthorityUserEntity) error
-		FindOne(ctx context.Context, id uint) (*AuthorityUserPlusRoleNameDTO, error)
+		FindOne(ctx context.Context, id uint64) (*AuthorityUserPlusRoleNameDTO, error)
 		Update(ctx context.Context, data *AuthorityUserEntity) (*AuthorityUserEntity, error)
-		Delete(ctx context.Context, id uint) error
+		Delete(ctx context.Context, id uint64) error
 		ModifyPassword(ctx context.Context, id uint, oldPassword string, newPassword string) error
 		SwitchUserActive(ctx context.Context, id uint, active bool) error
-		FindByRoleId(ctx context.Context, roleId uint) (bool, error)
+		ExistsById(ctx context.Context, roleId uint) (bool, error)
 	}
 
 	defaultAuthorityUserModel struct {
@@ -33,7 +33,7 @@ type (
 		Username    string `gorm:"unique;comment:用户名"` // 用户名
 		Password    string `gorm:"not null;comment:密码"`
 		Phone       string `gorm:"comment:手机号"` // 手机号
-		Email       string `gorm:"comment:邮箱"`  // 邮箱
+		Email       string `gorm:"comment:邮箱"`   // 邮箱
 		Active      bool   // 是否活跃
 		RoleModelID uint   `gorm:"not null"`
 	}
@@ -75,11 +75,11 @@ func (m *defaultAuthorityUserModel) List(ctx context.Context, page int, pageSize
 	return authorityUserPlusRoleNameList, total, err
 }
 
-func (m *defaultAuthorityUserModel) Delete(ctx context.Context, id uint) error {
+func (m *defaultAuthorityUserModel) Delete(ctx context.Context, id uint64) error {
 	return m.conn.WithContext(ctx).Where("id = ?", id).Unscoped().Delete(&AuthorityUserEntity{}).Error
 }
 
-func (m *defaultAuthorityUserModel) FindOne(ctx context.Context, id uint) (*AuthorityUserPlusRoleNameDTO, error) {
+func (m *defaultAuthorityUserModel) FindOne(ctx context.Context, id uint64) (*AuthorityUserPlusRoleNameDTO, error) {
 	var authorityUserPlusRoleName AuthorityUserPlusRoleNameDTO
 	err := m.conn.WithContext(ctx).
 		Table("authority_user").
@@ -144,7 +144,7 @@ func (m *defaultAuthorityUserModel) SwitchUserActive(ctx context.Context, id uin
 	return conn.Model(&authorityUser).Update("active", active).Error
 }
 
-func (m *defaultAuthorityUserModel) FindByRoleId(ctx context.Context, roleId uint) (bool, error) {
+func (m *defaultAuthorityUserModel) ExistsById(ctx context.Context, roleId uint) (bool, error) {
 	var count int64
 
 	err := m.conn.WithContext(ctx).

@@ -1,17 +1,16 @@
 package authority
 
 import (
-	"basis/types/authority/user_pb"
 	"context"
-	"database/sql"
 	"errors"
 
-	modelAuthority "basis/internal/model/authority"
+	"github.com/zeromicro/go-zero/core/logx"
+
+	"basis/internal/model/authority"
 	"basis/internal/pkg"
 	"basis/internal/svc"
+	"basis/types/authority/user_pb"
 	"basis/types/common_pb"
-
-	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type UserLogic struct {
@@ -41,48 +40,33 @@ func (ul *UserLogic) DeleteUser(in *common_pb.IdReq) (*common_pb.SuccessResp, er
 
 	ul.Infof("user deleted, id=%d", in.Id)
 
-	return &common_pb.SuccessResp{
-		Success: true,
-	}, nil
+	return &common_pb.SuccessResp{Success: true}, nil
 }
 
 func (ul *UserLogic) CreateUser(in *user_pb.CreateUserReq) (*common_pb.SuccessResp, error) {
 	// check role exists
-	//exists, err := ul.svcCtx.AuthorityUserRepo.RoleExists(l.ctx, uint(in.RoleId))
-	//if err != nil {
-	//	return nil, err
-	//}
-	//if !exists {
-	//	return nil, errors.New("角色不存在")
-	//}
-
-	// create user model
-	_, err := ul.svcCtx.AuthorityUserRepo.Insert(ul.ctx, &modelAuthority.AuthorityUser{
-		Username: sql.NullString{
-			String: in.Username,
-			Valid:  in.Username != "",
-		},
-		Password: pkg.MD5V([]byte(in.Password)),
-		Phone: sql.NullString{
-			String: in.Phone,
-			Valid:  in.Phone != "",
-		},
-		Email: sql.NullString{
-			String: in.Email,
-			Valid:  in.Email != "",
-		},
-		Active: sql.NullInt64{
-			Int64: func() int64 {
-				if in.Active {
-					return 1
-				}
-				return 0
-			}(),
-			Valid: true,
-		},
-		RoleModelId: in.RoleId,
-	})
+	exists, err := ul.svcCtx.AuthorityUserRepo.ExistsById(ul.ctx, uint(in.RoleId))
 	if err != nil {
+		return nil, err
+	}
+	if !exists {
+		ul.Logger.Errorf("role not found")
+		return nil, errors.New("role not found")
+	}
+
+	// build entity
+	user := &authority.AuthorityUserEntity{
+		Username:    in.Username,
+		Password:    pkg.MD5V([]byte(in.Password)),
+		Phone:       in.Phone,
+		Email:       in.Email,
+		Active:      in.Active,
+		RoleModelID: uint(in.RoleId),
+	}
+
+	err = ul.svcCtx.AuthorityUserRepo.Insert(ul.ctx, user)
+	if err != nil {
+		ul.Logger.Errorf("insert user entity failed, err=%v", err)
 		return nil, err
 	}
 

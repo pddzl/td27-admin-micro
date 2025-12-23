@@ -54,7 +54,7 @@ func (m *defaultAuthorityRoleModel) Delete(ctx context.Context, id uint) error {
 		return errors.New("record not found")
 	}
 
-	userExist, err := m.userRepo.FindByRoleId(ctx, id)
+	userExist, err := m.userRepo.ExistsById(ctx, id)
 	if err != nil {
 		return err
 	}

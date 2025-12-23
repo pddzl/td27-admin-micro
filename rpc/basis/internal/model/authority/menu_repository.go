@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"sort"
 
+	"database/sql/driver"
 	"gorm.io/gorm"
 
 	"basis/internal/model"
-	"database/sql/driver"
 )
 
 type (
