@@ -13,14 +13,14 @@ import (
 
 type (
 	authorityUserModel interface {
-		List(ctx context.Context, page int, pageSize int) ([]AuthorityUserPlusRoleNameDTO, int64, error)
+		List(ctx context.Context, page int, pageSize int) ([]UserPlusRoleNameDTO, int64, error)
 		Insert(ctx context.Context, data *AuthorityUserEntity) error
-		FindOne(ctx context.Context, id uint64) (*AuthorityUserPlusRoleNameDTO, error)
-		Update(ctx context.Context, data *AuthorityUserEntity) (*AuthorityUserEntity, error)
+		FindOne(ctx context.Context, id uint64) (*UserPlusRoleNameDTO, error)
+		Update(ctx context.Context, data *UpdateUserDTO) (*AuthorityUserEntity, error)
 		Delete(ctx context.Context, id uint64) error
-		ModifyPassword(ctx context.Context, id uint, oldPassword string, newPassword string) error
-		SwitchUserActive(ctx context.Context, id uint, active bool) error
-		ExistsById(ctx context.Context, roleId uint) (bool, error)
+		ModifyPassword(ctx context.Context, id uint64, oldPassword string, newPassword string) error
+		SwitchUserActive(ctx context.Context, id uint64, active bool) error
+		ExistsById(ctx context.Context, roleId uint64) (bool, error)
 	}
 
 	defaultAuthorityUserModel struct {
@@ -35,12 +35,7 @@ type (
 		Phone       string `gorm:"comment:手机号"` // 手机号
 		Email       string `gorm:"comment:邮箱"`   // 邮箱
 		Active      bool   // 是否活跃
-		RoleModelID uint   `gorm:"not null"`
-	}
-
-	AuthorityUserPlusRoleNameDTO struct {
-		AuthorityUserEntity
-		RoleName string
+		RoleModelID uint64 `gorm:"not null"`
 	}
 )
 
@@ -55,8 +50,8 @@ func newAuthorityUserModel(conn *gorm.DB) *defaultAuthorityUserModel {
 	}
 }
 
-func (m *defaultAuthorityUserModel) List(ctx context.Context, page int, pageSize int) ([]AuthorityUserPlusRoleNameDTO, int64, error) {
-	var authorityUserPlusRoleNameList []AuthorityUserPlusRoleNameDTO
+func (m *defaultAuthorityUserModel) List(ctx context.Context, page int, pageSize int) ([]UserPlusRoleNameDTO, int64, error) {
+	var authorityUserPlusRoleNameList []UserPlusRoleNameDTO
 	var total int64
 
 	db := m.conn.WithContext(ctx).Model(&AuthorityUserEntity{})
@@ -79,8 +74,8 @@ func (m *defaultAuthorityUserModel) Delete(ctx context.Context, id uint64) error
 	return m.conn.WithContext(ctx).Where("id = ?", id).Unscoped().Delete(&AuthorityUserEntity{}).Error
 }
 
-func (m *defaultAuthorityUserModel) FindOne(ctx context.Context, id uint64) (*AuthorityUserPlusRoleNameDTO, error) {
-	var authorityUserPlusRoleName AuthorityUserPlusRoleNameDTO
+func (m *defaultAuthorityUserModel) FindOne(ctx context.Context, id uint64) (*UserPlusRoleNameDTO, error) {
+	var authorityUserPlusRoleName UserPlusRoleNameDTO
 	err := m.conn.WithContext(ctx).
 		Table("authority_user").
 		Select("authority_user.created_at,authority_user.id,authority_user.username,authority_user.phone,authority_user.email,authority_user.active,authority_user.role_model_id,authority_role.role_name").
@@ -94,47 +89,42 @@ func (m *defaultAuthorityUserModel) Insert(ctx context.Context, data *AuthorityU
 	return m.conn.WithContext(ctx).Create(data).Error
 }
 
-func (m *defaultAuthorityUserModel) Update(ctx context.Context, newData *AuthorityUserEntity) (*AuthorityUserEntity, error) {
-	// Check existence
+func (m *defaultAuthorityUserModel) Update(ctx context.Context, newData *UpdateUserDTO) (*AuthorityUserEntity, error) {
 	var existing AuthorityUserEntity
-	if err := m.conn.WithContext(ctx).First(&existing, newData.ID).Error; err != nil {
-		return nil, err
-	}
-
-	// todo
-	// check role existence
+	conn := m.conn.WithContext(ctx)
 
 	// Update (use map to avoid zero-value problems)
-	err := m.conn.Model(&existing).Updates(map[string]interface{}{
+	err := conn.Model(&existing).Updates(map[string]interface{}{
 		"username":      newData.Username,
+		"password":      pkg.MD5V([]byte(newData.Password)),
 		"phone":         newData.Phone,
 		"email":         newData.Email,
 		"active":        newData.Active,
-		"role_model_id": newData.RoleModelID,
+		"role_model_id": newData.RoleModelId,
 	}).Error
 	if err != nil {
 		return nil, err
 	}
 
 	// Reload updated record (DB is source of truth)
-	if err = m.conn.First(&existing, newData.ID).Error; err != nil {
+	if err = conn.First(&existing, newData.ID).Error; err != nil {
 		return nil, err
 	}
 
 	return &existing, nil
 }
 
-func (m *defaultAuthorityUserModel) ModifyPassword(ctx context.Context, id uint, oldPassword string, newPassword string) error {
+func (m *defaultAuthorityUserModel) ModifyPassword(ctx context.Context, id uint64, oldPassword string, newPassword string) error {
 	conn := m.conn.WithContext(ctx)
 	var authorityUser AuthorityUserEntity
 	if errors.Is(conn.Where("id = ? and password = ?", id, pkg.MD5V([]byte(oldPassword))).First(&authorityUser).Error, gorm.ErrRecordNotFound) {
 		return errors.New("wrong old password")
 	}
 
-	return conn.WithContext(ctx).Model(&authorityUser).Update("password", pkg.MD5V([]byte(newPassword))).Error
+	return conn.Model(&authorityUser).Update("password", pkg.MD5V([]byte(newPassword))).Error
 }
 
-func (m *defaultAuthorityUserModel) SwitchUserActive(ctx context.Context, id uint, active bool) error {
+func (m *defaultAuthorityUserModel) SwitchUserActive(ctx context.Context, id uint64, active bool) error {
 	conn := m.conn.WithContext(ctx)
 	var authorityUser AuthorityUserEntity
 	if errors.Is(conn.Where("id = ?", id).First(&authorityUser).Error, gorm.ErrRecordNotFound) {
@@ -144,12 +134,12 @@ func (m *defaultAuthorityUserModel) SwitchUserActive(ctx context.Context, id uin
 	return conn.Model(&authorityUser).Update("active", active).Error
 }
 
-func (m *defaultAuthorityUserModel) ExistsById(ctx context.Context, roleId uint) (bool, error) {
+func (m *defaultAuthorityUserModel) ExistsById(ctx context.Context, id uint64) (bool, error) {
 	var count int64
 
 	err := m.conn.WithContext(ctx).
 		Model(&AuthorityUserEntity{}).
-		Where("role_model_id = ?", roleId).
+		Where("id = ?", id).
 		Limit(1).
 		Count(&count).
 		Error

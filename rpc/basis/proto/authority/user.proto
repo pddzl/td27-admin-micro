@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "common.proto";
+import "google/protobuf/timestamp.proto";
 
 package basis.authority.user;
 
@@ -9,13 +10,60 @@ option go_package = "types/authority/user_pb";
 message CreateUserReq {
   string username = 1;
   string password = 2;
+  optional string phone = 3;
+  optional string email = 4;
+  optional bool active = 5;
+  uint64 role_id = 6;
+}
+
+message UpdateUserReq {
+  uint64 id = 1;
+  string username = 2;
+  string password = 3;
+  string phone = 4;
+  string email = 5;
+  bool active = 6;
+  uint64 role_id = 7;
+}
+
+message UserResp {
+  uint64 id = 1;
+  string username = 2;
   string phone = 3;
   string email = 4;
   bool active = 5;
   uint64 role_id = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp updated_at = 8;
+}
+
+message UserRoleResp {
+    UserResp user = 1;
+    string role_name = 2;
+}
+
+message ListUserResp {
+  repeated UserRoleResp list = 1;
+  int64 total = 2;
+}
+
+message ModifyPasswdReq {
+  uint64 id = 1;
+  string oldPassword = 2;
+  string newPassword = 3;
+}
+
+message SwitchActiveReq {
+  uint64 id = 1;
+  bool active = 2;
 }
 
 service User {
+  rpc GetUserInfo(basis.common.IdReq) returns (UserRoleResp);
+  rpc ListUser(basis.common.PageReq) returns (ListUserResp);
   rpc DeleteUser(basis.common.IdReq) returns (basis.common.SuccessResp);
   rpc CreateUser(CreateUserReq) returns (basis.common.SuccessResp);
+  rpc UpdateUser(UpdateUserReq) returns (UserResp);
+  rpc ModifyPassword(ModifyPasswdReq) returns (basis.common.SuccessResp);
+  rpc SwitchUserActive(SwitchActiveReq) returns (basis.common.SuccessResp);
 }

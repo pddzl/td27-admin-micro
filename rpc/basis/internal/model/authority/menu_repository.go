@@ -29,33 +29,18 @@ type (
 
 	AuthorityMenuEntity struct {
 		model.Td27Model
-		Pid       uint                   `json:"pid"`                       // 父菜单ID
+		Pid       uint64                 `json:"pid"`                       // 父菜单ID
 		Name      string                 `json:"name"`                      // 路由名称
 		Path      string                 `json:"path" gorm:"unique"`        // 路由路径
 		Redirect  string                 `json:"redirect"`                  // 重定向
 		Component string                 `json:"component" gorm:"not null"` // 前端组件
 		Sort      uint                   `json:"sort" gorm:"not null"`      // 排序
-		Meta      Meta                   `json:"meta" gorm:"type:json"`     // 元数据
+		Meta      MetaEntity             `json:"meta" gorm:"type:json"`     // 元数据
 		Children  []AuthorityMenuEntity  `json:"children" gorm:"-"`
 		Roles     []*AuthorityRoleEntity `json:"roles" gorm:"many2many:role_menus;"`
 	}
 
-	MenuDTO struct {
-		Pid       uint   `json:"pid"`                          // 默认0 根目录
-		Name      string `json:"name"`                         // 名称
-		Path      string `json:"path" binding:"required"`      // 路径
-		Redirect  string `json:"redirect"`                     // 重定向
-		Component string `json:"component" binding:"required"` // 前端组件
-		Sort      uint   `json:"sort" binding:"required"`      // 排序
-		Meta      Meta   `json:"meta"`
-	}
-
-	NewMenuDTO struct {
-		ID uint
-		MenuDTO
-	}
-
-	Meta struct {
+	MetaEntity struct {
 		Hidden     bool   `json:"hidden,omitempty"`  // 菜单是否隐藏
 		Title      string `json:"title,omitempty"`   // 菜单名
 		SvgIcon    string `json:"svgIcon,omitempty"` // svg图标
@@ -66,12 +51,12 @@ type (
 	}
 )
 
-func (m Meta) Value() (driver.Value, error) {
+func (m MetaEntity) Value() (driver.Value, error) {
 	b, err := json.Marshal(m)
 	return string(b), err
 }
 
-func (m *Meta) Scan(input interface{}) error {
+func (m *MetaEntity) Scan(input interface{}) error {
 	return json.Unmarshal(input.([]byte), m)
 }
 
@@ -149,7 +134,7 @@ func getTreeMap(menuListFormat []AuthorityMenuEntity, menuList []AuthorityMenuEn
 }
 
 // GetElTreeMenus 获取所有menu
-func (m *defaultAuthorityMenuModel) GetElTreeMenus(roleId uint) ([]AuthorityMenuEntity, []uint, error) {
+func (m *defaultAuthorityMenuModel) GetElTreeMenus(roleId uint) ([]AuthorityMenuEntity, []uint64, error) {
 	var authorityMenuEntityList []AuthorityMenuEntity
 	conn := m.conn.WithContext(context.Background())
 
@@ -175,7 +160,7 @@ func (m *defaultAuthorityMenuModel) GetElTreeMenus(roleId uint) ([]AuthorityMenu
 
 	// 前端el-tree 选中数据
 	// 去掉夫菜单，防止直接选中父级造成全选
-	roleIds := make([]uint, 0)
+	roleIds := make([]uint64, 0)
 	count := 0
 	for _, menu := range authorityRoleEntity.Menus {
 		for _, menu1 := range authorityRoleEntity.Menus {

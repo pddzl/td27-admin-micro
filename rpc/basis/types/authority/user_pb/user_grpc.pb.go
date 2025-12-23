@@ -20,16 +20,26 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	User_DeleteUser_FullMethodName = "/basis.authority.user.User/DeleteUser"
-	User_CreateUser_FullMethodName = "/basis.authority.user.User/CreateUser"
+	User_GetUserInfo_FullMethodName      = "/basis.authority.user.User/GetUserInfo"
+	User_ListUser_FullMethodName         = "/basis.authority.user.User/ListUser"
+	User_DeleteUser_FullMethodName       = "/basis.authority.user.User/DeleteUser"
+	User_CreateUser_FullMethodName       = "/basis.authority.user.User/CreateUser"
+	User_UpdateUser_FullMethodName       = "/basis.authority.user.User/UpdateUser"
+	User_ModifyPassword_FullMethodName   = "/basis.authority.user.User/ModifyPassword"
+	User_SwitchUserActive_FullMethodName = "/basis.authority.user.User/SwitchUserActive"
 )
 
 // UserClient is the client API for User service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserClient interface {
+	GetUserInfo(ctx context.Context, in *common_pb.IdReq, opts ...grpc.CallOption) (*UserRoleResp, error)
+	ListUser(ctx context.Context, in *common_pb.PageReq, opts ...grpc.CallOption) (*ListUserResp, error)
 	DeleteUser(ctx context.Context, in *common_pb.IdReq, opts ...grpc.CallOption) (*common_pb.SuccessResp, error)
 	CreateUser(ctx context.Context, in *CreateUserReq, opts ...grpc.CallOption) (*common_pb.SuccessResp, error)
+	UpdateUser(ctx context.Context, in *UpdateUserReq, opts ...grpc.CallOption) (*UserResp, error)
+	ModifyPassword(ctx context.Context, in *ModifyPasswdReq, opts ...grpc.CallOption) (*common_pb.SuccessResp, error)
+	SwitchUserActive(ctx context.Context, in *SwitchActiveReq, opts ...grpc.CallOption) (*common_pb.SuccessResp, error)
 }
 
 type userClient struct {
@@ -38,6 +48,26 @@ type userClient struct {
 
 func NewUserClient(cc grpc.ClientConnInterface) UserClient {
 	return &userClient{cc}
+}
+
+func (c *userClient) GetUserInfo(ctx context.Context, in *common_pb.IdReq, opts ...grpc.CallOption) (*UserRoleResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UserRoleResp)
+	err := c.cc.Invoke(ctx, User_GetUserInfo_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) ListUser(ctx context.Context, in *common_pb.PageReq, opts ...grpc.CallOption) (*ListUserResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListUserResp)
+	err := c.cc.Invoke(ctx, User_ListUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *userClient) DeleteUser(ctx context.Context, in *common_pb.IdReq, opts ...grpc.CallOption) (*common_pb.SuccessResp, error) {
@@ -60,12 +90,47 @@ func (c *userClient) CreateUser(ctx context.Context, in *CreateUserReq, opts ...
 	return out, nil
 }
 
+func (c *userClient) UpdateUser(ctx context.Context, in *UpdateUserReq, opts ...grpc.CallOption) (*UserResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UserResp)
+	err := c.cc.Invoke(ctx, User_UpdateUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) ModifyPassword(ctx context.Context, in *ModifyPasswdReq, opts ...grpc.CallOption) (*common_pb.SuccessResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(common_pb.SuccessResp)
+	err := c.cc.Invoke(ctx, User_ModifyPassword_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) SwitchUserActive(ctx context.Context, in *SwitchActiveReq, opts ...grpc.CallOption) (*common_pb.SuccessResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(common_pb.SuccessResp)
+	err := c.cc.Invoke(ctx, User_SwitchUserActive_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServer is the server API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility.
 type UserServer interface {
+	GetUserInfo(context.Context, *common_pb.IdReq) (*UserRoleResp, error)
+	ListUser(context.Context, *common_pb.PageReq) (*ListUserResp, error)
 	DeleteUser(context.Context, *common_pb.IdReq) (*common_pb.SuccessResp, error)
 	CreateUser(context.Context, *CreateUserReq) (*common_pb.SuccessResp, error)
+	UpdateUser(context.Context, *UpdateUserReq) (*UserResp, error)
+	ModifyPassword(context.Context, *ModifyPasswdReq) (*common_pb.SuccessResp, error)
+	SwitchUserActive(context.Context, *SwitchActiveReq) (*common_pb.SuccessResp, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -76,11 +141,26 @@ type UserServer interface {
 // pointer dereference when methods are called.
 type UnimplementedUserServer struct{}
 
+func (UnimplementedUserServer) GetUserInfo(context.Context, *common_pb.IdReq) (*UserRoleResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserInfo not implemented")
+}
+func (UnimplementedUserServer) ListUser(context.Context, *common_pb.PageReq) (*ListUserResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListUser not implemented")
+}
 func (UnimplementedUserServer) DeleteUser(context.Context, *common_pb.IdReq) (*common_pb.SuccessResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
 }
 func (UnimplementedUserServer) CreateUser(context.Context, *CreateUserReq) (*common_pb.SuccessResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
+}
+func (UnimplementedUserServer) UpdateUser(context.Context, *UpdateUserReq) (*UserResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
+}
+func (UnimplementedUserServer) ModifyPassword(context.Context, *ModifyPasswdReq) (*common_pb.SuccessResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ModifyPassword not implemented")
+}
+func (UnimplementedUserServer) SwitchUserActive(context.Context, *SwitchActiveReq) (*common_pb.SuccessResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SwitchUserActive not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 func (UnimplementedUserServer) testEmbeddedByValue()              {}
@@ -101,6 +181,42 @@ func RegisterUserServer(s grpc.ServiceRegistrar, srv UserServer) {
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&User_ServiceDesc, srv)
+}
+
+func _User_GetUserInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(common_pb.IdReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).GetUserInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_GetUserInfo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).GetUserInfo(ctx, req.(*common_pb.IdReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_ListUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(common_pb.PageReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).ListUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_ListUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).ListUser(ctx, req.(*common_pb.PageReq))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _User_DeleteUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -139,6 +255,60 @@ func _User_CreateUser_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_UpdateUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).UpdateUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_UpdateUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).UpdateUser(ctx, req.(*UpdateUserReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_ModifyPassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ModifyPasswdReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).ModifyPassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_ModifyPassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).ModifyPassword(ctx, req.(*ModifyPasswdReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_SwitchUserActive_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SwitchActiveReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).SwitchUserActive(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_SwitchUserActive_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).SwitchUserActive(ctx, req.(*SwitchActiveReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // User_ServiceDesc is the grpc.ServiceDesc for User service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -147,12 +317,32 @@ var User_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*UserServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "GetUserInfo",
+			Handler:    _User_GetUserInfo_Handler,
+		},
+		{
+			MethodName: "ListUser",
+			Handler:    _User_ListUser_Handler,
+		},
+		{
 			MethodName: "DeleteUser",
 			Handler:    _User_DeleteUser_Handler,
 		},
 		{
 			MethodName: "CreateUser",
 			Handler:    _User_CreateUser_Handler,
+		},
+		{
+			MethodName: "UpdateUser",
+			Handler:    _User_UpdateUser_Handler,
+		},
+		{
+			MethodName: "ModifyPassword",
+			Handler:    _User_ModifyPassword_Handler,
+		},
+		{
+			MethodName: "SwitchUserActive",
+			Handler:    _User_SwitchUserActive_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
