@@ -10,7 +10,7 @@ import (
 	"database/sql/driver"
 	"gorm.io/gorm"
 
-	"basis/internal/model"
+	"td27/rpc/basis/internal/model"
 )
 
 type (
@@ -18,7 +18,7 @@ type (
 		Insert(ctx context.Context, data *MenuDTO) error
 		Update(ctx context.Context, newData *NewMenuDTO) (*AuthorityMenuEntity, error)
 		Delete(ctx context.Context, id uint) error
-		GetElTreeMenus(roleId uint) ([]AuthorityMenuEntity, []uint, error)
+		GetElTreeMenus(roleId uint) ([]AuthorityMenuEntity, []uint64, error)
 		FindByIds(ctx context.Context, ids []uint) ([]AuthorityMenuEntity, error)
 	}
 

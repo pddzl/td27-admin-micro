@@ -1,4 +1,4 @@
-package pkg
+package tool
 
 import (
 	"google.golang.org/protobuf/types/known/timestamppb"

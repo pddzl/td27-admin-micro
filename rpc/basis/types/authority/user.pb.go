@@ -4,7 +4,7 @@
 // 	protoc        v6.33.2
 // source: authority/user.proto
 
-package user_pb
+package user
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -12,7 +12,7 @@ import (
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
-	common_pb "basis/types/common_pb"
+	common "td27/rpc/basis/types/common"
 	unsafe "unsafe"
 )
 
@@ -519,7 +519,7 @@ var File_authority_user_proto protoreflect.FileDescriptor
 
 const file_authority_user_proto_rawDesc = "" +
 	"\n" +
-	"\x14authority/user.proto\x12\x14basis.authority.user\x1a\fcommon.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd2\x01\n" +
+	"\x14authority/user.proto\x12\x14basis.authority.user\x1a\x13common/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd2\x01\n" +
 	"\rCreateUserReq\x12\x1a\n" +
 	"\busername\x18\x01 \x01(\tR\busername\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x19\n" +
@@ -572,7 +572,7 @@ const file_authority_user_proto_rawDesc = "" +
 	"\n" +
 	"UpdateUser\x12#.basis.authority.user.UpdateUserReq\x1a\x1e.basis.authority.user.UserResp\x12R\n" +
 	"\x0eModifyPassword\x12%.basis.authority.user.ModifyPasswdReq\x1a\x19.basis.common.SuccessResp\x12T\n" +
-	"\x10SwitchUserActive\x12%.basis.authority.user.SwitchActiveReq\x1a\x19.basis.common.SuccessRespB\x19Z\x17types/authority/user_pbb\x06proto3"
+	"\x10SwitchUserActive\x12%.basis.authority.user.SwitchActiveReq\x1a\x19.basis.common.SuccessRespB*Z(td27/rpc/basis/types/authority/user;userb\x06proto3"
 
 var (
 	file_authority_user_proto_rawDescOnce sync.Once
@@ -596,9 +596,9 @@ var file_authority_user_proto_goTypes = []any{
 	(*ModifyPasswdReq)(nil),       // 5: basis.authority.user.ModifyPasswdReq
 	(*SwitchActiveReq)(nil),       // 6: basis.authority.user.SwitchActiveReq
 	(*timestamppb.Timestamp)(nil), // 7: google.protobuf.Timestamp
-	(*common_pb.IdReq)(nil),       // 8: basis.common.IdReq
-	(*common_pb.PageReq)(nil),     // 9: basis.common.PageReq
-	(*common_pb.SuccessResp)(nil), // 10: basis.common.SuccessResp
+	(*common.IdReq)(nil),          // 8: basis.common.IdReq
+	(*common.PageReq)(nil),        // 9: basis.common.PageReq
+	(*common.SuccessResp)(nil),    // 10: basis.common.SuccessResp
 }
 var file_authority_user_proto_depIdxs = []int32{
 	7,  // 0: basis.authority.user.UserResp.created_at:type_name -> google.protobuf.Timestamp

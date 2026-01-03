@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-import "common.proto";
+import "common/common.proto";
 import "google/protobuf/timestamp.proto";
 
 package basis.authority.user;
 
-option go_package = "types/authority/user_pb";
+option go_package = "td27/rpc/basis/types/authority/user;user";
 
 message CreateUserReq {
   string username = 1;

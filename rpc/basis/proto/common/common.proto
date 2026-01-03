@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package basis.common;
 
-option go_package = "types/common_pb";
+option go_package = "td27/rpc/basis/types/common;common";
 
 message IdReq {
   uint64 id = 1;

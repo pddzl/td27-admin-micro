@@ -1,4 +1,4 @@
-package pkg
+package tool
 
 import (
 	"crypto/md5"

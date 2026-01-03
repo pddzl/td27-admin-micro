@@ -7,11 +7,11 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"basis/internal/model/authority"
-	"basis/internal/pkg"
-	"basis/internal/svc"
-	"basis/types/authority/user_pb"
-	"basis/types/common_pb"
+	"td27/pkg/tool"
+	"td27/rpc/basis/internal/model/authority"
+	"td27/rpc/basis/internal/svc"
+	"td27/rpc/basis/types/authority/user_pb"
+	"td27/rpc/basis/types/common_pb"
 )
 
 type UserLogic struct {
@@ -40,8 +40,8 @@ func (ul *UserLogic) mapUserEntityToUserResp(entity *authority.AuthorityUserEnti
 		Email:     entity.Email,
 		Active:    entity.Active,
 		RoleId:    entity.RoleModelID,
-		CreatedAt: pkg.ToProtoTimestamp(entity.CreatedAt),
-		UpdatedAt: pkg.ToProtoTimestamp(entity.UpdatedAt),
+		CreatedAt: tool.ToProtoTimestamp(entity.CreatedAt),
+		UpdatedAt: tool.ToProtoTimestamp(entity.UpdatedAt),
 	}
 }
 
@@ -114,7 +114,7 @@ func (ul *UserLogic) CreateUser(in *user_pb.CreateUserReq) (*common_pb.SuccessRe
 	// build entity
 	user := &authority.AuthorityUserEntity{
 		Username:    in.Username,
-		Password:    pkg.MD5V([]byte(in.Password)),
+		Password:    tool.MD5V([]byte(in.Password)),
 		Phone:       *in.Phone,
 		Email:       *in.Email,
 		Active:      *in.Active,
@@ -175,8 +175,8 @@ func (ul *UserLogic) UpdateUser(in *user_pb.UpdateUserReq) (*user_pb.UserResp, e
 		Email:     userEntity.Email,
 		Active:    userEntity.Active,
 		RoleId:    userEntity.RoleModelID,
-		CreatedAt: pkg.ToProtoTimestamp(userEntity.CreatedAt),
-		UpdatedAt: pkg.ToProtoTimestamp(userEntity.UpdatedAt),
+		CreatedAt: tool.ToProtoTimestamp(userEntity.CreatedAt),
+		UpdatedAt: tool.ToProtoTimestamp(userEntity.UpdatedAt),
 	}, nil
 }
 

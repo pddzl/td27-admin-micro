@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.36.10
 // 	protoc        v6.33.2
-// source: common.proto
+// source: common/common.proto
 
-package common_pb
+package common
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -30,7 +30,7 @@ type IdReq struct {
 
 func (x *IdReq) Reset() {
 	*x = IdReq{}
-	mi := &file_common_proto_msgTypes[0]
+	mi := &file_common_common_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -42,7 +42,7 @@ func (x *IdReq) String() string {
 func (*IdReq) ProtoMessage() {}
 
 func (x *IdReq) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_msgTypes[0]
+	mi := &file_common_common_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -55,7 +55,7 @@ func (x *IdReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IdReq.ProtoReflect.Descriptor instead.
 func (*IdReq) Descriptor() ([]byte, []int) {
-	return file_common_proto_rawDescGZIP(), []int{0}
+	return file_common_common_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *IdReq) GetId() uint64 {
@@ -75,7 +75,7 @@ type PageReq struct {
 
 func (x *PageReq) Reset() {
 	*x = PageReq{}
-	mi := &file_common_proto_msgTypes[1]
+	mi := &file_common_common_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -87,7 +87,7 @@ func (x *PageReq) String() string {
 func (*PageReq) ProtoMessage() {}
 
 func (x *PageReq) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_msgTypes[1]
+	mi := &file_common_common_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -100,7 +100,7 @@ func (x *PageReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PageReq.ProtoReflect.Descriptor instead.
 func (*PageReq) Descriptor() ([]byte, []int) {
-	return file_common_proto_rawDescGZIP(), []int{1}
+	return file_common_common_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *PageReq) GetPage() uint32 {
@@ -126,7 +126,7 @@ type SuccessResp struct {
 
 func (x *SuccessResp) Reset() {
 	*x = SuccessResp{}
-	mi := &file_common_proto_msgTypes[2]
+	mi := &file_common_common_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -138,7 +138,7 @@ func (x *SuccessResp) String() string {
 func (*SuccessResp) ProtoMessage() {}
 
 func (x *SuccessResp) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_msgTypes[2]
+	mi := &file_common_common_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -151,7 +151,7 @@ func (x *SuccessResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SuccessResp.ProtoReflect.Descriptor instead.
 func (*SuccessResp) Descriptor() ([]byte, []int) {
-	return file_common_proto_rawDescGZIP(), []int{2}
+	return file_common_common_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *SuccessResp) GetSuccess() bool {
@@ -169,7 +169,7 @@ type Empty struct {
 
 func (x *Empty) Reset() {
 	*x = Empty{}
-	mi := &file_common_proto_msgTypes[3]
+	mi := &file_common_common_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -181,7 +181,7 @@ func (x *Empty) String() string {
 func (*Empty) ProtoMessage() {}
 
 func (x *Empty) ProtoReflect() protoreflect.Message {
-	mi := &file_common_proto_msgTypes[3]
+	mi := &file_common_common_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -194,14 +194,14 @@ func (x *Empty) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Empty.ProtoReflect.Descriptor instead.
 func (*Empty) Descriptor() ([]byte, []int) {
-	return file_common_proto_rawDescGZIP(), []int{3}
+	return file_common_common_proto_rawDescGZIP(), []int{3}
 }
 
-var File_common_proto protoreflect.FileDescriptor
+var File_common_common_proto protoreflect.FileDescriptor
 
-const file_common_proto_rawDesc = "" +
+const file_common_common_proto_rawDesc = "" +
 	"\n" +
-	"\fcommon.proto\x12\fbasis.common\"\x17\n" +
+	"\x13common/common.proto\x12\fbasis.common\"\x17\n" +
 	"\x05IdReq\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x04R\x02id\":\n" +
 	"\aPageReq\x12\x12\n" +
@@ -209,28 +209,28 @@ const file_common_proto_rawDesc = "" +
 	"\tpage_size\x18\x02 \x01(\rR\bpageSize\"'\n" +
 	"\vSuccessResp\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\"\a\n" +
-	"\x05EmptyB\x11Z\x0ftypes/common_pbb\x06proto3"
+	"\x05EmptyB$Z\"td27/rpc/basis/types/common;commonb\x06proto3"
 
 var (
-	file_common_proto_rawDescOnce sync.Once
-	file_common_proto_rawDescData []byte
+	file_common_common_proto_rawDescOnce sync.Once
+	file_common_common_proto_rawDescData []byte
 )
 
-func file_common_proto_rawDescGZIP() []byte {
-	file_common_proto_rawDescOnce.Do(func() {
-		file_common_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_common_proto_rawDesc), len(file_common_proto_rawDesc)))
+func file_common_common_proto_rawDescGZIP() []byte {
+	file_common_common_proto_rawDescOnce.Do(func() {
+		file_common_common_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_common_common_proto_rawDesc), len(file_common_common_proto_rawDesc)))
 	})
-	return file_common_proto_rawDescData
+	return file_common_common_proto_rawDescData
 }
 
-var file_common_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
-var file_common_proto_goTypes = []any{
+var file_common_common_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_common_common_proto_goTypes = []any{
 	(*IdReq)(nil),       // 0: basis.common.IdReq
 	(*PageReq)(nil),     // 1: basis.common.PageReq
 	(*SuccessResp)(nil), // 2: basis.common.SuccessResp
 	(*Empty)(nil),       // 3: basis.common.Empty
 }
-var file_common_proto_depIdxs = []int32{
+var file_common_common_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
 	0, // [0:0] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -238,26 +238,26 @@ var file_common_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_common_proto_init() }
-func file_common_proto_init() {
-	if File_common_proto != nil {
+func init() { file_common_common_proto_init() }
+func file_common_common_proto_init() {
+	if File_common_common_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_common_proto_rawDesc), len(file_common_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_common_common_proto_rawDesc), len(file_common_common_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_common_proto_goTypes,
-		DependencyIndexes: file_common_proto_depIdxs,
-		MessageInfos:      file_common_proto_msgTypes,
+		GoTypes:           file_common_common_proto_goTypes,
+		DependencyIndexes: file_common_common_proto_depIdxs,
+		MessageInfos:      file_common_common_proto_msgTypes,
 	}.Build()
-	File_common_proto = out.File
-	file_common_proto_goTypes = nil
-	file_common_proto_depIdxs = nil
+	File_common_common_proto = out.File
+	file_common_common_proto_goTypes = nil
+	file_common_common_proto_depIdxs = nil
 }

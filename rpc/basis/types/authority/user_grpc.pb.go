@@ -4,14 +4,14 @@
 // - protoc             v6.33.2
 // source: authority/user.proto
 
-package user_pb
+package user
 
 import (
 	context "context"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	common_pb "basis/types/common_pb"
+	common "td27/rpc/basis/types/common"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -33,13 +33,13 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserClient interface {
-	GetUserInfo(ctx context.Context, in *common_pb.IdReq, opts ...grpc.CallOption) (*UserRoleResp, error)
-	ListUser(ctx context.Context, in *common_pb.PageReq, opts ...grpc.CallOption) (*ListUserResp, error)
-	DeleteUser(ctx context.Context, in *common_pb.IdReq, opts ...grpc.CallOption) (*common_pb.SuccessResp, error)
-	CreateUser(ctx context.Context, in *CreateUserReq, opts ...grpc.CallOption) (*common_pb.SuccessResp, error)
+	GetUserInfo(ctx context.Context, in *common.IdReq, opts ...grpc.CallOption) (*UserRoleResp, error)
+	ListUser(ctx context.Context, in *common.PageReq, opts ...grpc.CallOption) (*ListUserResp, error)
+	DeleteUser(ctx context.Context, in *common.IdReq, opts ...grpc.CallOption) (*common.SuccessResp, error)
+	CreateUser(ctx context.Context, in *CreateUserReq, opts ...grpc.CallOption) (*common.SuccessResp, error)
 	UpdateUser(ctx context.Context, in *UpdateUserReq, opts ...grpc.CallOption) (*UserResp, error)
-	ModifyPassword(ctx context.Context, in *ModifyPasswdReq, opts ...grpc.CallOption) (*common_pb.SuccessResp, error)
-	SwitchUserActive(ctx context.Context, in *SwitchActiveReq, opts ...grpc.CallOption) (*common_pb.SuccessResp, error)
+	ModifyPassword(ctx context.Context, in *ModifyPasswdReq, opts ...grpc.CallOption) (*common.SuccessResp, error)
+	SwitchUserActive(ctx context.Context, in *SwitchActiveReq, opts ...grpc.CallOption) (*common.SuccessResp, error)
 }
 
 type userClient struct {
@@ -50,7 +50,7 @@ func NewUserClient(cc grpc.ClientConnInterface) UserClient {
 	return &userClient{cc}
 }
 
-func (c *userClient) GetUserInfo(ctx context.Context, in *common_pb.IdReq, opts ...grpc.CallOption) (*UserRoleResp, error) {
+func (c *userClient) GetUserInfo(ctx context.Context, in *common.IdReq, opts ...grpc.CallOption) (*UserRoleResp, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UserRoleResp)
 	err := c.cc.Invoke(ctx, User_GetUserInfo_FullMethodName, in, out, cOpts...)
@@ -60,7 +60,7 @@ func (c *userClient) GetUserInfo(ctx context.Context, in *common_pb.IdReq, opts 
 	return out, nil
 }
 
-func (c *userClient) ListUser(ctx context.Context, in *common_pb.PageReq, opts ...grpc.CallOption) (*ListUserResp, error) {
+func (c *userClient) ListUser(ctx context.Context, in *common.PageReq, opts ...grpc.CallOption) (*ListUserResp, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListUserResp)
 	err := c.cc.Invoke(ctx, User_ListUser_FullMethodName, in, out, cOpts...)
@@ -70,9 +70,9 @@ func (c *userClient) ListUser(ctx context.Context, in *common_pb.PageReq, opts .
 	return out, nil
 }
 
-func (c *userClient) DeleteUser(ctx context.Context, in *common_pb.IdReq, opts ...grpc.CallOption) (*common_pb.SuccessResp, error) {
+func (c *userClient) DeleteUser(ctx context.Context, in *common.IdReq, opts ...grpc.CallOption) (*common.SuccessResp, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(common_pb.SuccessResp)
+	out := new(common.SuccessResp)
 	err := c.cc.Invoke(ctx, User_DeleteUser_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -80,9 +80,9 @@ func (c *userClient) DeleteUser(ctx context.Context, in *common_pb.IdReq, opts .
 	return out, nil
 }
 
-func (c *userClient) CreateUser(ctx context.Context, in *CreateUserReq, opts ...grpc.CallOption) (*common_pb.SuccessResp, error) {
+func (c *userClient) CreateUser(ctx context.Context, in *CreateUserReq, opts ...grpc.CallOption) (*common.SuccessResp, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(common_pb.SuccessResp)
+	out := new(common.SuccessResp)
 	err := c.cc.Invoke(ctx, User_CreateUser_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -100,9 +100,9 @@ func (c *userClient) UpdateUser(ctx context.Context, in *UpdateUserReq, opts ...
 	return out, nil
 }
 
-func (c *userClient) ModifyPassword(ctx context.Context, in *ModifyPasswdReq, opts ...grpc.CallOption) (*common_pb.SuccessResp, error) {
+func (c *userClient) ModifyPassword(ctx context.Context, in *ModifyPasswdReq, opts ...grpc.CallOption) (*common.SuccessResp, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(common_pb.SuccessResp)
+	out := new(common.SuccessResp)
 	err := c.cc.Invoke(ctx, User_ModifyPassword_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -110,9 +110,9 @@ func (c *userClient) ModifyPassword(ctx context.Context, in *ModifyPasswdReq, op
 	return out, nil
 }
 
-func (c *userClient) SwitchUserActive(ctx context.Context, in *SwitchActiveReq, opts ...grpc.CallOption) (*common_pb.SuccessResp, error) {
+func (c *userClient) SwitchUserActive(ctx context.Context, in *SwitchActiveReq, opts ...grpc.CallOption) (*common.SuccessResp, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(common_pb.SuccessResp)
+	out := new(common.SuccessResp)
 	err := c.cc.Invoke(ctx, User_SwitchUserActive_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -124,13 +124,13 @@ func (c *userClient) SwitchUserActive(ctx context.Context, in *SwitchActiveReq, 
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility.
 type UserServer interface {
-	GetUserInfo(context.Context, *common_pb.IdReq) (*UserRoleResp, error)
-	ListUser(context.Context, *common_pb.PageReq) (*ListUserResp, error)
-	DeleteUser(context.Context, *common_pb.IdReq) (*common_pb.SuccessResp, error)
-	CreateUser(context.Context, *CreateUserReq) (*common_pb.SuccessResp, error)
+	GetUserInfo(context.Context, *common.IdReq) (*UserRoleResp, error)
+	ListUser(context.Context, *common.PageReq) (*ListUserResp, error)
+	DeleteUser(context.Context, *common.IdReq) (*common.SuccessResp, error)
+	CreateUser(context.Context, *CreateUserReq) (*common.SuccessResp, error)
 	UpdateUser(context.Context, *UpdateUserReq) (*UserResp, error)
-	ModifyPassword(context.Context, *ModifyPasswdReq) (*common_pb.SuccessResp, error)
-	SwitchUserActive(context.Context, *SwitchActiveReq) (*common_pb.SuccessResp, error)
+	ModifyPassword(context.Context, *ModifyPasswdReq) (*common.SuccessResp, error)
+	SwitchUserActive(context.Context, *SwitchActiveReq) (*common.SuccessResp, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -141,25 +141,25 @@ type UserServer interface {
 // pointer dereference when methods are called.
 type UnimplementedUserServer struct{}
 
-func (UnimplementedUserServer) GetUserInfo(context.Context, *common_pb.IdReq) (*UserRoleResp, error) {
+func (UnimplementedUserServer) GetUserInfo(context.Context, *common.IdReq) (*UserRoleResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserInfo not implemented")
 }
-func (UnimplementedUserServer) ListUser(context.Context, *common_pb.PageReq) (*ListUserResp, error) {
+func (UnimplementedUserServer) ListUser(context.Context, *common.PageReq) (*ListUserResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListUser not implemented")
 }
-func (UnimplementedUserServer) DeleteUser(context.Context, *common_pb.IdReq) (*common_pb.SuccessResp, error) {
+func (UnimplementedUserServer) DeleteUser(context.Context, *common.IdReq) (*common.SuccessResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
 }
-func (UnimplementedUserServer) CreateUser(context.Context, *CreateUserReq) (*common_pb.SuccessResp, error) {
+func (UnimplementedUserServer) CreateUser(context.Context, *CreateUserReq) (*common.SuccessResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateUser not implemented")
 }
 func (UnimplementedUserServer) UpdateUser(context.Context, *UpdateUserReq) (*UserResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUser not implemented")
 }
-func (UnimplementedUserServer) ModifyPassword(context.Context, *ModifyPasswdReq) (*common_pb.SuccessResp, error) {
+func (UnimplementedUserServer) ModifyPassword(context.Context, *ModifyPasswdReq) (*common.SuccessResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ModifyPassword not implemented")
 }
-func (UnimplementedUserServer) SwitchUserActive(context.Context, *SwitchActiveReq) (*common_pb.SuccessResp, error) {
+func (UnimplementedUserServer) SwitchUserActive(context.Context, *SwitchActiveReq) (*common.SuccessResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SwitchUserActive not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
@@ -184,7 +184,7 @@ func RegisterUserServer(s grpc.ServiceRegistrar, srv UserServer) {
 }
 
 func _User_GetUserInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(common_pb.IdReq)
+	in := new(common.IdReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -196,13 +196,13 @@ func _User_GetUserInfo_Handler(srv interface{}, ctx context.Context, dec func(in
 		FullMethod: User_GetUserInfo_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).GetUserInfo(ctx, req.(*common_pb.IdReq))
+		return srv.(UserServer).GetUserInfo(ctx, req.(*common.IdReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _User_ListUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(common_pb.PageReq)
+	in := new(common.PageReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -214,13 +214,13 @@ func _User_ListUser_Handler(srv interface{}, ctx context.Context, dec func(inter
 		FullMethod: User_ListUser_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).ListUser(ctx, req.(*common_pb.PageReq))
+		return srv.(UserServer).ListUser(ctx, req.(*common.PageReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _User_DeleteUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(common_pb.IdReq)
+	in := new(common.IdReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -232,7 +232,7 @@ func _User_DeleteUser_Handler(srv interface{}, ctx context.Context, dec func(int
 		FullMethod: User_DeleteUser_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).DeleteUser(ctx, req.(*common_pb.IdReq))
+		return srv.(UserServer).DeleteUser(ctx, req.(*common.IdReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }

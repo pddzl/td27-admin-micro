@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-import "common.proto";
+import "common/common.proto";
 
 package basis.authority.role;
 
-option go_package = "types/authority/role_pb";
+option go_package = "td27/rpc/basis/types/authority/role;role";
 
 message CreateUserReq {
   string username = 1;

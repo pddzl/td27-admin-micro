@@ -7,7 +7,7 @@ import (
 
 	"gorm.io/gorm"
 
-	"basis/internal/model"
+	"td27/rpc/basis/internal/model"
 )
 
 type (
@@ -15,7 +15,7 @@ type (
 		Insert(ctx context.Context, data *AuthorityRoleEntity) error
 		FindOne(ctx context.Context, id uint) (*AuthorityRoleEntity, error)
 		Update(ctx context.Context, id uint, roleName string) error
-		Delete(ctx context.Context, id uint) error
+		Delete(ctx context.Context, id uint64) error
 		UpdateRoleMenus(ctx context.Context, roleId uint, ids []uint) error
 		ExistsById(ctx context.Context, id uint64) (bool, error)
 	}
@@ -43,7 +43,7 @@ func newAuthorityRoleModel(conn *gorm.DB) *defaultAuthorityRoleModel {
 	}
 }
 
-func (ar *defaultAuthorityRoleModel) Delete(ctx context.Context, id uint) error {
+func (ar *defaultAuthorityRoleModel) Delete(ctx context.Context, id uint64) error {
 	var authorityRoleEntity AuthorityRoleEntity
 	conn := ar.conn.WithContext(ctx)
 

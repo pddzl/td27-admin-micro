@@ -1,11 +1,11 @@
 package svc
 
 import (
-	"basis/internal/model/authority"
 	"log"
 
-	"basis/internal/config"
-	"basis/internal/initialization"
+	"td27/rpc/basis/internal/config"
+	"td27/rpc/basis/internal/initialization"
+	"td27/rpc/basis/internal/model/authority"
 )
 
 type ServiceContext struct {
@@ -26,10 +26,10 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		c.DataBase.MaxIdleConn,
 		c.DataBase.ConnMaxLifetime)
 	if err != nil {
-		log.Panicf("init rawDB err: %v", err)
+		log.Panicf("init mysql err: %v", err)
 		return nil
 	} else {
-		log.Println("init rawDB success")
+		log.Println("init mysql success")
 	}
 
 	return &ServiceContext{

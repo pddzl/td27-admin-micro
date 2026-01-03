@@ -3,10 +3,10 @@ package authority
 import (
 	"context"
 
-	"basis/internal/logic/authority"
-	"basis/internal/svc"
-	"basis/types/authority/user_pb"
-	"basis/types/common_pb"
+	"td27/rpc/basis/internal/logic/authority"
+	"td27/rpc/basis/internal/svc"
+	"td27/rpc/basis/types/authority/user_pb"
+	"td27/rpc/basis/types/common_pb"
 )
 
 type UserServer struct {

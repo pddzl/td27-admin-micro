@@ -7,8 +7,8 @@ import (
 
 	"gorm.io/gorm"
 
-	"basis/internal/model"
-	"basis/internal/pkg"
+	"td27/pkg/tool"
+	"td27/rpc/basis/internal/model"
 )
 
 type (
@@ -33,7 +33,7 @@ type (
 		Username    string `gorm:"unique;comment:用户名"` // 用户名
 		Password    string `gorm:"not null;comment:密码"`
 		Phone       string `gorm:"comment:手机号"` // 手机号
-		Email       string `gorm:"comment:邮箱"`   // 邮箱
+		Email       string `gorm:"comment:邮箱"`  // 邮箱
 		Active      bool   // 是否活跃
 		RoleModelID uint64 `gorm:"not null"`
 	}
@@ -85,7 +85,7 @@ func (m *defaultAuthorityUserModel) FindOne(ctx context.Context, id uint64) (*Us
 }
 
 func (m *defaultAuthorityUserModel) Insert(ctx context.Context, data *AuthorityUserEntity) error {
-	data.Password = pkg.MD5V([]byte(data.Password))
+	data.Password = tool.MD5V([]byte(data.Password))
 	return m.conn.WithContext(ctx).Create(data).Error
 }
 
@@ -96,7 +96,7 @@ func (m *defaultAuthorityUserModel) Update(ctx context.Context, newData *UpdateU
 	// Update (use map to avoid zero-value problems)
 	err := conn.Model(&existing).Updates(map[string]interface{}{
 		"username":      newData.Username,
-		"password":      pkg.MD5V([]byte(newData.Password)),
+		"password":      tool.MD5V([]byte(newData.Password)),
 		"phone":         newData.Phone,
 		"email":         newData.Email,
 		"active":        newData.Active,
@@ -117,11 +117,11 @@ func (m *defaultAuthorityUserModel) Update(ctx context.Context, newData *UpdateU
 func (m *defaultAuthorityUserModel) ModifyPassword(ctx context.Context, id uint64, oldPassword string, newPassword string) error {
 	conn := m.conn.WithContext(ctx)
 	var authorityUser AuthorityUserEntity
-	if errors.Is(conn.Where("id = ? and password = ?", id, pkg.MD5V([]byte(oldPassword))).First(&authorityUser).Error, gorm.ErrRecordNotFound) {
+	if errors.Is(conn.Where("id = ? and password = ?", id, tool.MD5V([]byte(oldPassword))).First(&authorityUser).Error, gorm.ErrRecordNotFound) {
 		return errors.New("wrong old password")
 	}
 
-	return conn.Model(&authorityUser).Update("password", pkg.MD5V([]byte(newPassword))).Error
+	return conn.Model(&authorityUser).Update("password", tool.MD5V([]byte(newPassword))).Error
 }
 
 func (m *defaultAuthorityUserModel) SwitchUserActive(ctx context.Context, id uint64, active bool) error {
