@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+import "common/common.proto";
+import "google/protobuf/timestamp.proto";
+
+package basis.monitor.operation_log;
+
+option go_package = "td27/rpc/basis/types/monitor/operation_log_pb;operation_log_pb";
+
+message OperationLogResp {
+  uint64 id = 1;
+  string ip = 2;
+  string method = 3;
+  string path = 4;
+  int32 status = 5;
+  string user_agent = 6;
+  string req_param = 7;
+  string resp_data = 8;
+  int64 resp_time = 9;
+  uint64 user_id = 10;
+  string user_name = 11;
+  google.protobuf.Timestamp created_at = 12;
+}
+
+message ListOperationLogReq {
+  basis.common.PageReq page = 1;
+  optional uint64 user_id = 2;
+  optional int32 status = 3;
+}
+
+message ListOperationLogResp {
+  repeated OperationLogResp list = 1;
+  int64 total = 2;
+}
+
+message CleanupExpiredLogsReq {
+  int32 days = 1;
+}
+
+service OperationLog {
+  rpc ListOperationLog(ListOperationLogReq) returns (ListOperationLogResp);
+  rpc CleanupExpiredLogs(CleanupExpiredLogsReq) returns (basis.common.SuccessResp);
+}

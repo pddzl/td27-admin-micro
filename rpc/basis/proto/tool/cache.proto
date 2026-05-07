@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+import "common/common.proto";
+import "google/protobuf/timestamp.proto";
+
+package basis.tool.cache;
+
+option go_package = "td27/rpc/basis/types/tool/cache_pb;cache_pb";
+
+message GetCacheReq {
+  string key = 1;
+}
+
+message GetCacheResp {
+  string key = 1;
+  string value = 2;
+  google.protobuf.Timestamp expires_at = 3;
+}
+
+message SetCacheReq {
+  string key = 1;
+  string value = 2;
+  int64 ttl_seconds = 3;
+}
+
+message DeleteCacheReq {
+  string key = 1;
+}
+
+message CacheResp {
+  uint64 id = 1;
+  string username = 2;
+  string key = 3;
+  string value = 4;
+  google.protobuf.Timestamp expires_at = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}
+
+message ListCacheResp {
+  repeated CacheResp list = 1;
+  int64 total = 2;
+}
+
+message CleanupExpiredResp {
+  int64 deleted_count = 1;
+}
+
+service Cache {
+  rpc GetCache(GetCacheReq) returns (GetCacheResp);
+  rpc SetCache(SetCacheReq) returns (basis.common.SuccessResp);
+  rpc DeleteCache(DeleteCacheReq) returns (basis.common.SuccessResp);
+  rpc ListCache(basis.common.PageReq) returns (ListCacheResp);
+  rpc CleanupExpired(basis.common.Empty) returns (CleanupExpiredResp);
+}

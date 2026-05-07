@@ -7,9 +7,11 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"td27/pkg/tool"
 	"td27/rpc/basis/internal/model/authority"
+	"td27/rpc/basis/internal/model/common"
 	"td27/rpc/basis/internal/svc"
+	"td27/rpc/basis/internal/util"
+	"td27/rpc/basis/types/authority/role_pb"
 	"td27/rpc/basis/types/authority/user_pb"
 	"td27/rpc/basis/types/common_pb"
 )
@@ -28,61 +30,90 @@ func NewUserLogic(ctx context.Context, svcCtx *svc.ServiceContext) *UserLogic {
 	}
 }
 
-func (ul *UserLogic) mapUserEntityToUserResp(entity *authority.AuthorityUserEntity) *user_pb.UserResp {
-	if entity == nil {
+func (ul *UserLogic) mapUserToResp(user *authority.UserModel) *user_pb.UserResp {
+	if user == nil {
 		return nil
+	}
+
+	roles := make([]*role_pb.RoleResp, 0, len(user.Roles))
+	for _, role := range user.Roles {
+		var roleParentID uint64
+		if role.ParentID != nil {
+			roleParentID = uint64(*role.ParentID)
+		}
+		roles = append(roles, &role_pb.RoleResp{
+			Id:        uint64(role.ID),
+			RoleName:  role.RoleName,
+			ParentId:  &roleParentID,
+			CreatedAt: util.ToProtoTimestamp(role.CreatedAt),
+			UpdatedAt: util.ToProtoTimestamp(role.UpdatedAt),
+		})
 	}
 
 	return &user_pb.UserResp{
-		Id:        entity.ID,
-		Username:  entity.Username,
-		Phone:     entity.Phone,
-		Email:     entity.Email,
-		Active:    entity.Active,
-		RoleId:    entity.RoleModelID,
-		CreatedAt: tool.ToProtoTimestamp(entity.CreatedAt),
-		UpdatedAt: tool.ToProtoTimestamp(entity.UpdatedAt),
+		Id:        uint64(user.ID),
+		Username:  user.Username,
+		Phone:     user.Phone,
+		Email:     user.Email,
+		Active:    user.Active,
+		DeptId:    uint64(user.DeptID),
+		Roles:     roles,
+		CreatedAt: util.ToProtoTimestamp(user.CreatedAt),
+		UpdatedAt: util.ToProtoTimestamp(user.UpdatedAt),
 	}
 }
 
-func (ul *UserLogic) mapUserPlusRoleNameDTOToUserRoleResp(dto *authority.UserPlusRoleNameDTO) *user_pb.UserRoleResp {
-	if dto == nil {
-		return nil
+func (ul *UserLogic) Login(in *user_pb.LoginReq) (*user_pb.LoginResp, error) {
+	user, err := ul.svcCtx.UserService.GetByUsername(ul.ctx, in.Username)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "login failed: %v", err)
+	}
+	if user == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "invalid username or password")
 	}
 
-	userResp := ul.mapUserEntityToUserResp(&dto.AuthorityUserEntity)
-
-	return &user_pb.UserRoleResp{
-		User:     userResp,
-		RoleName: dto.RoleName,
+	if !ul.svcCtx.UserService.VerifyPassword(user.Password, in.Password) {
+		return nil, status.Errorf(codes.Unauthenticated, "invalid username or password")
 	}
+
+	token := "placeholder_token"
+
+	return &user_pb.LoginResp{
+		Token: token,
+		User:  ul.mapUserToResp(user),
+	}, nil
 }
 
-func (ul *UserLogic) GetUserInfo(in *common_pb.IdReq) (*user_pb.UserRoleResp, error) {
-	userPlusRoleNameDTO, err := ul.svcCtx.AuthorityUserRepo.FindOne(ul.ctx, in.Id)
+func (ul *UserLogic) GetUserInfo(in *common_pb.IdReq) (*user_pb.UserResp, error) {
+	user, err := ul.svcCtx.UserService.GetByIDWithRoles(ul.ctx, uint(in.Id))
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "GetUserInfo failed: %v", err)
 	}
+	if user == nil {
+		return nil, status.Errorf(codes.NotFound, "user not found")
+	}
 
-	return ul.mapUserPlusRoleNameDTOToUserRoleResp(userPlusRoleNameDTO), nil
+	return ul.mapUserToResp(user), nil
 }
 
 func (ul *UserLogic) ListUser(in *common_pb.PageReq) (*user_pb.ListUserResp, error) {
-	list, count, err := ul.svcCtx.AuthorityUserRepo.List(ul.ctx, int(in.Page), int(in.PageSize))
+	page := &common.PageInfo{
+		Page:     int(in.Page),
+		PageSize: int(in.PageSize),
+	}
+
+	users, count, err := ul.svcCtx.UserService.List(ul.ctx, page, nil)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "ListUser failed: %v", err)
 	}
 
 	resp := &user_pb.ListUserResp{
-		List:  make([]*user_pb.UserRoleResp, 0, len(list)),
+		List:  make([]*user_pb.UserResp, 0, len(users)),
 		Total: count,
 	}
 
-	for _, user := range list {
-		resp.List = append(
-			resp.List,
-			ul.mapUserPlusRoleNameDTOToUserRoleResp(&user),
-		)
+	for _, user := range users {
+		resp.List = append(resp.List, ul.mapUserToResp(user))
 	}
 
 	return resp, nil
@@ -90,98 +121,96 @@ func (ul *UserLogic) ListUser(in *common_pb.PageReq) (*user_pb.ListUserResp, err
 
 func (ul *UserLogic) DeleteUser(in *common_pb.IdReq) (*common_pb.SuccessResp, error) {
 	if in.Id == 0 {
-		return nil, status.Errorf(codes.Internal, "invalid user id")
+		return nil, status.Errorf(codes.InvalidArgument, "invalid user id")
 	}
 
-	err := ul.svcCtx.AuthorityUserRepo.Delete(ul.ctx, in.Id)
+	err := ul.svcCtx.UserService.Delete(ul.ctx, uint(in.Id))
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "delete user failed, id=%d, err=%v", in.Id, err)
+		return nil, status.Errorf(codes.Internal, "delete user failed: %v", err)
 	}
 
 	return &common_pb.SuccessResp{Success: true}, nil
 }
 
 func (ul *UserLogic) CreateUser(in *user_pb.CreateUserReq) (*common_pb.SuccessResp, error) {
-	// check role exists
-	exists, err := ul.svcCtx.AuthorityRoleRepo.ExistsById(ul.ctx, in.RoleId)
-	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
-	}
-	if !exists {
-		return nil, status.Errorf(codes.Internal, "role not found")
-	}
-
-	// build entity
-	user := &authority.AuthorityUserEntity{
-		Username:    in.Username,
-		Password:    tool.MD5V([]byte(in.Password)),
-		Phone:       *in.Phone,
-		Email:       *in.Email,
-		Active:      *in.Active,
-		RoleModelID: in.RoleId,
+	user := &authority.UserModel{
+		Username: in.Username,
+		Phone:    *in.Phone,
+		Email:    *in.Email,
+		Active:   *in.Active,
+		DeptID:   uint(*in.DeptId),
 	}
 
-	// create entity
-	err = ul.svcCtx.AuthorityUserRepo.Insert(ul.ctx, user)
+	err := ul.svcCtx.UserService.Create(ul.ctx, user, in.Password)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "insert user entity failed, err=%v", err)
+		return nil, status.Errorf(codes.Internal, "create user failed: %v", err)
+	}
+
+	if len(in.RoleIds) > 0 {
+		roleIDs := make([]uint, 0, len(in.RoleIds))
+		for _, rid := range in.RoleIds {
+			roleIDs = append(roleIDs, uint(rid))
+		}
+		err = ul.svcCtx.UserService.AssignRoles(ul.ctx, uint(user.ID), roleIDs)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "assign roles failed: %v", err)
+		}
 	}
 
 	return &common_pb.SuccessResp{Success: true}, nil
 }
 
 func (ul *UserLogic) UpdateUser(in *user_pb.UpdateUserReq) (*user_pb.UserResp, error) {
-	// check user exists
-	userExists, err := ul.svcCtx.AuthorityUserRepo.ExistsById(ul.ctx, in.Id)
+	user, err := ul.svcCtx.UserService.GetByID(ul.ctx, uint(in.Id))
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
+		return nil, status.Errorf(codes.Internal, "get user failed: %v", err)
 	}
-	if !userExists {
-		return nil, status.Errorf(codes.Internal, "user not found")
-	}
-
-	// check role exists
-	roleExists, err := ul.svcCtx.AuthorityRoleRepo.ExistsById(ul.ctx, in.RoleId)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
-	}
-	if !roleExists {
-		return nil, status.Errorf(codes.Internal, "role not found")
+	if user == nil {
+		return nil, status.Errorf(codes.NotFound, "user not found")
 	}
 
-	// update user
-	userEntity, err := ul.svcCtx.AuthorityUserRepo.Update(
-		ul.ctx,
-		&authority.UpdateUserDTO{
-			ID:          in.Id,
-			Username:    in.Username,
-			Password:    in.Password,
-			Phone:       in.Phone,
-			Email:       in.Email,
-			Active:      in.Active,
-			RoleModelId: in.RoleId,
-		},
-	)
+	if in.Username != nil {
+		user.Username = *in.Username
+	}
+	if in.Phone != nil {
+		user.Phone = *in.Phone
+	}
+	if in.Email != nil {
+		user.Email = *in.Email
+	}
+	if in.Active != nil {
+		user.Active = *in.Active
+	}
+	if in.DeptId != nil {
+		user.DeptID = uint(*in.DeptId)
+	}
 
+	err = ul.svcCtx.UserService.Update(ul.ctx, user)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "update user failed: %v", err)
 	}
 
-	// entity → proto
-	return &user_pb.UserResp{
-		Id:        userEntity.ID,
-		Username:  userEntity.Username,
-		Phone:     userEntity.Phone,
-		Email:     userEntity.Email,
-		Active:    userEntity.Active,
-		RoleId:    userEntity.RoleModelID,
-		CreatedAt: tool.ToProtoTimestamp(userEntity.CreatedAt),
-		UpdatedAt: tool.ToProtoTimestamp(userEntity.UpdatedAt),
-	}, nil
+	if in.RoleIds != nil && len(in.RoleIds) > 0 {
+		roleIDs := make([]uint, 0, len(in.RoleIds))
+		for _, rid := range in.RoleIds {
+			roleIDs = append(roleIDs, uint(rid))
+		}
+		err = ul.svcCtx.UserService.AssignRoles(ul.ctx, uint(user.ID), roleIDs)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "update roles failed: %v", err)
+		}
+	}
+
+	updatedUser, err := ul.svcCtx.UserService.GetByIDWithRoles(ul.ctx, uint(in.Id))
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "get updated user failed: %v", err)
+	}
+
+	return ul.mapUserToResp(updatedUser), nil
 }
 
 func (ul *UserLogic) ModifyPassword(in *user_pb.ModifyPasswdReq) (*common_pb.SuccessResp, error) {
-	err := ul.svcCtx.AuthorityUserRepo.ModifyPassword(ul.ctx, in.Id, in.OldPassword, in.NewPassword)
+	err := ul.svcCtx.UserService.ChangePassword(ul.ctx, uint(in.Id), in.OldPassword, in.NewPassword)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "modify password failed: %v", err)
 	}
@@ -190,9 +219,23 @@ func (ul *UserLogic) ModifyPassword(in *user_pb.ModifyPasswdReq) (*common_pb.Suc
 }
 
 func (ul *UserLogic) SwitchUserActive(in *user_pb.SwitchActiveReq) (*common_pb.SuccessResp, error) {
-	err := ul.svcCtx.AuthorityUserRepo.SwitchUserActive(ul.ctx, in.Id, in.Active)
+	err := ul.svcCtx.UserService.ToggleActive(ul.ctx, uint(in.Id), in.Active)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "switch active failed: %v", err)
+	}
+
+	return &common_pb.SuccessResp{Success: true}, nil
+}
+
+func (ul *UserLogic) AssignRoles(in *user_pb.AssignRolesReq) (*common_pb.SuccessResp, error) {
+	roleIDs := make([]uint, 0, len(in.RoleIds))
+	for _, rid := range in.RoleIds {
+		roleIDs = append(roleIDs, uint(rid))
+	}
+
+	err := ul.svcCtx.UserService.AssignRoles(ul.ctx, uint(in.UserId), roleIDs)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "assign roles failed: %v", err)
 	}
 
 	return &common_pb.SuccessResp{Success: true}, nil

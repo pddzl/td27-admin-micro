@@ -25,7 +25,7 @@ func (us *UserServer) DeleteUser(ctx context.Context, in *common_pb.IdReq) (*com
 	return ul.DeleteUser(in)
 }
 
-func (us *UserServer) GetUserInfo(ctx context.Context, in *common_pb.IdReq) (*user_pb.UserRoleResp, error) {
+func (us *UserServer) GetUserInfo(ctx context.Context, in *common_pb.IdReq) (*user_pb.UserResp, error) {
 	ul := authority.NewUserLogic(ctx, us.svcCtx)
 	return ul.GetUserInfo(in)
 }
@@ -53,4 +53,14 @@ func (us *UserServer) ModifyPassword(ctx context.Context, in *user_pb.ModifyPass
 func (us *UserServer) SwitchUserActive(ctx context.Context, in *user_pb.SwitchActiveReq) (*common_pb.SuccessResp, error) {
 	ul := authority.NewUserLogic(ctx, us.svcCtx)
 	return ul.SwitchUserActive(in)
+}
+
+func (us *UserServer) AssignRoles(ctx context.Context, in *user_pb.AssignRolesReq) (*common_pb.SuccessResp, error) {
+	ul := authority.NewUserLogic(ctx, us.svcCtx)
+	return ul.AssignRoles(in)
+}
+
+func (us *UserServer) Login(ctx context.Context, in *user_pb.LoginReq) (*user_pb.LoginResp, error) {
+	ul := authority.NewUserLogic(ctx, us.svcCtx)
+	return ul.Login(in)
 }

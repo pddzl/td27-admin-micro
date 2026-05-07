@@ -17,14 +17,53 @@ Log:
   MaxSize: 5            # MB, only for size rotation
   Compress: true          # gzip old logs
 
-DataBase:
-#  Type: mysql
-  Host: 127.0.0.1
-  Port: 3306
-  DBName: td27
-  Config: 'charset=utf8mb4&parseTime=True&loc=Local'
-  Username: root
-  Password: td27admin
-  MaxOpenConn: 50
-  MaxIdleConn: 10
-  ConnMaxLifetime: 3600
+# PostgreSQL database configuration
+Pgsql:
+  host: 127.0.0.1
+  port: 5432
+  username: postgres
+  password: td27admin
+  db-name: td27
+  max-idle-conns: 10
+  max-open-conns: 100
+  log-level: info
+  log-mode: false
+
+# JWT authentication configuration
+JWT:
+  signing-key: pddzl
+  expires-time: 86400
+  buffer-time: 43200
+  issuer: pddzl
+  multi-login: true
+  multi-login-limit: 5
+
+# Casbin RBAC configuration
+Casbin:
+  cache-ttl: 3600
+  auto-load-interval: 600
+  enable-role-hierarchy: true
+  enable-data-permission: true
+
+# File upload configuration
+File:
+  upload-path: ./resource/upload
+  max-size: 10
+  allowed-ext:
+    - .jpg
+    - .jpeg
+    - .png
+    - .gif
+    - .pdf
+    - .doc
+    - .docx
+    - .xls
+    - .xlsx
+
+# System configuration
+System:
+  env: dev
+  addr: 8080
+  app-name: basis-rpc
+  operation-log: true
+  max-upload-size: 10

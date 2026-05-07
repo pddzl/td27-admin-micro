@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+import "common/common.proto";
+import "google/protobuf/timestamp.proto";
+
+package basis.authority.api;
+
+option go_package = "td27/rpc/basis/types/authority/api_pb;api_pb";
+
+message CreateAPIReq {
+  string path = 1;
+  string method = 2;
+  string group_en = 3;
+  string group_cn = 4;
+  string description = 5;
+}
+
+message UpdateAPIReq {
+  uint64 id = 1;
+  optional string path = 2;
+  optional string method = 3;
+  optional string group_en = 4;
+  optional string group_cn = 5;
+  optional string description = 6;
+}
+
+message APIResp {
+  uint64 id = 1;
+  string path = 2;
+  string method = 3;
+  string group_en = 4;
+  string group_cn = 5;
+  string description = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp updated_at = 8;
+}
+
+message ListAPIResp {
+  repeated APIResp list = 1;
+  int64 total = 2;
+}
+
+message GetAPIsByGroupReq {
+  string group_en = 1;
+}
+
+service API {
+  rpc GetAPI(basis.common.IdReq) returns (APIResp);
+  rpc ListAPI(basis.common.PageReq) returns (ListAPIResp);
+  rpc GetAPIsByGroup(GetAPIsByGroupReq) returns (ListAPIResp);
+  rpc CreateAPI(CreateAPIReq) returns (basis.common.SuccessResp);
+  rpc UpdateAPI(UpdateAPIReq) returns (APIResp);
+  rpc DeleteAPI(basis.common.IdReq) returns (basis.common.SuccessResp);
+}

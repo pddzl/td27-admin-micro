@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+import "common/common.proto";
+import "google/protobuf/timestamp.proto";
+
+package basis.authority.permission;
+
+option go_package = "td27/rpc/basis/types/authority/permission_pb;permission_pb";
+
+enum PermissionDomain {
+  DOMAIN_MENU = 0;
+  DOMAIN_API = 1;
+  DOMAIN_BUTTON = 2;
+  DOMAIN_DATA = 3;
+}
+
+enum Action {
+  ACTION_ALL = 0;
+  ACTION_VIEW = 1;
+  ACTION_READ = 2;
+  ACTION_CREATE = 3;
+  ACTION_UPDATE = 4;
+  ACTION_DELETE = 5;
+  ACTION_EXECUTE = 6;
+}
+
+message CreatePermissionReq {
+  string name = 1;
+  PermissionDomain domain = 2;
+  string resource = 3;
+  Action action = 4;
+  uint64 domain_id = 5;
+}
+
+message UpdatePermissionReq {
+  uint64 id = 1;
+  optional string name = 2;
+  optional PermissionDomain domain = 3;
+  optional string resource = 4;
+  optional Action action = 5;
+  optional uint64 domain_id = 6;
+}
+
+message PermissionResp {
+  uint64 id = 1;
+  string name = 2;
+  PermissionDomain domain = 3;
+  string resource = 4;
+  Action action = 5;
+  uint64 domain_id = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp updated_at = 8;
+}
+
+message ListPermissionResp {
+  repeated PermissionResp list = 1;
+  int64 total = 2;
+}
+
+message CheckPermissionReq {
+  repeated uint64 role_ids = 1;
+  string resource = 2;
+  Action action = 3;
+}
+
+message CheckPermissionResp {
+  bool allowed = 1;
+}
+
+service Permission {
+  rpc GetPermission(basis.common.IdReq) returns (PermissionResp);
+  rpc ListPermission(basis.common.PageReq) returns (ListPermissionResp);
+  rpc GetAllPermissions(basis.common.Empty) returns (ListPermissionResp);
+  rpc GetPermissionsByRoleId(basis.common.IdReq) returns (ListPermissionResp);
+  rpc CreatePermission(CreatePermissionReq) returns (basis.common.SuccessResp);
+  rpc UpdatePermission(UpdatePermissionReq) returns (PermissionResp);
+  rpc DeletePermission(basis.common.IdReq) returns (basis.common.SuccessResp);
+  rpc CheckPermission(CheckPermissionReq) returns (CheckPermissionResp);
+  rpc ReloadPolicy(basis.common.Empty) returns (basis.common.SuccessResp);
+}

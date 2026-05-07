@@ -2,10 +2,11 @@ syntax = "proto3";
 
 import "common/common.proto";
 import "google/protobuf/timestamp.proto";
+import "authority/role.proto";
 
 package basis.authority.user;
 
-option go_package = "td27/rpc/basis/types/authority/user;user";
+option go_package = "td27/rpc/basis/types/authority/user_pb;user_pb";
 
 message CreateUserReq {
   string username = 1;
@@ -13,17 +14,18 @@ message CreateUserReq {
   optional string phone = 3;
   optional string email = 4;
   optional bool active = 5;
-  uint64 role_id = 6;
+  optional uint64 dept_id = 6;
+  repeated uint64 role_ids = 7;
 }
 
 message UpdateUserReq {
   uint64 id = 1;
-  string username = 2;
-  string password = 3;
-  string phone = 4;
-  string email = 5;
-  bool active = 6;
-  uint64 role_id = 7;
+  optional string username = 2;
+  optional string phone = 3;
+  optional string email = 4;
+  optional bool active = 5;
+  optional uint64 dept_id = 6;
+  repeated uint64 role_ids = 7;
 }
 
 message UserResp {
@@ -32,25 +34,21 @@ message UserResp {
   string phone = 3;
   string email = 4;
   bool active = 5;
-  uint64 role_id = 6;
-  google.protobuf.Timestamp created_at = 7;
-  google.protobuf.Timestamp updated_at = 8;
-}
-
-message UserRoleResp {
-    UserResp user = 1;
-    string role_name = 2;
+  uint64 dept_id = 6;
+  repeated basis.authority.role.RoleResp roles = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
 }
 
 message ListUserResp {
-  repeated UserRoleResp list = 1;
+  repeated UserResp list = 1;
   int64 total = 2;
 }
 
 message ModifyPasswdReq {
   uint64 id = 1;
-  string oldPassword = 2;
-  string newPassword = 3;
+  string old_password = 2;
+  string new_password = 3;
 }
 
 message SwitchActiveReq {
@@ -58,12 +56,29 @@ message SwitchActiveReq {
   bool active = 2;
 }
 
+message AssignRolesReq {
+  uint64 user_id = 1;
+  repeated uint64 role_ids = 2;
+}
+
+message LoginReq {
+  string username = 1;
+  string password = 2;
+}
+
+message LoginResp {
+  string token = 1;
+  UserResp user = 2;
+}
+
 service User {
-  rpc GetUserInfo(basis.common.IdReq) returns (UserRoleResp);
+  rpc Login(LoginReq) returns (LoginResp);
+  rpc GetUserInfo(basis.common.IdReq) returns (UserResp);
   rpc ListUser(basis.common.PageReq) returns (ListUserResp);
   rpc DeleteUser(basis.common.IdReq) returns (basis.common.SuccessResp);
   rpc CreateUser(CreateUserReq) returns (basis.common.SuccessResp);
   rpc UpdateUser(UpdateUserReq) returns (UserResp);
   rpc ModifyPassword(ModifyPasswdReq) returns (basis.common.SuccessResp);
   rpc SwitchUserActive(SwitchActiveReq) returns (basis.common.SuccessResp);
+  rpc AssignRoles(AssignRolesReq) returns (basis.common.SuccessResp);
 }

@@ -1,0 +1,76 @@
+syntax = "proto3";
+
+import "common/common.proto";
+import "google/protobuf/timestamp.proto";
+
+package basis.tool.service_token;
+
+option go_package = "td27/rpc/basis/types/tool/service_token_pb;service_token_pb";
+
+message CreateServiceTokenReq {
+  string name = 1;
+  optional bool status = 2;
+  optional int64 expires_at = 3;
+  repeated uint64 permission_ids = 4;
+}
+
+message CreateServiceTokenResp {
+  uint64 token_id = 1;
+  string raw_token = 2;
+}
+
+message UpdateServiceTokenReq {
+  uint64 id = 1;
+  optional string name = 2;
+  optional bool status = 3;
+  optional int64 expires_at = 4;
+}
+
+message ServiceTokenResp {
+  uint64 id = 1;
+  string name = 2;
+  bool status = 3;
+  optional int64 expires_at = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+message ListServiceTokenResp {
+  repeated ServiceTokenResp list = 1;
+  int64 total = 2;
+}
+
+message ToggleTokenStatusReq {
+  uint64 id = 1;
+  bool status = 2;
+}
+
+message AssignTokenPermissionsReq {
+  uint64 token_id = 1;
+  repeated uint64 permission_ids = 2;
+}
+
+message GetTokenPermissionsResp {
+  repeated uint64 permission_ids = 1;
+}
+
+message ValidateTokenReq {
+  string token = 1;
+}
+
+message ValidateTokenResp {
+  bool valid = 1;
+  optional ServiceTokenResp token = 2;
+}
+
+service ServiceToken {
+  rpc CreateServiceToken(CreateServiceTokenReq) returns (CreateServiceTokenResp);
+  rpc GetServiceToken(basis.common.IdReq) returns (ServiceTokenResp);
+  rpc ListServiceToken(basis.common.PageReq) returns (ListServiceTokenResp);
+  rpc UpdateServiceToken(UpdateServiceTokenReq) returns (ServiceTokenResp);
+  rpc ToggleTokenStatus(ToggleTokenStatusReq) returns (basis.common.SuccessResp);
+  rpc AssignTokenPermissions(AssignTokenPermissionsReq) returns (basis.common.SuccessResp);
+  rpc GetTokenPermissions(basis.common.IdReq) returns (GetTokenPermissionsResp);
+  rpc DeleteServiceToken(basis.common.IdReq) returns (basis.common.SuccessResp);
+  rpc ValidateToken(ValidateTokenReq) returns (ValidateTokenResp);
+}
