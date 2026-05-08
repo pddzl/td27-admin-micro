@@ -6,7 +6,7 @@ Compact guidance for AI agents working in this repository. Only includes repo-sp
 - Two processes: `rpc/basis` (gRPC server) and `api/gateway` (HTTP REST gateway)
 - Module name: `td27`
 - Tech stack: gRPC, go-zero rest, GORM, PostgreSQL, Casbin RBAC, JWT auth, bcrypt
-- Three business modules: `sysManagement` (authority/ACL), `sysMonitor` (audit), `sysTool` (system tools)
+- Three business modules: `sysManagement` (sysManagement/ACL), `sysMonitor` (audit), `sysTool` (system tools)
 
 ## Project Structure
 ```

@@ -1,6 +1,6 @@
 ## Why
 
-This change aligns the current go-zero gRPC authority service with the mature, production-tested business logic from the existing `td27-admin/server` reference repository. It retains all microservice benefits (gRPC interface, etcd service discovery, go-zero framework conventions) while eliminating duplicated effort by reusing proven authority system logic, excluding only observability components we don't need for this service.
+This change aligns the current go-zero gRPC sysManagement service with the mature, production-tested business logic from the existing `td27-admin/server` reference repository. It retains all microservice benefits (gRPC interface, etcd service discovery, go-zero framework conventions) while eliminating duplicated effort by reusing proven sysManagement system logic, excluding only observability components we don't need for this service.
 
 ## What Changes
 

@@ -53,14 +53,14 @@ rm -rf rpc/basis/types/td27
 **Update gRPC registration block** (add these within the func):
 ```go
 s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
-    user_pb.RegisterUserServer(grpcServer, authority.NewUserServer(ctx))
-    role_pb.RegisterRoleServer(grpcServer, authority.NewRoleServer(ctx))
-    permission_pb.RegisterPermissionServer(grpcServer, authority.NewPermissionServer(ctx))
-    menu_pb.RegisterMenuServer(grpcServer, authority.NewMenuServer(ctx))
-    dept_pb.RegisterDeptServer(grpcServer, authority.NewDeptServer(ctx))
-    dict_pb.RegisterDictServer(grpcServer, authority.NewDictServer(ctx))
-    api_pb.RegisterAPIServer(grpcServer, authority.NewAPIServer(ctx))
-    button_pb.RegisterButtonServer(grpcServer, authority.NewButtonServer(ctx))
+    user_pb.RegisterUserServer(grpcServer, sysManagement.NewUserServer(ctx))
+    role_pb.RegisterRoleServer(grpcServer, sysManagement.NewRoleServer(ctx))
+    permission_pb.RegisterPermissionServer(grpcServer, sysManagement.NewPermissionServer(ctx))
+    menu_pb.RegisterMenuServer(grpcServer, sysManagement.NewMenuServer(ctx))
+    dept_pb.RegisterDeptServer(grpcServer, sysManagement.NewDeptServer(ctx))
+    dict_pb.RegisterDictServer(grpcServer, sysManagement.NewDictServer(ctx))
+    api_pb.RegisterAPIServer(grpcServer, sysManagement.NewAPIServer(ctx))
+    button_pb.RegisterButtonServer(grpcServer, sysManagement.NewButtonServer(ctx))
     file_pb.RegisterFileServer(grpcServer, tool.NewFileServer(ctx))
     cron.RegisterCronServer(grpcServer, tool.NewCronServer(ctx))
     cache.RegisterCacheServer(grpcServer, tool.NewCacheServer(ctx))

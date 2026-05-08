@@ -1,6 +1,6 @@
 ## Context
 
-Current state: We have a basic go-zero gRPC authority service in `rpc/basis` with minimal functionality. We need to rewrite this service to incorporate all the mature, production-tested business logic from the `td27-admin/server` reference repository, while retaining go-zero framework conventions, gRPC interface, and etcd service discovery.
+Current state: We have a basic go-zero gRPC sysManagement service in `rpc/basis` with minimal functionality. We need to rewrite this service to incorporate all the mature, production-tested business logic from the `td27-admin/server` reference repository, while retaining go-zero framework conventions, gRPC interface, and etcd service discovery.
 
 ## Goals / Non-Goals
 
@@ -34,7 +34,7 @@ Current state: We have a basic go-zero gRPC authority service in `rpc/basis` wit
    - Decision: Split proto files by functional module matching reference repo structure
    - Rationale: Makes it easy to map reference repo functionality to gRPC methods, improves maintainability
    - Structure:
-     - `proto/authority/`: All sysManagement module protos (user, role, permission, etc.)
+     - `proto/sysManagement/`: All sysManagement module protos (user, role, permission, etc.)
      - `proto/tool/`: All sysTool module protos (cache, cron, file, service token)
 
 3. **Shared Dependencies Management**

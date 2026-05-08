@@ -14,7 +14,7 @@
 - JWT middleware wraps private route handlers: `jwtMiddleware.Handle(handler.Method)`
 
 ## Proto-generated Types
-- Proto client imports use the full module path: `td27/rpc/basis/types/authority/<service>_pb`
+- Proto client imports use the full module path: `td27/rpc/basis/types/sysManagement/<service>_pb`
 - Common types (IdReq, Empty, PageReq, SuccessResp) are in `td27/rpc/basis/types/common_pb`
 - Optional proto fields are pointers in Go (`*uint64`, `*string`, `*uint32`, `*bool`)
 - Non-optional proto fields are value types

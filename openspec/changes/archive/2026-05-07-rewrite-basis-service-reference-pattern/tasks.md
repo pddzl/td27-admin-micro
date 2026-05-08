@@ -2,7 +2,7 @@
 
 - [x] 1.1 Backup existing `rpc/basis` directory content to temporary location
 - [x] 1.2 Add required dependencies to go.mod (Casbin, jwt-go, cron, etc.)
-- [x] 1.3 Create new directory structure: `internal/service`, `internal/repository`, `proto/authority`, `proto/tool`, `proto/monitor`
+- [x] 1.3 Create new directory structure: `internal/service`, `internal/repository`, `proto/sysManagement`, `proto/tool`, `proto/monitor`
 
 ## 2. Core Infrastructure Implementation
 
@@ -15,21 +15,21 @@
 
 ## 3. Model Layer Implementation
 
-- [x] 3.1 Migrate all sysManagement model definitions from reference repo to `internal/model/authority`
+- [x] 3.1 Migrate all sysManagement model definitions from reference repo to `internal/model/sysManagement`
 - [x] 3.2 Migrate all sysTool model definitions from reference repo to `internal/model/tool`
 - [x] 3.3 Migrate all sysMonitor model definitions from reference repo to `internal/model/monitor`
 - [x] 3.4 Verify all GORM tags and model relationships match reference repo exactly
 
 ## 4. Repository Layer Implementation
 
-- [x] 4.1 Implement repository interfaces for all authority models (user, role, permission, menu, dept, dict, api, button, data permission)
+- [x] 4.1 Implement repository interfaces for all sysManagement models (user, role, permission, menu, dept, dict, api, button, data permission)
 - [x] 4.2 Implement repository interfaces for all tool models (cache, cron, file, service token)
 - [x] 4.3 Implement repository interfaces for all monitor models (operation log)
 - [x] 4.4 Verify all CRUD operations match reference repo implementation exactly
 
 ## 5. Service Layer Implementation
 
-- [x] 5.1 Implement authority module services (user, role, permission, menu, dept, dict, api, button, data permission)
+- [x] 5.1 Implement sysManagement module services (user, role, permission, menu, dept, dict, api, button, data permission)
 - [x] 5.2 Implement tool module services (cache, cron, file, service token)
 - [x] 5.3 Implement monitor module services (operation log, dashboard metrics)
 - [x] 5.3 Implement Casbin RBAC integration in permission service
@@ -38,7 +38,7 @@
 
 ## 6. Protobuf & gRPC Layer Implementation
 
-- [x] 6.1 Write protobuf definitions for all authority module gRPC methods
+- [x] 6.1 Write protobuf definitions for all sysManagement module gRPC methods
 - [x] 6.2 Write protobuf definitions for all tool module gRPC methods
 - [x] 6.3 Write protobuf definitions for all monitor module gRPC methods
 - [x] 6.3 Generate gRPC/pb Go code using goctl
