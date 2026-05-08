@@ -12,12 +12,12 @@ import (
 
 	"td27/rpc/basis/internal/config"
 	"td27/rpc/basis/internal/initialization"
-	authRepo "td27/rpc/basis/internal/repository/authority"
-	monitorRepo "td27/rpc/basis/internal/repository/monitor"
-	toolRepo "td27/rpc/basis/internal/repository/tool"
-	authService "td27/rpc/basis/internal/service/authority"
-	monitorService "td27/rpc/basis/internal/service/monitor"
-	toolService "td27/rpc/basis/internal/service/tool"
+	sysManagementRepo "td27/rpc/basis/internal/repository/sysManagement"
+	sysMonitorRepo "td27/rpc/basis/internal/repository/sysMonitor"
+	sysToolRepo "td27/rpc/basis/internal/repository/sysTool"
+	sysManagementService "td27/rpc/basis/internal/service/sysManagement"
+	sysMonitorService "td27/rpc/basis/internal/service/sysMonitor"
+	sysToolService "td27/rpc/basis/internal/service/sysTool"
 )
 
 type ServiceContext struct {
@@ -28,39 +28,39 @@ type ServiceContext struct {
 	CronScheduler  *cron.Cron
 
 	// Repositories
-	UserRepo    authRepo.UserRepository
-	RoleRepo    authRepo.RoleRepository
-	PermRepo    authRepo.PermissionRepository
-	MenuRepo    authRepo.MenuRepository
-	DeptRepo    authRepo.DeptRepository
-	DictRepo    authRepo.DictRepository
-	DictDetRepo authRepo.DictDetailRepository
-	APIRepo     authRepo.APIRepository
-	ButtonRepo  authRepo.ButtonRepository
+	UserRepo    sysManagementRepo.UserRepository
+	RoleRepo    sysManagementRepo.RoleRepository
+	PermRepo    sysManagementRepo.PermissionRepository
+	MenuRepo    sysManagementRepo.MenuRepository
+	DeptRepo    sysManagementRepo.DeptRepository
+	DictRepo    sysManagementRepo.DictRepository
+	DictDetRepo sysManagementRepo.DictDetailRepository
+	APIRepo     sysManagementRepo.APIRepository
+	ButtonRepo  sysManagementRepo.ButtonRepository
 
-	FileRepo  toolRepo.FileRepository
-	CronRepo  toolRepo.CronRepository
-	CacheRepo toolRepo.CacheRepository
-	TokenRepo toolRepo.ServiceTokenRepository
+	FileRepo  sysToolRepo.FileRepository
+	CronRepo  sysToolRepo.CronRepository
+	CacheRepo sysToolRepo.CacheRepository
+	TokenRepo sysToolRepo.ServiceTokenRepository
 
-	LogRepo monitorRepo.OperationLogRepository
+	LogRepo sysMonitorRepo.OperationLogRepository
 
 	// Services
-	UserService   *authService.UserService
-	RoleService   *authService.RoleService
-	PermService   *authService.PermissionService
-	MenuService   *authService.MenuService
-	DeptService   *authService.DeptService
-	DictService   *authService.DictService
-	APIService    *authService.APIService
-	ButtonService *authService.ButtonService
+	UserService   *sysManagementService.UserService
+	RoleService   *sysManagementService.RoleService
+	PermService   *sysManagementService.PermissionService
+	MenuService   *sysManagementService.MenuService
+	DeptService   *sysManagementService.DeptService
+	DictService   *sysManagementService.DictService
+	APIService    *sysManagementService.APIService
+	ButtonService *sysManagementService.ButtonService
 
-	FileService  *toolService.FileService
-	CronService  *toolService.CronService
-	CacheService *toolService.CacheService
-	TokenService *toolService.ServiceTokenService
+	FileService  *sysToolService.FileService
+	CronService  *sysToolService.CronService
+	CacheService *sysToolService.CacheService
+	TokenService *sysToolService.ServiceTokenService
 
-	LogService *monitorService.OperationLogService
+	LogService *sysMonitorService.OperationLogService
 }
 
 // JWTManager handles JWT token operations
@@ -174,39 +174,39 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	logx.Infof("init cron scheduler success")
 
 	// Initialize Repositories
-	userRepo := authRepo.NewUserRepository(db)
-	roleRepo := authRepo.NewRoleRepository(db)
-	permRepo := authRepo.NewPermissionRepository(db)
-	menuRepo := authRepo.NewMenuRepository(db)
-	deptRepo := authRepo.NewDeptRepository(db)
-	dictRepo := authRepo.NewDictRepository(db)
-	dictDetRepo := authRepo.NewDictDetailRepository(db)
-	apiRepo := authRepo.NewAPIRepository(db)
-	buttonRepo := authRepo.NewButtonRepository(db)
+	userRepo := sysManagementRepo.NewUserRepository(db)
+	roleRepo := sysManagementRepo.NewRoleRepository(db)
+	permRepo := sysManagementRepo.NewPermissionRepository(db)
+	menuRepo := sysManagementRepo.NewMenuRepository(db)
+	deptRepo := sysManagementRepo.NewDeptRepository(db)
+	dictRepo := sysManagementRepo.NewDictRepository(db)
+	dictDetRepo := sysManagementRepo.NewDictDetailRepository(db)
+	apiRepo := sysManagementRepo.NewAPIRepository(db)
+	buttonRepo := sysManagementRepo.NewButtonRepository(db)
 
-	fileRepo := toolRepo.NewFileRepository(db)
-	cronRepo := toolRepo.NewCronRepository(db)
-	cacheRepo := toolRepo.NewCacheRepository(db)
-	tokenRepo := toolRepo.NewServiceTokenRepository(db)
+	fileRepo := sysToolRepo.NewFileRepository(db)
+	cronRepo := sysToolRepo.NewCronRepository(db)
+	cacheRepo := sysToolRepo.NewCacheRepository(db)
+	tokenRepo := sysToolRepo.NewServiceTokenRepository(db)
 
-	logRepo := monitorRepo.NewOperationLogRepository(db)
+	logRepo := sysMonitorRepo.NewOperationLogRepository(db)
 
 	// Initialize Services
-	userService := authService.NewUserService(userRepo, roleRepo)
-	roleService := authService.NewRoleService(roleRepo, permRepo, userRepo)
-	permService := authService.NewPermissionService(permRepo, roleRepo, casbinEnforcer)
-	menuService := authService.NewMenuService(menuRepo)
-	deptService := authService.NewDeptService(deptRepo)
-	dictService := authService.NewDictService(dictRepo)
-	apiService := authService.NewAPIService(apiRepo)
-	buttonService := authService.NewButtonService(buttonRepo)
+	userService := sysManagementService.NewUserService(userRepo, roleRepo)
+	roleService := sysManagementService.NewRoleService(roleRepo, permRepo, userRepo)
+	permService := sysManagementService.NewPermissionService(permRepo, roleRepo, casbinEnforcer)
+	menuService := sysManagementService.NewMenuService(menuRepo)
+	deptService := sysManagementService.NewDeptService(deptRepo)
+	dictService := sysManagementService.NewDictService(dictRepo)
+	apiService := sysManagementService.NewAPIService(apiRepo)
+	buttonService := sysManagementService.NewButtonService(buttonRepo)
 
-	fileService := toolService.NewFileService(fileRepo, c.File)
-	cronService := toolService.NewCronService(cronRepo, cronScheduler)
-	cacheService := toolService.NewCacheService(cacheRepo)
-	tokenService := toolService.NewServiceTokenService(tokenRepo)
+	fileService := sysToolService.NewFileService(fileRepo, c.File)
+	cronService := sysToolService.NewCronService(cronRepo, cronScheduler)
+	cacheService := sysToolService.NewCacheService(cacheRepo)
+	tokenService := sysToolService.NewServiceTokenService(tokenRepo)
 
-	logService := monitorService.NewOperationLogService(logRepo)
+	logService := sysMonitorService.NewOperationLogService(logRepo)
 
 	return &ServiceContext{
 		Config:         c,

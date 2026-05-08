@@ -1,0 +1,39 @@
+Name: gateway
+Host: 0.0.0.0
+Port: 8888
+Mode: dev
+
+Log:
+  ServiceName: gateway
+  Mode: file
+  Path: logs
+  Level: info
+  KeepDays: 7
+  Rotation: daily
+  MaxSize: 5
+  Compress: true
+
+Auth:
+  AccessSecret: pddzl
+  AccessExpire: 86400
+
+# gRPC client config for discovering basis service
+BasisRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: basis.rpc
+
+# CORS configuration
+Cors:
+  AllowedOrigins:
+    - "*"
+  AllowedMethods:
+    - GET
+    - POST
+    - PUT
+    - DELETE
+    - OPTIONS
+  AllowedHeaders:
+    - Content-Type
+    - Authorization
