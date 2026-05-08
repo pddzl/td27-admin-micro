@@ -22,7 +22,8 @@ yarn-error.log*
 *.sw?
 
 /api/demo
-/rpc/basis/logs
+rpc/basis/logs
 
 *.iml
-
+basis
+logs

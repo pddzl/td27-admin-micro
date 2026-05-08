@@ -7,8 +7,8 @@ import (
 
 	"gorm.io/gorm"
 
-	"td27/rpc/basis/internal/model/tool"
 	"td27/rpc/basis/internal/model/common"
+	"td27/rpc/basis/internal/model/tool"
 )
 
 // ServiceTokenRepository defines interface for service token data operations
@@ -72,7 +72,7 @@ func (r *serviceTokenRepository) List(ctx context.Context, page *common.PageInfo
 	var total int64
 
 	query := r.db.WithContext(ctx).Model(&tool.ServiceToken{})
-	
+
 	if err := query.Count(&total).Error; err != nil {
 		return nil, 0, err
 	}

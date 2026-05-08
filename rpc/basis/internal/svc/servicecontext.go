@@ -1,8 +1,9 @@
 package svc
 
 import (
-	"log"
 	"time"
+
+	"github.com/zeromicro/go-zero/core/logx"
 
 	"github.com/casbin/casbin/v2"
 	casbinModel "github.com/casbin/casbin/v2/model"
@@ -12,11 +13,11 @@ import (
 	"td27/rpc/basis/internal/config"
 	"td27/rpc/basis/internal/initialization"
 	authRepo "td27/rpc/basis/internal/repository/authority"
-	toolRepo "td27/rpc/basis/internal/repository/tool"
 	monitorRepo "td27/rpc/basis/internal/repository/monitor"
+	toolRepo "td27/rpc/basis/internal/repository/tool"
 	authService "td27/rpc/basis/internal/service/authority"
-	toolService "td27/rpc/basis/internal/service/tool"
 	monitorService "td27/rpc/basis/internal/service/monitor"
+	toolService "td27/rpc/basis/internal/service/tool"
 )
 
 type ServiceContext struct {
@@ -25,7 +26,7 @@ type ServiceContext struct {
 	CasbinEnforcer *casbin.SyncedCachedEnforcer
 	JWT            *JWTManager
 	CronScheduler  *cron.Cron
-	
+
 	// Repositories
 	UserRepo    authRepo.UserRepository
 	RoleRepo    authRepo.RoleRepository
@@ -36,35 +37,35 @@ type ServiceContext struct {
 	DictDetRepo authRepo.DictDetailRepository
 	APIRepo     authRepo.APIRepository
 	ButtonRepo  authRepo.ButtonRepository
-	
+
 	FileRepo  toolRepo.FileRepository
 	CronRepo  toolRepo.CronRepository
 	CacheRepo toolRepo.CacheRepository
 	TokenRepo toolRepo.ServiceTokenRepository
-	
+
 	LogRepo monitorRepo.OperationLogRepository
-	
+
 	// Services
-	UserService    *authService.UserService
-	RoleService    *authService.RoleService
-	PermService    *authService.PermissionService
-	MenuService    *authService.MenuService
-	DeptService    *authService.DeptService
-	DictService    *authService.DictService
-	APIService     *authService.APIService
-	ButtonService  *authService.ButtonService
-	
-	FileService    *toolService.FileService
-	CronService    *toolService.CronService
-	CacheService   *toolService.CacheService
-	TokenService   *toolService.ServiceTokenService
-	
-	LogService     *monitorService.OperationLogService
+	UserService   *authService.UserService
+	RoleService   *authService.RoleService
+	PermService   *authService.PermissionService
+	MenuService   *authService.MenuService
+	DeptService   *authService.DeptService
+	DictService   *authService.DictService
+	APIService    *authService.APIService
+	ButtonService *authService.ButtonService
+
+	FileService  *toolService.FileService
+	CronService  *toolService.CronService
+	CacheService *toolService.CacheService
+	TokenService *toolService.ServiceTokenService
+
+	LogService *monitorService.OperationLogService
 }
 
 // JWTManager handles JWT token operations
 type JWTManager struct {
-	SigningKey []byte
+	SigningKey  []byte
 	ExpiresTime int64
 	BufferTime  int64
 	Issuer      string
@@ -83,7 +84,7 @@ func NewJWTManager(cfg config.JWT) *JWTManager {
 // getCasbinModel returns the Casbin RBAC model
 func getCasbinModel(enableRoleHierarchy bool) (casbinModel.Model, error) {
 	var modelText string
-	
+
 	if enableRoleHierarchy {
 		modelText = `
 		[request_definition]
@@ -129,15 +130,15 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	// Initialize database connection
 	db, err := initialization.Gorm(c.Pgsql)
 	if err != nil {
-		log.Panicf("init postgresql err: %v", err)
-		return nil
+		logx.Errorf("init postgresql err: %v", err)
+		panic(err)
 	}
-	log.Println("init postgresql success")
+	logx.Infof("init postgresql success")
 
 	// Initialize Casbin enforcer
 	casbinModel, err := getCasbinModel(c.Casbin.EnableRoleHierarchy)
 	if err != nil {
-		log.Panicf("init casbin model err: %v", err)
+		logx.Errorf("init casbin model err: %v", err)
 		return nil
 	}
 
@@ -145,8 +146,8 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	// For now, use a dummy adapter, will replace with proper adapter later
 	casbinEnforcer, err := casbin.NewSyncedCachedEnforcer(casbinModel)
 	if err != nil {
-		log.Panicf("init casbin enforcer err: %v", err)
-		return nil
+		logx.Errorf("init casbin enforcer err: %v", err)
+		panic(err)
 	}
 
 	// Configure Casbin cache
@@ -161,16 +162,16 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		casbinEnforcer.StartAutoLoadPolicy(time.Duration(c.Casbin.AutoLoadInterval) * time.Second)
 	}
 
-	log.Println("init casbin enforcer success")
+	logx.Infof("init casbin enforcer success")
 
 	// Initialize JWT manager
 	jwtManager := NewJWTManager(c.JWT)
-	log.Println("init jwt manager success")
+	logx.Infof("init jwt manager success")
 
 	// Initialize cron scheduler
 	cronScheduler := cron.New()
 	cronScheduler.Start()
-	log.Println("init cron scheduler success")
+	logx.Infof("init cron scheduler success")
 
 	// Initialize Repositories
 	userRepo := authRepo.NewUserRepository(db)
@@ -182,12 +183,12 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	dictDetRepo := authRepo.NewDictDetailRepository(db)
 	apiRepo := authRepo.NewAPIRepository(db)
 	buttonRepo := authRepo.NewButtonRepository(db)
-	
+
 	fileRepo := toolRepo.NewFileRepository(db)
 	cronRepo := toolRepo.NewCronRepository(db)
 	cacheRepo := toolRepo.NewCacheRepository(db)
 	tokenRepo := toolRepo.NewServiceTokenRepository(db)
-	
+
 	logRepo := monitorRepo.NewOperationLogRepository(db)
 
 	// Initialize Services
@@ -199,12 +200,12 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	dictService := authService.NewDictService(dictRepo)
 	apiService := authService.NewAPIService(apiRepo)
 	buttonService := authService.NewButtonService(buttonRepo)
-	
+
 	fileService := toolService.NewFileService(fileRepo, c.File)
 	cronService := toolService.NewCronService(cronRepo, cronScheduler)
 	cacheService := toolService.NewCacheService(cacheRepo)
 	tokenService := toolService.NewServiceTokenService(tokenRepo)
-	
+
 	logService := monitorService.NewOperationLogService(logRepo)
 
 	return &ServiceContext{
@@ -213,7 +214,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		CasbinEnforcer: casbinEnforcer,
 		JWT:            jwtManager,
 		CronScheduler:  cronScheduler,
-		
+
 		// Repositories
 		UserRepo:    userRepo,
 		RoleRepo:    roleRepo,
@@ -224,29 +225,29 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		DictDetRepo: dictDetRepo,
 		APIRepo:     apiRepo,
 		ButtonRepo:  buttonRepo,
-		
+
 		FileRepo:  fileRepo,
 		CronRepo:  cronRepo,
 		CacheRepo: cacheRepo,
 		TokenRepo: tokenRepo,
-		
+
 		LogRepo: logRepo,
-		
+
 		// Services
-		UserService:    userService,
-		RoleService:    roleService,
-		PermService:    permService,
-		MenuService:    menuService,
-		DeptService:    deptService,
-		DictService:    dictService,
-		APIService:     apiService,
-		ButtonService:  buttonService,
-		
-		FileService:    fileService,
-		CronService:    cronService,
-		CacheService:   cacheService,
-		TokenService:   tokenService,
-		
-		LogService:     logService,
+		UserService:   userService,
+		RoleService:   roleService,
+		PermService:   permService,
+		MenuService:   menuService,
+		DeptService:   deptService,
+		DictService:   dictService,
+		APIService:    apiService,
+		ButtonService: buttonService,
+
+		FileService:  fileService,
+		CronService:  cronService,
+		CacheService: cacheService,
+		TokenService: tokenService,
+
+		LogService: logService,
 	}
 }

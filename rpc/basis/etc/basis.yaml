@@ -9,12 +9,13 @@ Mode: dev
 
 Log:
   ServiceName: basis
-  Mode: file            # console | file | volume
+  Mode: console            # console | file | volume
+  Encoding: json
   Path: logs             # log directory
   Level: info             # debug | info | warn | error | fatal
   KeepDays: 7             # days to keep logs
   Rotation: daily         # daily | size
-  MaxSize: 5            # MB, only for size rotation
+#  MaxSize: 5            # MB, only for size rotation
   Compress: true          # gzip old logs
 
 # PostgreSQL database configuration

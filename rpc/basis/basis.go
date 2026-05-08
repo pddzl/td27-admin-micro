@@ -12,22 +12,24 @@ import (
 
 	"td27/rpc/basis/internal/config"
 	"td27/rpc/basis/internal/server/authority"
+	basisServer "td27/rpc/basis/internal/server/basis"
+	"td27/rpc/basis/internal/server/monitor"
 	"td27/rpc/basis/internal/server/tool"
 	"td27/rpc/basis/internal/svc"
-	"td27/rpc/basis/types/authority/user_pb"
-	"td27/rpc/basis/types/authority/role_pb"
-	"td27/rpc/basis/types/authority/permission_pb"
-	"td27/rpc/basis/types/authority/menu_pb"
-	"td27/rpc/basis/types/authority/dept_pb"
-	"td27/rpc/basis/types/authority/dict_pb"
 	"td27/rpc/basis/types/authority/api_pb"
 	"td27/rpc/basis/types/authority/button_pb"
-	"td27/rpc/basis/types/tool/file_pb"
-	"td27/rpc/basis/types/tool/cron_pb"
-	"td27/rpc/basis/types/tool/cache_pb"
-	"td27/rpc/basis/types/tool/service_token_pb"
+	"td27/rpc/basis/types/authority/dept_pb"
+	"td27/rpc/basis/types/authority/dict_pb"
+	"td27/rpc/basis/types/authority/menu_pb"
+	"td27/rpc/basis/types/authority/permission_pb"
+	"td27/rpc/basis/types/authority/role_pb"
+	"td27/rpc/basis/types/authority/user_pb"
+	"td27/rpc/basis/types/basis_pb"
 	"td27/rpc/basis/types/monitor/operation_log_pb"
-	"td27/rpc/basis/internal/server/monitor"
+	"td27/rpc/basis/types/tool/cache_pb"
+	"td27/rpc/basis/types/tool/cron_pb"
+	"td27/rpc/basis/types/tool/file_pb"
+	"td27/rpc/basis/types/tool/service_token_pb"
 )
 
 var configFile = flag.String("f", "etc/basis.yaml", "the config file")
@@ -40,6 +42,7 @@ func main() {
 	ctx := svc.NewServiceContext(c)
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
+		basis_pb.RegisterBasisServer(grpcServer, basisServer.NewBasisServer(ctx))
 		user_pb.RegisterUserServer(grpcServer, authority.NewUserServer(ctx))
 		role_pb.RegisterRoleServer(grpcServer, authority.NewRoleServer(ctx))
 		permission_pb.RegisterPermissionServer(grpcServer, authority.NewPermissionServer(ctx))

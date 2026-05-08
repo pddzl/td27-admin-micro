@@ -2,7 +2,6 @@ package initialization
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strings"
 	"time"
@@ -28,6 +27,12 @@ func (w *writer) Printf(message string, data ...interface{}) {
 	w.Writer.Printf(message, data...)
 }
 
+type gormLogWriter struct{}
+
+func (gormLogWriter) Printf(format string, args ...interface{}) {
+	fmt.Fprintf(os.Stdout, format, args...)
+}
+
 func gormConfig(logLevel string, logMode bool) *gorm.Config {
 	var gormLogLevel logger.LogLevel
 	switch strings.ToLower(logLevel) {
@@ -48,7 +53,7 @@ func gormConfig(logLevel string, logMode bool) *gorm.Config {
 	}
 
 	newLogger := logger.New(
-		NewWriter(log.New(os.Stdout, "\r\n", log.LstdFlags)),
+		NewWriter(gormLogWriter{}),
 		logger.Config{
 			SlowThreshold:             200 * time.Millisecond,
 			LogLevel:                  gormLogLevel,

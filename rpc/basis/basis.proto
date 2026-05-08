@@ -1,16 +1,15 @@
 syntax = "proto3";
 
 package basis;
-option go_package="./basis";
 
-message Request {
-  string ping = 1;
-}
+option go_package = "td27/rpc/basis/types/basis_pb;basis_pb";
 
-message Response {
-  string pong = 1;
+message PingReq {}
+
+message PingResp {
+  string db_status = 1;
 }
 
 service Basis {
-  rpc Ping(Request) returns(Response);
+  rpc Ping(PingReq) returns (PingResp);
 }
