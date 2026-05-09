@@ -2,44 +2,58 @@ package handler
 
 import (
 	"net/http"
-	sysManagement2 "td27/api/gateway/internal/handler/basis/sysManagement"
-	basisSysMonitor "td27/api/gateway/internal/handler/basis/sysMonitor"
-	sysTool2 "td27/api/gateway/internal/handler/basis/sysTool"
-	middleware2 "td27/api/gateway/internal/middleware"
-	"td27/api/gateway/internal/svc"
 
 	"github.com/zeromicro/go-zero/rest"
+
+	"td27/api/gateway/internal/handler/basis/sysManagement"
+	"td27/api/gateway/internal/handler/basis/sysMonitor"
+	"td27/api/gateway/internal/handler/basis/sysTool"
+	"td27/api/gateway/internal/middleware"
+	"td27/api/gateway/internal/svc"
 )
 
 func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
-	jwtMiddleware := middleware2.NewJwtMiddleware(svcCtx)
-	opRecordMiddleware := middleware2.NewOperationRecordMiddleware(svcCtx)
+	jwtMiddleware := middleware.NewJwtMiddleware(svcCtx)
+	opRecordMiddleware := middleware.NewOperationRecordMiddleware(svcCtx)
 
-	loginHandler := sysManagement2.NewLoginHandler(svcCtx)
-	deptHandler := sysManagement2.NewDeptHandler(svcCtx)
-	dictHandler := sysManagement2.NewDictHandler(svcCtx)
-	apiHandler := sysManagement2.NewAPIHandler(svcCtx)
-	buttonHandler := sysManagement2.NewButtonHandler(svcCtx)
-	userHandler := sysManagement2.NewUserHandler(svcCtx)
-	roleHandler := sysManagement2.NewRoleHandler(svcCtx)
-	menuHandler := sysManagement2.NewMenuHandler(svcCtx)
-	permissionHandler := sysManagement2.NewPermissionHandler(svcCtx)
-	fileHandler := sysTool2.NewFileHandler(svcCtx)
-	cronHandler := sysTool2.NewCronHandler(svcCtx)
-	cacheHandler := sysTool2.NewCacheHandler(svcCtx)
-	serviceTokenHandler := sysTool2.NewServiceTokenHandler(svcCtx)
-	operationLogHandler := basisSysMonitor.NewOperationLogHandler(svcCtx)
+	loginHandler := sysManagement.NewLoginHandler(svcCtx)
+	captchaHandler := sysManagement.NewCaptchaHandler(svcCtx)
+	logoutHandler := sysManagement.NewLogoutHandler(svcCtx)
+	deptHandler := sysManagement.NewDeptHandler(svcCtx)
+	dictHandler := sysManagement.NewDictHandler(svcCtx)
+	apiHandler := sysManagement.NewAPIHandler(svcCtx)
+	buttonHandler := sysManagement.NewButtonHandler(svcCtx)
+	userHandler := sysManagement.NewUserHandler(svcCtx)
+	roleHandler := sysManagement.NewRoleHandler(svcCtx)
+	menuHandler := sysManagement.NewMenuHandler(svcCtx)
+	permissionHandler := sysManagement.NewPermissionHandler(svcCtx)
+	fileHandler := sysTool.NewFileHandler(svcCtx)
+	cronHandler := sysTool.NewCronHandler(svcCtx)
+	cacheHandler := sysTool.NewCacheHandler(svcCtx)
+	serviceTokenHandler := sysTool.NewServiceTokenHandler(svcCtx)
+	operationLogHandler := sysMonitor.NewOperationLogHandler(svcCtx)
+	dashboardHandler := sysMonitor.NewDashboardHandler(svcCtx)
 
 	// Public routes
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/login",
+		Path:    "/login",
 		Handler: loginHandler.Login,
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
-		Path:    "/api/health",
+		Path:    "/health",
 		Handler: loginHandler.Health,
+	})
+	server.AddRoute(rest.Route{
+		Method:  http.MethodGet,
+		Path:    "/api/captcha",
+		Handler: captchaHandler.GenerateCaptcha,
+	})
+	server.AddRoute(rest.Route{
+		Method:  http.MethodPost,
+		Path:    "/api/logout",
+		Handler: jwtMiddleware.Handle(logoutHandler.Logout),
 	})
 
 	// Dept routes
@@ -120,6 +134,11 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 		Path:    "/api/dict/detail/delete",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(dictHandler.DeleteDictDetail)),
 	})
+	server.AddRoute(rest.Route{
+		Method:  http.MethodPost,
+		Path:    "/api/dict/detail/flat",
+		Handler: jwtMiddleware.Handle(dictHandler.FlatDictDetails),
+	})
 
 	// API routes
 	server.AddRoute(rest.Route{
@@ -151,6 +170,11 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 		Method:  http.MethodPost,
 		Path:    "/api/apis/delete",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(apiHandler.DeleteAPI)),
+	})
+	server.AddRoute(rest.Route{
+		Method:  http.MethodPost,
+		Path:    "/api/apis/delete-by-ids",
+		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(apiHandler.DeleteByIds)),
 	})
 
 	// Button routes
@@ -188,6 +212,11 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 		Method:  http.MethodPost,
 		Path:    "/api/button/delete",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(buttonHandler.DeleteButton)),
+	})
+	server.AddRoute(rest.Route{
+		Method:  http.MethodPost,
+		Path:    "/api/button/batch-check",
+		Handler: jwtMiddleware.Handle(buttonHandler.BatchCheckPermission),
 	})
 
 	// User routes
@@ -370,6 +399,11 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 		Handler: jwtMiddleware.Handle(fileHandler.GetFile),
 	})
 	server.AddRoute(rest.Route{
+		Method:  http.MethodGet,
+		Path:    "/api/file/download/:id",
+		Handler: jwtMiddleware.Handle(fileHandler.DownloadFile),
+	})
+	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
 		Path:    "/api/file/list",
 		Handler: jwtMiddleware.Handle(fileHandler.ListFile),
@@ -415,6 +449,11 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 		Method:  http.MethodPost,
 		Path:    "/api/cron/delete",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(cronHandler.DeleteCron)),
+	})
+	server.AddRoute(rest.Route{
+		Method:  http.MethodPost,
+		Path:    "/api/cron/delete-by-ids",
+		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(cronHandler.DeleteByIds)),
 	})
 
 	// Cache routes
@@ -491,11 +530,38 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 		Handler: jwtMiddleware.Handle(serviceTokenHandler.ValidateToken),
 	})
 
+	// Dashboard routes
+	server.AddRoute(rest.Route{
+		Method:  http.MethodGet,
+		Path:    "/api/dashboard/statistics",
+		Handler: jwtMiddleware.Handle(dashboardHandler.GetStatistics),
+	})
+	server.AddRoute(rest.Route{
+		Method:  http.MethodGet,
+		Path:    "/api/dashboard/recent-operations",
+		Handler: jwtMiddleware.Handle(dashboardHandler.GetRecentOperations),
+	})
+	server.AddRoute(rest.Route{
+		Method:  http.MethodGet,
+		Path:    "/api/dashboard/system-info",
+		Handler: jwtMiddleware.Handle(dashboardHandler.GetSystemInfo),
+	})
+
 	// Operation log routes
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
 		Path:    "/api/operation-log/list",
 		Handler: jwtMiddleware.Handle(operationLogHandler.ListOperationLog),
+	})
+	server.AddRoute(rest.Route{
+		Method:  http.MethodPost,
+		Path:    "/api/operation-log/delete",
+		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(operationLogHandler.DeleteOperationLog)),
+	})
+	server.AddRoute(rest.Route{
+		Method:  http.MethodPost,
+		Path:    "/api/operation-log/delete-by-ids",
+		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(operationLogHandler.DeleteOperationLogByIds)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,

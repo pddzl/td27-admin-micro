@@ -28,6 +28,7 @@ import (
 	"td27/rpc/basis/types/sysManagement/permission_pb"
 	"td27/rpc/basis/types/sysManagement/role_pb"
 	"td27/rpc/basis/types/sysManagement/user_pb"
+	"td27/rpc/basis/types/sysMonitor/dashboard_pb"
 	"td27/rpc/basis/types/sysMonitor/operation_log_pb"
 	"td27/rpc/basis/types/sysTool/cache_pb"
 	"td27/rpc/basis/types/sysTool/cron_pb"
@@ -59,6 +60,7 @@ func main() {
 		cache_pb.RegisterCacheServer(grpcServer, sysTool.NewCacheServer(ctx))
 		service_token_pb.RegisterServiceTokenServer(grpcServer, sysTool.NewServiceTokenServer(ctx))
 		operation_log_pb.RegisterOperationLogServer(grpcServer, sysMonitor.NewOperationLogServer(ctx))
+		dashboard_pb.RegisterDashboardServer(grpcServer, sysMonitor.NewDashboardServer(ctx))
 
 		if c.Mode == service.DevMode || c.Mode == service.TestMode {
 			reflection.Register(grpcServer)

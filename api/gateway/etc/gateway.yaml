@@ -24,6 +24,12 @@ BasisRpc:
       - 127.0.0.1:2379
     Key: basis.rpc
 
+# CAPTCHA configuration
+Captcha:
+  key-long: 6
+  img-width: 240
+  img-height: 80
+
 # CORS configuration
 Cors:
   AllowedOrigins:

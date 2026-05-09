@@ -2,8 +2,8 @@ package svc
 
 import (
 	"github.com/zeromicro/go-zero/zrpc"
+
 	"td27/api/gateway/internal/config"
-	"td27/rpc/basis/types/monitor/operation_log_pb"
 	"td27/rpc/basis/types/sysManagement/api_pb"
 	"td27/rpc/basis/types/sysManagement/button_pb"
 	"td27/rpc/basis/types/sysManagement/dept_pb"
@@ -12,10 +12,12 @@ import (
 	"td27/rpc/basis/types/sysManagement/permission_pb"
 	"td27/rpc/basis/types/sysManagement/role_pb"
 	"td27/rpc/basis/types/sysManagement/user_pb"
-	"td27/rpc/basis/types/tool/cache_pb"
-	"td27/rpc/basis/types/tool/cron_pb"
-	"td27/rpc/basis/types/tool/file_pb"
-	"td27/rpc/basis/types/tool/service_token_pb"
+	"td27/rpc/basis/types/sysMonitor/dashboard_pb"
+	"td27/rpc/basis/types/sysMonitor/operation_log_pb"
+	"td27/rpc/basis/types/sysTool/cache_pb"
+	"td27/rpc/basis/types/sysTool/cron_pb"
+	"td27/rpc/basis/types/sysTool/file_pb"
+	"td27/rpc/basis/types/sysTool/service_token_pb"
 )
 
 type ServiceContext struct {
@@ -34,6 +36,7 @@ type ServiceContext struct {
 	CacheClient        cache_pb.CacheClient
 	ServiceTokenClient service_token_pb.ServiceTokenClient
 	OperationLogClient operation_log_pb.OperationLogClient
+	DashboardClient    dashboard_pb.DashboardClient
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -54,5 +57,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		CacheClient:        cache_pb.NewCacheClient(conn.Conn()),
 		ServiceTokenClient: service_token_pb.NewServiceTokenClient(conn.Conn()),
 		OperationLogClient: operation_log_pb.NewOperationLogClient(conn.Conn()),
+		DashboardClient:    dashboard_pb.NewDashboardClient(conn.Conn()),
 	}
 }

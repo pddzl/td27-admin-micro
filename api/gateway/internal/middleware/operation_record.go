@@ -9,7 +9,7 @@ import (
 	"td27/api/gateway/internal/svc"
 	"time"
 
-	"td27/rpc/basis/types/monitor/operation_log_pb"
+	"td27/rpc/basis/types/sysMonitor/operation_log_pb"
 )
 
 type OperationRecordMiddleware struct {

@@ -1,8 +1,10 @@
 package svc
 
 import (
+	"fmt"
 	"time"
 
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/zeromicro/go-zero/core/logx"
 
 	"github.com/casbin/casbin/v2"
@@ -43,7 +45,8 @@ type ServiceContext struct {
 	CacheRepo sysToolRepo.CacheRepository
 	TokenRepo sysToolRepo.ServiceTokenRepository
 
-	LogRepo sysMonitorRepo.OperationLogRepository
+	LogRepo       sysMonitorRepo.OperationLogRepository
+	DashboardRepo sysMonitorRepo.DashboardRepository
 
 	// Services
 	UserService   *sysManagementService.UserService
@@ -60,7 +63,8 @@ type ServiceContext struct {
 	CacheService *sysToolService.CacheService
 	TokenService *sysToolService.ServiceTokenService
 
-	LogService *sysMonitorService.OperationLogService
+	LogService       *sysMonitorService.OperationLogService
+	DashboardService *sysMonitorService.DashboardService
 }
 
 // JWTManager handles JWT token operations
@@ -79,6 +83,49 @@ func NewJWTManager(cfg config.JWT) *JWTManager {
 		BufferTime:  cfg.BufferTime,
 		Issuer:      cfg.Issuer,
 	}
+}
+
+// CreateToken generates a JWT token with the given user claims
+func (m *JWTManager) CreateToken(userId uint64, username string, roleIds []uint64) (string, error) {
+	now := time.Now()
+	expiresAt := now.Add(time.Duration(m.ExpiresTime) * time.Second)
+
+	claims := jwt.MapClaims{
+		"userId":   userId,
+		"username": username,
+		"roleIds":  roleIds,
+		"exp":      expiresAt.Unix(),
+		"iat":      now.Unix(),
+		"iss":      m.Issuer,
+		"nbf":      now.Unix() - 1,
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString(m.SigningKey)
+	if err != nil {
+		return "", fmt.Errorf("failed to create token: %w", err)
+	}
+
+	return tokenString, nil
+}
+
+// ParseToken parses and validates a JWT token string
+func (m *JWTManager) ParseToken(tokenStr string) (jwt.MapClaims, error) {
+	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return m.SigningKey, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		return claims, nil
+	}
+
+	return nil, fmt.Errorf("invalid token")
 }
 
 // getCasbinModel returns the Casbin RBAC model
@@ -190,6 +237,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	tokenRepo := sysToolRepo.NewServiceTokenRepository(db)
 
 	logRepo := sysMonitorRepo.NewOperationLogRepository(db)
+	dashboardRepo := sysMonitorRepo.NewDashboardRepository(db)
 
 	// Initialize Services
 	userService := sysManagementService.NewUserService(userRepo, roleRepo)
@@ -207,6 +255,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	tokenService := sysToolService.NewServiceTokenService(tokenRepo)
 
 	logService := sysMonitorService.NewOperationLogService(logRepo)
+	dashboardService := sysMonitorService.NewDashboardService(dashboardRepo)
 
 	return &ServiceContext{
 		Config:         c,
@@ -231,7 +280,8 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		CacheRepo: cacheRepo,
 		TokenRepo: tokenRepo,
 
-		LogRepo: logRepo,
+		LogRepo:       logRepo,
+		DashboardRepo: dashboardRepo,
 
 		// Services
 		UserService:   userService,
@@ -248,6 +298,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		CacheService: cacheService,
 		TokenService: tokenService,
 
-		LogService: logService,
+		LogService:       logService,
+		DashboardService: dashboardService,
 	}
 }

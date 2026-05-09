@@ -16,8 +16,14 @@ type Config struct {
 	BasisRpc zrpc.RpcClientConf
 
 	Cors struct {
-		AllowedOrigins  []string
-		AllowedMethods  []string
-		AllowedHeaders  []string
+		AllowedOrigins []string
+		AllowedMethods []string
+		AllowedHeaders []string
+	}
+
+	Captcha struct {
+		KeyLong   int `json:"key-long"`
+		ImgWidth  int `json:"img-width"`
+		ImgHeight int `json:"img-height"`
 	}
 }

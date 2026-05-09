@@ -45,6 +45,12 @@ func (m *JwtMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
+		tokenHash := HashToken(tokenStr)
+		if GetBlocklist().IsBlocklisted(tokenHash) {
+			writeJson(w, http.StatusUnauthorized, pkg.Error(401, "token has been invalidated"))
+			return
+		}
+
 		ctx := context.WithValue(r.Context(), UserIdKey, claims["userId"])
 		ctx = context.WithValue(ctx, UsernameKey, claims["username"])
 		ctx = context.WithValue(ctx, RoleIdsKey, claims["roleIds"])
