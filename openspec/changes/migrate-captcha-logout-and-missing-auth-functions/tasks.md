@@ -27,7 +27,7 @@
 ## 4. Logout Endpoint (api/gateway)
 
 - [x] 4.1 Create `api/gateway/internal/handler/basis/sysManagement/logout.go` with `LogoutHandler`
-- [x] 4.2 Implement `Logout` handler: extract token from Authorization header, compute SHA-256 hash, add to blocklist
+- [x] 4.2 Implement `Logout` handler: extract token from x-token header, compute SHA-256 hash, add to blocklist
 - [x] 4.3 Register `POST /api/logout` as a JWT-protected route (without operation record) in `handler.go`
 - [x] 4.4 Verify logout returns HTTP 200 on success, HTTP 401 on missing/invalid token
 

@@ -2,13 +2,13 @@ package middleware
 
 import (
 	"context"
-	"encoding/json"
-	"github.com/golang-jwt/jwt/v4"
 	"net/http"
 	"strings"
-	"td27/api/gateway/internal/svc"
 
-	"td27/pkg"
+	"github.com/golang-jwt/jwt/v4"
+
+	"td27/api/gateway/internal/svc"
+	"td27/pkg/api"
 )
 
 var (
@@ -27,27 +27,27 @@ func NewJwtMiddleware(svcCtx *svc.ServiceContext) *JwtMiddleware {
 
 func (m *JwtMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		authHeader := r.Header.Get("Authorization")
+		authHeader := r.Header.Get("x-token")
 		if authHeader == "" {
-			writeJson(w, http.StatusUnauthorized, pkg.Error(401, "missing authorization header"))
+			api.FailWithRequest(w, http.StatusUnauthorized, "missing authorization header")
 			return
 		}
 
 		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
 		if tokenStr == authHeader {
-			writeJson(w, http.StatusUnauthorized, pkg.Error(401, "invalid authorization format"))
+			api.FailWithRequest(w, http.StatusUnauthorized, "invalid authorization format")
 			return
 		}
 
 		claims, err := m.parseToken(tokenStr)
 		if err != nil {
-			writeJson(w, http.StatusUnauthorized, pkg.Error(401, "invalid or expired token"))
+			api.FailWithRequest(w, http.StatusUnauthorized, "invalid or expired token")
 			return
 		}
 
 		tokenHash := HashToken(tokenStr)
 		if GetBlocklist().IsBlocklisted(tokenHash) {
-			writeJson(w, http.StatusUnauthorized, pkg.Error(401, "token has been invalidated"))
+			api.FailWithRequest(w, http.StatusUnauthorized, "token has been invalidated")
 			return
 		}
 
@@ -73,10 +73,4 @@ func (m *JwtMiddleware) parseToken(tokenStr string) (jwt.MapClaims, error) {
 		return claims, nil
 	}
 	return nil, jwt.ErrSignatureInvalid
-}
-
-func writeJson(w http.ResponseWriter, status int, resp *pkg.Response) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(resp)
 }

@@ -36,55 +36,61 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 
 	// Public routes
 	server.AddRoute(rest.Route{
+		Method:  http.MethodGet,
+		Path:    "/health",
+		Handler: loginHandler.Health,
+	})
+	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
 		Path:    "/login",
 		Handler: loginHandler.Login,
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
-		Path:    "/health",
-		Handler: loginHandler.Health,
-	})
-	server.AddRoute(rest.Route{
-		Method:  http.MethodGet,
-		Path:    "/api/captcha",
+		Path:    "/captcha",
 		Handler: captchaHandler.GenerateCaptcha,
 	})
+
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/logout",
+		Path:    "/logout",
 		Handler: jwtMiddleware.Handle(logoutHandler.Logout),
 	})
 
 	// Dept routes
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
-		Path:    "/api/dept",
+		Path:    "/dept/getTree",
 		Handler: jwtMiddleware.Handle(deptHandler.GetDeptTree),
+	})
+	server.AddRoute(rest.Route{
+		Method:  http.MethodPost,
+		Path:    "/api/dept/list",
+		Handler: jwtMiddleware.Handle(deptHandler.ListDept),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
 		Path:    "/api/dept/:id",
 		Handler: jwtMiddleware.Handle(deptHandler.GetDept),
 	})
+	//server.AddRoute(rest.Route{
+	//	Method:  http.MethodPost,
+	//	Path:    "/dept/descendants",
+	//	Handler: jwtMiddleware.Handle(deptHandler.GetDeptDescendants),
+	//})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/dept/descendants",
-		Handler: jwtMiddleware.Handle(deptHandler.GetDeptDescendants),
-	})
-	server.AddRoute(rest.Route{
-		Method:  http.MethodPost,
-		Path:    "/api/dept/create",
+		Path:    "/dept/create",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(deptHandler.CreateDept)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPut,
-		Path:    "/api/dept/update",
+		Path:    "/dept/update",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(deptHandler.UpdateDept)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/dept/delete",
+		Path:    "/dept/delete",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(deptHandler.DeleteDept)),
 	})
 
@@ -139,6 +145,11 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 		Path:    "/api/dict/detail/flat",
 		Handler: jwtMiddleware.Handle(dictHandler.FlatDictDetails),
 	})
+	server.AddRoute(rest.Route{
+		Method:  http.MethodPost,
+		Path:    "/api/dict/detail/list",
+		Handler: jwtMiddleware.Handle(dictHandler.ListDictDetail),
+	})
 
 	// API routes
 	server.AddRoute(rest.Route{
@@ -175,6 +186,11 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 		Method:  http.MethodPost,
 		Path:    "/api/apis/delete-by-ids",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(apiHandler.DeleteByIds)),
+	})
+	server.AddRoute(rest.Route{
+		Method:  http.MethodPost,
+		Path:    "/api/apis/tree",
+		Handler: jwtMiddleware.Handle(apiHandler.GetAPITree),
 	})
 
 	// Button routes

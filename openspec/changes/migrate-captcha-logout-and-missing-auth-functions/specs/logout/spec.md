@@ -9,7 +9,7 @@ The system SHALL provide an authenticated endpoint to terminate user sessions.
 - **AND** return HTTP 200 with a success message
 
 #### Scenario: Logout without token
-- **WHEN** an unauthenticated client sends POST /api/logout without an Authorization header
+- **WHEN** an unauthenticated client sends POST /api/logout without an x-token header
 - **THEN** the system SHALL return HTTP 401
 
 #### Scenario: Logout with invalid token

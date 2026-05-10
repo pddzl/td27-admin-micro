@@ -42,4 +42,4 @@ Cors:
     - OPTIONS
   AllowedHeaders:
     - Content-Type
-    - Authorization
+    - x-token

@@ -86,7 +86,7 @@ func NewJWTManager(cfg config.JWT) *JWTManager {
 }
 
 // CreateToken generates a JWT token with the given user claims
-func (m *JWTManager) CreateToken(userId uint64, username string, roleIds []uint64) (string, error) {
+func (m *JWTManager) CreateToken(userId uint64, username string, roleIds []uint64) (string, time.Time, error) {
 	now := time.Now()
 	expiresAt := now.Add(time.Duration(m.ExpiresTime) * time.Second)
 
@@ -103,10 +103,10 @@ func (m *JWTManager) CreateToken(userId uint64, username string, roleIds []uint6
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString(m.SigningKey)
 	if err != nil {
-		return "", fmt.Errorf("failed to create token: %w", err)
+		return "", time.Time{}, fmt.Errorf("failed to create token: %w", err)
 	}
 
-	return tokenString, nil
+	return tokenString, expiresAt, nil
 }
 
 // ParseToken parses and validates a JWT token string

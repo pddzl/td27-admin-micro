@@ -72,7 +72,7 @@ api/basis/
 - Create `api/basis/internal/svc/servicecontext.go` with gRPC client connections (discover via etcd)
 
 ### 2. JWT middleware + response types
-- Create `api/basis/internal/middleware/jwt.go` — validates JWT from `Authorization` header, extracts user info into context
+- Create `api/basis/internal/middleware/jwt.go` — validates JWT from `x-token` header, extracts user info into context
 - Create `api/basis/types/response.go` — standard JSON response format `{code, data, msg}`
 
 ### 3. Auth handlers (public)
