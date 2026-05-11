@@ -23,6 +23,7 @@ import (
 	"td27/rpc/basis/types/sysManagement/api_pb"
 	"td27/rpc/basis/types/sysManagement/button_pb"
 	"td27/rpc/basis/types/sysManagement/dept_pb"
+	"td27/rpc/basis/types/sysManagement/dict_detail_pb"
 	"td27/rpc/basis/types/sysManagement/dict_pb"
 	"td27/rpc/basis/types/sysManagement/menu_pb"
 	"td27/rpc/basis/types/sysManagement/permission_pb"
@@ -53,6 +54,7 @@ func main() {
 		menu_pb.RegisterMenuServer(grpcServer, sysManagement.NewMenuServer(ctx))
 		dept_pb.RegisterDeptServer(grpcServer, sysManagement.NewDeptServer(ctx))
 		dict_pb.RegisterDictServer(grpcServer, sysManagement.NewDictServer(ctx))
+		dict_detail_pb.RegisterDictDetailServer(grpcServer, sysManagement.NewDictDetailServer(ctx))
 		api_pb.RegisterAPIServer(grpcServer, sysManagement.NewAPIServer(ctx))
 		button_pb.RegisterButtonServer(grpcServer, sysManagement.NewButtonServer(ctx))
 		file_pb.RegisterFileServer(grpcServer, sysTool.NewFileServer(ctx))

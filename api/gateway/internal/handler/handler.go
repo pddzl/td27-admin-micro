@@ -21,6 +21,7 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 	logoutHandler := sysManagement.NewLogoutHandler(svcCtx)
 	deptHandler := sysManagement.NewDeptHandler(svcCtx)
 	dictHandler := sysManagement.NewDictHandler(svcCtx)
+	dictDetailHandler := sysManagement.NewDictDetailHandler(svcCtx)
 	apiHandler := sysManagement.NewAPIHandler(svcCtx)
 	buttonHandler := sysManagement.NewButtonHandler(svcCtx)
 	userHandler := sysManagement.NewUserHandler(svcCtx)
@@ -60,13 +61,13 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 	// Dept routes
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
-		Path:    "/dept/getTree",
-		Handler: jwtMiddleware.Handle(deptHandler.GetDeptTree),
+		Path:    "/dept/list",
+		Handler: jwtMiddleware.Handle(deptHandler.ListDept),
 	})
 	server.AddRoute(rest.Route{
-		Method:  http.MethodPost,
-		Path:    "/api/dept/list",
-		Handler: jwtMiddleware.Handle(deptHandler.ListDept),
+		Method:  http.MethodGet,
+		Path:    "/dept/getTree",
+		Handler: jwtMiddleware.Handle(deptHandler.GetDeptTree),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
@@ -97,7 +98,7 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 	// Dict routes
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
-		Path:    "/api/dict",
+		Path:    "/dict/list",
 		Handler: jwtMiddleware.Handle(dictHandler.ListDict),
 	})
 	server.AddRoute(rest.Route{
@@ -105,50 +106,52 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 		Path:    "/api/dict/:id",
 		Handler: jwtMiddleware.Handle(dictHandler.GetDict),
 	})
-	server.AddRoute(rest.Route{
-		Method:  http.MethodGet,
-		Path:    "/api/dict/en/:en_name",
-		Handler: jwtMiddleware.Handle(dictHandler.GetDictByENName),
-	})
+	//server.AddRoute(rest.Route{
+	//	Method:  http.MethodGet,
+	//	Path:    "/api/dict/en/:en_name",
+	//	Handler: jwtMiddleware.Handle(dictHandler.GetDictByENName),
+	//})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/dict/create",
+		Path:    "/dict/create",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(dictHandler.CreateDict)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPut,
-		Path:    "/api/dict/update",
+		Path:    "/dict/update",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(dictHandler.UpdateDict)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/dict/delete",
+		Path:    "/dict/delete",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(dictHandler.DeleteDict)),
 	})
+
+	// DictDetail route
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/dict/detail/create",
-		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(dictHandler.CreateDictDetail)),
+		Path:    "/dictDetail/create",
+		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(dictDetailHandler.CreateDictDetail)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPut,
-		Path:    "/api/dict/detail/update",
-		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(dictHandler.UpdateDictDetail)),
+		Path:    "/dictDetail/update",
+		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(dictDetailHandler.UpdateDictDetail)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/dict/detail/delete",
-		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(dictHandler.DeleteDictDetail)),
+		Path:    "/dictDetail/delete",
+		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(dictDetailHandler.DeleteDictDetail)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/dict/detail/flat",
-		Handler: jwtMiddleware.Handle(dictHandler.FlatDictDetails),
+		Path:    "/dictDetail/flat",
+		Handler: jwtMiddleware.Handle(dictDetailHandler.FlatDictDetails),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/dict/detail/list",
-		Handler: jwtMiddleware.Handle(dictHandler.ListDictDetail),
+		Path:    "/dictDetail/list",
+		Handler: jwtMiddleware.Handle(dictDetailHandler.ListDictDetail),
 	})
 
 	// API routes

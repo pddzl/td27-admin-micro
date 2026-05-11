@@ -2,13 +2,14 @@ package main
 
 import (
 	"flag"
-	"td27/api/gateway/internal/config"
-	"td27/api/gateway/internal/handler"
-	"td27/api/gateway/internal/svc"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/rest"
+
+	"td27/api/gateway/internal/config"
+	"td27/api/gateway/internal/handler"
+	"td27/api/gateway/internal/svc"
 )
 
 var configFile = flag.String("f", "etc/gateway.yaml", "the config file")

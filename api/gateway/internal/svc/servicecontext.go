@@ -7,6 +7,7 @@ import (
 	"td27/rpc/basis/types/sysManagement/api_pb"
 	"td27/rpc/basis/types/sysManagement/button_pb"
 	"td27/rpc/basis/types/sysManagement/dept_pb"
+	"td27/rpc/basis/types/sysManagement/dict_detail_pb"
 	"td27/rpc/basis/types/sysManagement/dict_pb"
 	"td27/rpc/basis/types/sysManagement/menu_pb"
 	"td27/rpc/basis/types/sysManagement/permission_pb"
@@ -29,6 +30,7 @@ type ServiceContext struct {
 	MenuClient         menu_pb.MenuClient
 	DeptClient         dept_pb.DeptClient
 	DictClient         dict_pb.DictClient
+	DictDetailClient   dict_detail_pb.DictDetailClient
 	APIClient          api_pb.APIClient
 	ButtonClient       button_pb.ButtonClient
 	FileClient         file_pb.FileClient
@@ -50,6 +52,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		MenuClient:         menu_pb.NewMenuClient(conn.Conn()),
 		DeptClient:         dept_pb.NewDeptClient(conn.Conn()),
 		DictClient:         dict_pb.NewDictClient(conn.Conn()),
+		DictDetailClient:   dict_detail_pb.NewDictDetailClient(conn.Conn()),
 		APIClient:          api_pb.NewAPIClient(conn.Conn()),
 		ButtonClient:       button_pb.NewButtonClient(conn.Conn()),
 		FileClient:         file_pb.NewFileClient(conn.Conn()),
