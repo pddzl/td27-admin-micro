@@ -157,32 +157,32 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 	// API routes
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
-		Path:    "/api/apis",
+		Path:    "/api/list",
 		Handler: jwtMiddleware.Handle(apiHandler.ListAPI),
 	})
-	server.AddRoute(rest.Route{
-		Method:  http.MethodGet,
-		Path:    "/api/apis/:id",
-		Handler: jwtMiddleware.Handle(apiHandler.GetAPI),
-	})
+	//server.AddRoute(rest.Route{
+	//	Method:  http.MethodGet,
+	//	Path:    "/api/apis/:id",
+	//	Handler: jwtMiddleware.Handle(apiHandler.GetAPI),
+	//})
+	//server.AddRoute(rest.Route{
+	//	Method:  http.MethodPost,
+	//	Path:    "/api/apis/by-group",
+	//	Handler: jwtMiddleware.Handle(apiHandler.GetAPIsByGroup),
+	//})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/apis/by-group",
-		Handler: jwtMiddleware.Handle(apiHandler.GetAPIsByGroup),
-	})
-	server.AddRoute(rest.Route{
-		Method:  http.MethodPost,
-		Path:    "/api/apis/create",
+		Path:    "/api/create",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(apiHandler.CreateAPI)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPut,
-		Path:    "/api/apis/update",
+		Path:    "/api/update",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(apiHandler.UpdateAPI)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/apis/delete",
+		Path:    "/api/delete",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(apiHandler.DeleteAPI)),
 	})
 	server.AddRoute(rest.Route{
@@ -192,399 +192,399 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/apis/tree",
+		Path:    "/api/elTree",
 		Handler: jwtMiddleware.Handle(apiHandler.GetAPITree),
 	})
 
 	// Button routes
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
-		Path:    "/api/button",
+		Path:    "/button/list",
 		Handler: jwtMiddleware.Handle(buttonHandler.ListButton),
 	})
-	server.AddRoute(rest.Route{
-		Method:  http.MethodGet,
-		Path:    "/api/button/:id",
-		Handler: jwtMiddleware.Handle(buttonHandler.GetButton),
-	})
+	//server.AddRoute(rest.Route{
+	//	Method:  http.MethodGet,
+	//	Path:    "/api/button/:id",
+	//	Handler: jwtMiddleware.Handle(buttonHandler.GetButton),
+	//})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/button/by-page",
+		Path:    "/button/by-page",
 		Handler: jwtMiddleware.Handle(buttonHandler.GetButtonsByPagePath),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/button/user-buttons",
+		Path:    "/button/user-buttons",
 		Handler: jwtMiddleware.Handle(buttonHandler.GetUserButtons),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/button/create",
+		Path:    "/button/create",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(buttonHandler.CreateButton)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPut,
-		Path:    "/api/button/update",
+		Path:    "/button/update",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(buttonHandler.UpdateButton)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/button/delete",
+		Path:    "/button/delete",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(buttonHandler.DeleteButton)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/button/batch-check",
+		Path:    "/button/batch-check",
 		Handler: jwtMiddleware.Handle(buttonHandler.BatchCheckPermission),
 	})
 
 	// User routes
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
-		Path:    "/api/user/info",
+		Path:    "/user/info",
 		Handler: jwtMiddleware.Handle(userHandler.GetUserInfo),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/user/list",
+		Path:    "/user/list",
 		Handler: jwtMiddleware.Handle(userHandler.ListUser),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/user/create",
+		Path:    "/user/create",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(userHandler.CreateUser)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPut,
-		Path:    "/api/user/update",
+		Path:    "/user/update",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(userHandler.UpdateUser)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/user/delete",
+		Path:    "/user/delete",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(userHandler.DeleteUser)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/user/modify-password",
+		Path:    "/user/modify-password",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(userHandler.ModifyPassword)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/user/switch-active",
+		Path:    "/user/switch-active",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(userHandler.SwitchActive)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/user/assign-roles",
+		Path:    "/user/assign-roles",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(userHandler.AssignRoles)),
 	})
 
 	// Role routes
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
-		Path:    "/api/role/info",
+		Path:    "/role/info",
 		Handler: jwtMiddleware.Handle(roleHandler.GetRole),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
-		Path:    "/api/role/children",
+		Path:    "/role/children",
 		Handler: jwtMiddleware.Handle(roleHandler.GetRoleWithChildren),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/role/list",
+		Path:    "/role/list",
 		Handler: jwtMiddleware.Handle(roleHandler.ListRole),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
-		Path:    "/api/role/all",
+		Path:    "/role/all",
 		Handler: jwtMiddleware.Handle(roleHandler.GetAllRoles),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/role/create",
+		Path:    "/role/create",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(roleHandler.CreateRole)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPut,
-		Path:    "/api/role/update",
+		Path:    "/role/update",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(roleHandler.UpdateRole)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/role/delete",
+		Path:    "/role/delete",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(roleHandler.DeleteRole)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/role/assign-permissions",
+		Path:    "/role/assign-permissions",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(roleHandler.AssignPermissions)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
-		Path:    "/api/role/permissions",
+		Path:    "/role/permissions",
 		Handler: jwtMiddleware.Handle(roleHandler.GetRolePermissions),
 	})
 
 	// Menu routes
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
-		Path:    "/api/menu/info",
+		Path:    "/menu/info",
 		Handler: jwtMiddleware.Handle(menuHandler.GetMenu),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
-		Path:    "/api/menu/tree",
+		Path:    "/menu/elTree",
 		Handler: jwtMiddleware.Handle(menuHandler.GetMenuTree),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/menu/user-menus",
+		Path:    "/menu/user-menus",
 		Handler: jwtMiddleware.Handle(menuHandler.GetUserMenus),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/menu/create",
+		Path:    "/menu/create",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(menuHandler.CreateMenu)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPut,
-		Path:    "/api/menu/update",
+		Path:    "/menu/update",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(menuHandler.UpdateMenu)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/menu/delete",
+		Path:    "/menu/delete",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(menuHandler.DeleteMenu)),
 	})
 
 	// Permission routes
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
-		Path:    "/api/permission/info",
+		Path:    "/permission/info",
 		Handler: jwtMiddleware.Handle(permissionHandler.GetPermission),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/permission/list",
+		Path:    "/permission/list",
 		Handler: jwtMiddleware.Handle(permissionHandler.ListPermission),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
-		Path:    "/api/permission/all",
+		Path:    "/permission/all",
 		Handler: jwtMiddleware.Handle(permissionHandler.GetAllPermissions),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
-		Path:    "/api/permission/by-role",
+		Path:    "/permission/by-role",
 		Handler: jwtMiddleware.Handle(permissionHandler.GetPermissionsByRoleId),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/permission/create",
+		Path:    "/permission/create",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(permissionHandler.CreatePermission)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPut,
-		Path:    "/api/permission/update",
+		Path:    "/permission/update",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(permissionHandler.UpdatePermission)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/permission/delete",
+		Path:    "/permission/delete",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(permissionHandler.DeletePermission)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/permission/check",
+		Path:    "/permission/check",
 		Handler: jwtMiddleware.Handle(permissionHandler.CheckPermission),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/permission/reload-policy",
+		Path:    "/permission/reload-policy",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(permissionHandler.ReloadPolicy)),
 	})
 
 	// File routes
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/file/upload",
+		Path:    "/file/upload",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(fileHandler.UploadFile)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
-		Path:    "/api/file/:id",
+		Path:    "/file/:id",
 		Handler: jwtMiddleware.Handle(fileHandler.GetFile),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
-		Path:    "/api/file/download/:id",
+		Path:    "/file/download/:id",
 		Handler: jwtMiddleware.Handle(fileHandler.DownloadFile),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/file/list",
+		Path:    "/file/list",
 		Handler: jwtMiddleware.Handle(fileHandler.ListFile),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/file/delete",
+		Path:    "/file/delete",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(fileHandler.DeleteFile)),
 	})
 
 	// Cron routes
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
-		Path:    "/api/cron/:id",
+		Path:    "/cron/:id",
 		Handler: jwtMiddleware.Handle(cronHandler.GetCron),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/cron/list",
+		Path:    "/cron/list",
 		Handler: jwtMiddleware.Handle(cronHandler.ListCron),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/cron/create",
+		Path:    "/cron/create",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(cronHandler.CreateCron)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPut,
-		Path:    "/api/cron/update",
+		Path:    "/cron/update",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(cronHandler.UpdateCron)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/cron/toggle-status",
+		Path:    "/cron/toggle-status",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(cronHandler.ToggleCronStatus)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/cron/execute",
+		Path:    "/cron/execute",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(cronHandler.ExecuteCronNow)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/cron/delete",
+		Path:    "/cron/delete",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(cronHandler.DeleteCron)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/cron/delete-by-ids",
+		Path:    "/cron/delete-by-ids",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(cronHandler.DeleteByIds)),
 	})
 
 	// Cache routes
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/cache/get",
+		Path:    "/cache/get",
 		Handler: jwtMiddleware.Handle(cacheHandler.GetCache),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/cache/set",
+		Path:    "/cache/set",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(cacheHandler.SetCache)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/cache/delete",
+		Path:    "/cache/delete",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(cacheHandler.DeleteCache)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/cache/list",
+		Path:    "/cache/list",
 		Handler: jwtMiddleware.Handle(cacheHandler.ListCache),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/cache/cleanup",
+		Path:    "/cache/cleanup",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(cacheHandler.CleanupExpired)),
 	})
 
 	// Service token routes
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/service-token/create",
+		Path:    "/service-token/create",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(serviceTokenHandler.CreateServiceToken)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
-		Path:    "/api/service-token/:id",
+		Path:    "/service-token/:id",
 		Handler: jwtMiddleware.Handle(serviceTokenHandler.GetServiceToken),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/service-token/list",
+		Path:    "/service-token/list",
 		Handler: jwtMiddleware.Handle(serviceTokenHandler.ListServiceToken),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPut,
-		Path:    "/api/service-token/update",
+		Path:    "/service-token/update",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(serviceTokenHandler.UpdateServiceToken)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/service-token/toggle-status",
+		Path:    "/service-token/toggle-status",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(serviceTokenHandler.ToggleTokenStatus)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/service-token/assign-permissions",
+		Path:    "/service-token/assign-permissions",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(serviceTokenHandler.AssignTokenPermissions)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
-		Path:    "/api/service-token/permissions/:id",
+		Path:    "/service-token/permissions/:id",
 		Handler: jwtMiddleware.Handle(serviceTokenHandler.GetTokenPermissions),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/service-token/delete",
+		Path:    "/service-token/delete",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(serviceTokenHandler.DeleteServiceToken)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/service-token/validate",
+		Path:    "/service-token/validate",
 		Handler: jwtMiddleware.Handle(serviceTokenHandler.ValidateToken),
 	})
 
 	// Dashboard routes
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
-		Path:    "/api/dashboard/statistics",
+		Path:    "/dashboard/statistics",
 		Handler: jwtMiddleware.Handle(dashboardHandler.GetStatistics),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
-		Path:    "/api/dashboard/recent-operations",
+		Path:    "/dashboard/recent-operations",
 		Handler: jwtMiddleware.Handle(dashboardHandler.GetRecentOperations),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
-		Path:    "/api/dashboard/system-info",
+		Path:    "/dashboard/system-info",
 		Handler: jwtMiddleware.Handle(dashboardHandler.GetSystemInfo),
 	})
 
 	// Operation log routes
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/operation-log/list",
+		Path:    "/operation-log/list",
 		Handler: jwtMiddleware.Handle(operationLogHandler.ListOperationLog),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/operation-log/delete",
+		Path:    "/operation-log/delete",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(operationLogHandler.DeleteOperationLog)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/operation-log/delete-by-ids",
+		Path:    "/operation-log/delete-by-ids",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(operationLogHandler.DeleteOperationLogByIds)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/operation-log/cleanup",
+		Path:    "/operation-log/cleanup",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(operationLogHandler.CleanupExpiredLogs)),
 	})
 }
