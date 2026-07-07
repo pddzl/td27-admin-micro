@@ -10,7 +10,7 @@ Mode: dev
 Log:
   ServiceName: basis
   Mode: console            # console | file | volume
-  Encoding: json
+  Encoding: plain
   Path: logs             # log directory
   Level: info             # debug | info | warn | error | fatal
   KeepDays: 7             # days to keep logs

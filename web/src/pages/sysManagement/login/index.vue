@@ -38,7 +38,7 @@ const loginFormData: LoginRequestData = reactive({
   username: "",
   password: "",
   captcha: "",
-  captchaId: ""
+  captcha_id: ""
 })
 
 /** 登录表单校验规则 */
@@ -61,7 +61,7 @@ function handleLogin() {
           username: loginFormData.username,
           password: loginFormData.password,
           captcha: loginFormData.captcha,
-          captchaId: loginFormData.captchaId
+          captcha_id: loginFormData.captcha_id
         })
         .then(() => {
           router.push({ path: "/" })
@@ -82,8 +82,8 @@ function createCode() {
   loginFormData.captcha = ""
   // 获取验证码
   captchaApi().then((res) => {
-    codeUrl.value = res.data.picPath
-    loginFormData.captchaId = res.data.captchaId
+    codeUrl.value = res.data.pic_path
+    loginFormData.captcha_id = res.data.captcha_id
   })
 }
 
@@ -104,7 +104,7 @@ createCode()
         />
       </el-tooltip>
     </div>
-    
+
     <div class="login-card">
       <p class="p1">
         TD27 ADMIN
@@ -241,20 +241,20 @@ createCode()
   &.bg {
     background: #141414;
   }
-  
+
   .login-card {
     background: #1f1f1f;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-    
+
     .p1 {
       color: rgba(255, 255, 255, 0.85);
     }
-    
+
     .p2 {
       color: rgba(255, 255, 255, 0.45);
     }
   }
-  
+
   .footer span {
     color: rgba(255, 255, 255, 0.45);
   }
@@ -273,7 +273,7 @@ createCode()
   height: 44px;
   font-size: 20px;
   transition: all 0.3s;
-  
+
   &:hover {
     transform: scale(1.1);
   }

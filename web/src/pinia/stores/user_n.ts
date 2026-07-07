@@ -36,7 +36,7 @@ export const useUserStore = defineStore("user", () => {
       username: loginData.username,
       password: loginData.password,
       captcha: loginData.captcha,
-      captchaId: loginData.captchaId
+      captcha_id: loginData.captcha_id
     })
     if (res.code === 0) {
       token.value = res.data.token
@@ -53,7 +53,7 @@ export const useUserStore = defineStore("user", () => {
       userInfo.username = res.data.username
       userInfo.phone = res.data.phone
       userInfo.email = res.data.email
-      
+
       // 多角色支持
       userInfo.roles = res.data.roles || []
       if (userInfo.roles.length > 0) {
@@ -120,13 +120,13 @@ export const useUserStore = defineStore("user", () => {
     }
   )
 
-  return { 
-    token, 
-    username, 
-    getInfo, 
-    userInfo, 
-    login, 
-    logout, 
+  return {
+    token,
+    username,
+    getInfo,
+    userInfo,
+    login,
+    logout,
     resetToken,
     getAllRoleIds,
     hasRole

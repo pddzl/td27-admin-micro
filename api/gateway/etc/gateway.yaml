@@ -5,7 +5,7 @@ Mode: dev
 
 Log:
   ServiceName: gateway
-  Mode: file
+  Mode: console
   Path: logs
   Level: info
   KeepDays: 7

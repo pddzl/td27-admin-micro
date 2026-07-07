@@ -7,10 +7,10 @@ export interface LoginRequestData {
   password: string
   /** 验证码 */
   captcha: string
-  captchaId: string
+  captcha_id: string
 }
 
-type LoginCodeResponseData = ApiResponseData<{ picPath: string, captchaId: string }>
+type LoginCodeResponseData = ApiResponseData<{ pic_path: string, captcha_id: string }>
 type LoginResponseData = ApiResponseData<{ token: string }>
 
 // 获取验证码
