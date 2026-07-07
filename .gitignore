@@ -27,3 +27,4 @@ rpc/basis/logs
 *.iml
 basis
 logs
+.gocache
