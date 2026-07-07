@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/zeromicro/go-zero/core/logx"
 
 	"github.com/casbin/casbin/v2"
 	casbinModel "github.com/casbin/casbin/v2/model"
 	"github.com/robfig/cron/v3"
-	"gorm.io/gorm"
 
 	"td27/rpc/basis/internal/config"
 	"td27/rpc/basis/internal/initialization"
@@ -24,7 +24,7 @@ import (
 
 type ServiceContext struct {
 	Config         config.Config
-	DB             *gorm.DB
+	DB             *sqlx.DB
 	CasbinEnforcer *casbin.SyncedCachedEnforcer
 	JWT            *JWTManager
 	CronScheduler  *cron.Cron
@@ -175,7 +175,7 @@ func getCasbinModel(enableRoleHierarchy bool) (casbinModel.Model, error) {
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	// Initialize database connection
-	db, err := initialization.Gorm(c.Pgsql)
+	db, err := initialization.ConnectDB(c.Pgsql)
 	if err != nil {
 		logx.Errorf("init postgresql err: %v", err)
 		panic(err)
