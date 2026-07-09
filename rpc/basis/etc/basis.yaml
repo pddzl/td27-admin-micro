@@ -42,7 +42,7 @@ JWT:
 # Casbin RBAC configuration
 Casbin:
   cache-ttl: 3600
-  auto-load-interval: 600
+  auto-load-interval: 0
   enable-role-hierarchy: true
   enable-data-permission: true
 
