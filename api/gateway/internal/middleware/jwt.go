@@ -34,10 +34,6 @@ func (m *JwtMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
-		if tokenStr == authHeader {
-			api.FailWithRequest(w, http.StatusUnauthorized, "invalid authorization format")
-			return
-		}
 
 		claims, err := m.parseToken(tokenStr)
 		if err != nil {
