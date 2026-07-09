@@ -55,7 +55,7 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
 		Path:    "/logout",
-		Handler: jwtMiddleware.Handle(logoutHandler.Logout),
+		Handler: logoutHandler.Logout,
 	})
 
 	// Dept routes
