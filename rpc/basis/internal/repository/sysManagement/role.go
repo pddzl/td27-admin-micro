@@ -35,7 +35,7 @@ func NewRoleRepository(db *sqlx.DB) RoleRepository {
 	return &roleRepository{db: db}
 }
 
-const roleColumns = `id, COALESCE(created_at, NOW()) as created_at, COALESCE(updated_at, NOW()) as updated_at, deleted_at, role_name, parent_id, permission_hash`
+const roleColumns = `id, COALESCE(created_at, NOW()) as created_at, COALESCE(updated_at, NOW()) as updated_at, deleted_at, role_name, parent_id, COALESCE(permission_hash, '') as permission_hash`
 
 func (r *roleRepository) FindOne(ctx context.Context, id uint) (*sysManagement.RoleModel, error) {
 	var role sysManagement.RoleModel
@@ -182,7 +182,7 @@ func (r *roleRepository) GetPermissions(ctx context.Context, roleID uint) ([]uin
 func (r *roleRepository) GetUserRoles(ctx context.Context, userID uint) ([]*sysManagement.RoleModel, error) {
 	var roles []*sysManagement.RoleModel
 	err := r.db.SelectContext(ctx, &roles,
-		`SELECT r.id, COALESCE(r.created_at, NOW()) as created_at, COALESCE(r.updated_at, NOW()) as updated_at, r.deleted_at, r.role_name, r.parent_id, r.permission_hash
+		`SELECT r.id, COALESCE(r.created_at, NOW()) as created_at, COALESCE(r.updated_at, NOW()) as updated_at, r.deleted_at, r.role_name, r.parent_id, COALESCE(r.permission_hash, '') as permission_hash
 		 FROM sys_management_role r
 		 JOIN sys_management_user_roles ur ON ur.role_id = r.id
 		 WHERE ur.user_id = $1 AND r.deleted_at IS NULL`, userID)

@@ -74,7 +74,7 @@ func (r *userRepository) FindOneWithRoles(ctx context.Context, id uint) (*sysMan
 	// Load associated roles
 	var roles []*sysManagement.RoleModel
 	err = r.db.SelectContext(ctx, &roles,
-		`SELECT r.id, COALESCE(r.created_at, NOW()) as created_at, COALESCE(r.updated_at, NOW()) as updated_at, r.deleted_at, r.role_name, r.parent_id, r.permission_hash
+		`SELECT r.id, COALESCE(r.created_at, NOW()) as created_at, COALESCE(r.updated_at, NOW()) as updated_at, r.deleted_at, r.role_name, r.parent_id, COALESCE(r.permission_hash, '') as permission_hash
 		 FROM sys_management_role r
 		 JOIN sys_management_user_roles ur ON ur.role_id = r.id
 		 WHERE ur.user_id = $1 AND r.deleted_at IS NULL`, id)
