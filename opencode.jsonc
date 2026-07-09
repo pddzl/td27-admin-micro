@@ -1,0 +1,19 @@
+{
+  // Project-level configuration for OpenCode agent behavior.
+  // $schema enables IDE completion; remove comments if your editor complains.
+  "$schema": "https://raw.githubusercontent.com/opencodelabs/opencode/refs/heads/main/docs/opencode-schema.json",
+
+  "instructions": [
+    // === RESTRAINING RULES (always apply) ===
+    "CRITICAL: Before making ANY code changes, you MUST first create an OpenSpec change proposal using /opsx-propose with a descriptive kebab-case name. Wait for user approval on the proposal before implementing.",
+    "Never implement code changes directly in response to a question or bug report. Always route through: 1) /opsx-propose → 2) user approval → 3) /opsx-apply.",
+    "Exception: Trivial one-line fixes (typos, config values) may be done directly, but document them in a change afterward.",
+    "",
+    // === Repo-specific guidance ===
+    "This is a Go 1.26.4 monorepo using go-zero v1.9.4. Two processes: rpc/basis (gRPC port 8080) and api/gateway (HTTP port 8888).",
+    "DB is PostgreSQL via sqlx (NOT GORM). All repositories use raw SQL.",
+    "Build requires env vars: GONOSUMCHECK='*' GONOSUMDB='*' GOFLAGS='-mod=mod'",
+    "Proto generation: protoc --go_out=. --go-grpc_out=. --go_opt=module=td27 --go-grpc_opt=module=td27 -I ./rpc/basis/proto",
+    "Read AGENTS.md for full details before making changes."
+  ]
+}
