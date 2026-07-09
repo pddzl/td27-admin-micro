@@ -241,7 +241,7 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 	// User routes
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
-		Path:    "/user/info",
+		Path:    "/user/getUserInfo",
 		Handler: jwtMiddleware.Handle(userHandler.GetUserInfo),
 	})
 	server.AddRoute(rest.Route{
