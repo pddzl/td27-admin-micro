@@ -80,10 +80,10 @@ func (h *CaptchaHandler) GenerateCaptcha(w http.ResponseWriter, r *http.Request)
 }
 
 func generateRandomCode(length int) string {
-	const digits = "0123456789"
+	const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 	result := make([]byte, length)
 	for i := range result {
-		result[i] = digits[rand.Intn(len(digits))]
+		result[i] = chars[rand.Intn(len(chars))]
 	}
 	return string(result)
 }
