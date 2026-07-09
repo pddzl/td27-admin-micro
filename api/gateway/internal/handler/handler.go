@@ -330,11 +330,16 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 	// Menu routes
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
+		Path:    "/menu/list",
+		Handler: jwtMiddleware.Handle(menuHandler.ListMenu),
+	})
+	server.AddRoute(rest.Route{
+		Method:  http.MethodGet,
 		Path:    "/menu/info",
 		Handler: jwtMiddleware.Handle(menuHandler.GetMenu),
 	})
 	server.AddRoute(rest.Route{
-		Method:  http.MethodGet,
+		Method:  http.MethodPost,
 		Path:    "/menu/elTree",
 		Handler: jwtMiddleware.Handle(menuHandler.GetMenuTree),
 	})
@@ -349,7 +354,7 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(menuHandler.CreateMenu)),
 	})
 	server.AddRoute(rest.Route{
-		Method:  http.MethodPut,
+		Method:  http.MethodPost,
 		Path:    "/menu/update",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(menuHandler.UpdateMenu)),
 	})
