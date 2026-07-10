@@ -1,9 +1,11 @@
 package api
 
 import (
+	"encoding/json"
 	"net/http"
 
-	"github.com/zeromicro/go-zero/rest/httpx"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 type Response struct {
@@ -14,14 +16,36 @@ type Response struct {
 
 const (
 	SUCCESS   = 0
-	ERROR_REQ = 4 // request error
-	ERROR_RES = 7 // response/business error
+	ERROR_REQ = 4
+	ERROR_RES = 7
 )
 
+func marshalData(v interface{}) ([]byte, error) {
+	if msg, ok := v.(proto.Message); ok {
+		return protojson.Marshal(msg)
+	}
+	return json.Marshal(v)
+}
+
+func writeJson(w http.ResponseWriter, status int, v interface{}) {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(v)
+}
+
 func result(w http.ResponseWriter, status int, code int, data interface{}, msg string) {
-	httpx.WriteJson(w, status, Response{
+	dataBytes, err := marshalData(data)
+	if err != nil {
+		writeJson(w, http.StatusInternalServerError, Response{Code: ERROR_RES, Msg: "marshal error: " + err.Error()})
+		return
+	}
+	writeJson(w, status, struct {
+		Code int             `json:"code"`
+		Data json.RawMessage `json:"data"`
+		Msg  string          `json:"msg"`
+	}{
 		Code: code,
-		Data: data,
+		Data: dataBytes,
 		Msg:  msg,
 	})
 }
@@ -62,12 +86,6 @@ func FailWithRequest(w http.ResponseWriter, status int, msg string) {
 	result(w, status, ERROR_REQ, map[string]interface{}{}, msg)
 }
 
-func Custom(
-	w http.ResponseWriter,
-	status int,
-	code int,
-	data interface{},
-	msg string,
-) {
+func Custom(w http.ResponseWriter, status int, code int, data interface{}, msg string) {
 	result(w, status, code, data, msg)
 }
