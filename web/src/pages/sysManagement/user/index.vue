@@ -104,10 +104,13 @@ function mpOperateAction(formEl: FormInstance | undefined) {
         newPassword: mpFormData.newPassword
       })
         .then((res) => {
-          if (res.code === 0) {
-            ElMessage({ type: "success", message: res.msg })
-            mpCloseDialog()
+        if (res.code === 0) {
+          ElMessage({ type: "success", message: res.msg })
+          const index = tableData.value.indexOf(activeRow)
+          if (index !== -1) {
+            tableData.value.splice(index, 1, res.data)
           }
+        }
         })
         .catch(() => {})
     }

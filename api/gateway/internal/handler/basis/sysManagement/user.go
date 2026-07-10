@@ -63,12 +63,12 @@ func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		api.FailWithRequest(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
-	_, err := h.svcCtx.UserClient.UpdateUser(context.Background(), &req)
+	resp, err := h.svcCtx.UserClient.UpdateUser(context.Background(), &req)
 	if err != nil {
 		api.FailWithMessage(w, err.Error())
 		return
 	}
-	api.OkWithMessage(w, "更新成功")
+	api.OkWithDetailed(w, resp, "更新成功")
 }
 
 func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
