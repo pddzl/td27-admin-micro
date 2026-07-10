@@ -20,7 +20,7 @@ const searchForm = reactive({
 const loading = ref(false)
 const deptTree = ref<Dept[]>([])
 const allDepts = ref<Dept[]>([])
-const expandedRowKeys = ref<number[]>([])
+const isExpandAll = ref(true)
 const tableRef = ref<TableInstance>()
 
 // Dialog
@@ -107,19 +107,7 @@ function handleReset() {
 // Collect all row IDs from a tree
 // Expand/Collapse all
 function handleExpandAll() {
-  if (expandedRowKeys.value.length === 0) {
-    const ids: number[] = []
-    function collect(tree: Dept[]) {
-      for (const n of tree) {
-        if (n.id) ids.push(n.id)
-        if (n.children?.length) collect(n.children)
-      }
-    }
-    collect(deptTree.value)
-    expandedRowKeys.value = ids
-  } else {
-    expandedRowKeys.value = []
-  }
+  isExpandAll.value = !isExpandAll.value
 }
 
 // Create
@@ -281,7 +269,7 @@ onMounted(() => {
           row-key="id"
           :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
           border
-          :expand-row-keys="expandedRowKeys"
+          :default-expand-all="isExpandAll"
           highlight-current-row
         >
           <el-table-column prop="dept_name" label="部门名称" show-overflow-tooltip>
