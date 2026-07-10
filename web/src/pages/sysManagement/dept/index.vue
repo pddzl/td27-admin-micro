@@ -56,8 +56,9 @@ async function getDeptList() {
       status: searchForm.status
     })
     if (res.code === 0) {
-      deptTree.value = res.data
-      allDepts.value = flattenTree(res.data)
+      const data = res.data.list ?? res.data
+      deptTree.value = data
+      allDepts.value = flattenTree(data)
     }
   } finally {
     loading.value = false
