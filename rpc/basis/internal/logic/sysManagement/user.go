@@ -134,6 +134,8 @@ func (ul *UserLogic) ListUser(in *common_pb.PageReq) (*user_pb.ListUserResp, err
 	}
 
 	for _, user := range users {
+		roles, _ := ul.svcCtx.UserService.GetUserRoles(ul.ctx, user.ID)
+		user.Roles = roles
 		resp.List = append(resp.List, ul.mapUserToResp(user))
 	}
 
