@@ -65,6 +65,11 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 		Handler: jwtMiddleware.Handle(deptHandler.ListDept),
 	})
 	server.AddRoute(rest.Route{
+		Method:  http.MethodPost,
+		Path:    "/dept/getElTreeDepts",
+		Handler: jwtMiddleware.Handle(deptHandler.GetElTreeDepts),
+	})
+	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
 		Path:    "/dept/getTree",
 		Handler: jwtMiddleware.Handle(deptHandler.GetDeptTree),
