@@ -20,8 +20,8 @@ interface PageInfo {
 interface ApiListData<T> {
   list: T
   total: number
-  page: number
-  pageSize: number
+  page?: number
+  pageSize?: number
 }
 
 interface Td27Model {
@@ -41,8 +41,8 @@ interface MongoModel {
 interface ListData<T> {
   list: T
   total: number
-  page: number
-  pageSize: number
+  page?: number
+  pageSize?: number
 }
 
 /** 请求ID */
