@@ -51,14 +51,10 @@ const formRules: FormRules = {
 async function getDeptList() {
   loading.value = true
   try {
-    const res = await deptListApi({
-      dept_name: searchForm.dept_name,
-      status: searchForm.status
-    })
+    const res = await getElTreeDeptsApi()
     if (res.code === 0) {
-      const data = res.data.list ?? res.data
-      deptTree.value = data
-      allDepts.value = flattenTree(data)
+      deptTree.value = res.data.tree
+      allDepts.value = flattenTree(res.data.tree)
     }
   } finally {
     loading.value = false
