@@ -70,7 +70,10 @@ func (r *menuRepository) FindByRoleIDs(ctx context.Context, roleIDs []uint) ([]*
 		return []*sysManagement.MenuModel{}, nil
 	}
 
-	query := `SELECT DISTINCT m.* FROM sys_management_menu m
+	query := `SELECT DISTINCT m.id, COALESCE(m.created_at, NOW()) as created_at, COALESCE(m.updated_at, NOW()) as updated_at, m.deleted_at,
+		COALESCE(m.menu_name, '') as menu_name, COALESCE(m.icon, '') as icon, COALESCE(m.path, '') as path,
+		COALESCE(m.component, '') as component, COALESCE(m.redirect, '') as redirect, m.parent_id, m.sort, m.hidden, m.keep_alive, m.affix, m.always_show, COALESCE(m.title, '') as title
+		FROM sys_management_menu m
 		JOIN sys_management_permission p ON p.domain_id = m.id AND p.domain = 'menu'
 		JOIN sys_management_role_permissions rp ON rp.permission_id = p.id
 		WHERE rp.role_id IN (?) AND m.deleted_at IS NULL
