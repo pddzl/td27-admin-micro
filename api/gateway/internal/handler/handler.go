@@ -60,7 +60,7 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 
 	// Dept routes
 	server.AddRoute(rest.Route{
-		Method:  http.MethodGet,
+		Method:  http.MethodPost,
 		Path:    "/dept/list",
 		Handler: jwtMiddleware.Handle(deptHandler.ListDept),
 	})
