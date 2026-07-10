@@ -1,6 +1,6 @@
 /** 表单电话号码校验 */
 export function useValidatePhone(rule: any, value: any, callback: any) {
-  if (value === "") {
+  if (!value) {
     callback()
   } else {
     const phoneReg = /^1\d{10}$/
@@ -14,7 +14,7 @@ export function useValidatePhone(rule: any, value: any, callback: any) {
 
 /** 邮箱校验 */
 export function useValidateEmail(rule: any, value: any, callback: any) {
-  if (value === "") {
+  if (!value) {
     callback()
   } else {
     const emailReg = /^[\w-]+@[\w-]+(\.[\w-]+)+$/
