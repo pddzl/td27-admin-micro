@@ -49,12 +49,12 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		api.FailWithRequest(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
-	resp, err := h.svcCtx.UserClient.CreateUser(context.Background(), &req)
+	_, err := h.svcCtx.UserClient.CreateUser(context.Background(), &req)
 	if err != nil {
 		api.FailWithMessage(w, err.Error())
 		return
 	}
-	api.OkWithData(w, resp)
+	api.OkWithMessage(w, "创建成功")
 }
 
 func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
@@ -63,12 +63,12 @@ func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		api.FailWithRequest(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
-	resp, err := h.svcCtx.UserClient.UpdateUser(context.Background(), &req)
+	_, err := h.svcCtx.UserClient.UpdateUser(context.Background(), &req)
 	if err != nil {
 		api.FailWithMessage(w, err.Error())
 		return
 	}
-	api.OkWithData(w, resp)
+	api.OkWithMessage(w, "更新成功")
 }
 
 func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
@@ -77,12 +77,12 @@ func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 		api.FailWithRequest(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
-	resp, err := h.svcCtx.UserClient.DeleteUser(context.Background(), &req)
+	_, err := h.svcCtx.UserClient.DeleteUser(context.Background(), &req)
 	if err != nil {
 		api.FailWithMessage(w, err.Error())
 		return
 	}
-	api.OkWithData(w, resp)
+	api.OkWithMessage(w, "删除成功")
 }
 
 func (h *UserHandler) ModifyPassword(w http.ResponseWriter, r *http.Request) {
