@@ -19,7 +19,7 @@ export const useUserStore = defineStore("user", () => {
   // 多角色支持
   const userInfo = reactive({
     id: 0,
-    createdAt: "",
+    created_at: "",
     username: "",
     phone: "",
     email: "",

@@ -25,10 +25,10 @@ interface ApiListData<T> {
 }
 
 interface Td27Model {
-  id: number // 主键ID
-  createdAt?: string // 创建时间
-  updatedAt?: string // 更新时间
-  deletedAt?: string // 删除时间
+  id: number
+  created_at?: string
+  updated_at?: string
+  deleted_at?: string
 }
 
 interface MongoModel {

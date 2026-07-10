@@ -7,7 +7,7 @@ export interface ServiceToken {
   status: boolean
   expiresAt: number | null
   apiCount: number
-  createdAt: number
+  created_at: number
 }
 
 // 创建服务令牌响应（包含明文token）
