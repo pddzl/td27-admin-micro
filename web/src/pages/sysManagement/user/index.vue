@@ -254,7 +254,7 @@ getRoleOption()
 const deptOptions = ref<Dept[]>([])
 async function getDeptOptions() {
   const res = await getElTreeDeptsApi()
-  if (res.code === 200) {
+  if (res.code === 0) {
     deptOptions.value = res.data.tree
   }
 }

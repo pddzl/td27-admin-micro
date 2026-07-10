@@ -70,11 +70,11 @@ func deptTreeToResp(tree []*dept_pb.DeptTreeResp) []map[string]interface{} {
 			continue
 		}
 		item := map[string]interface{}{
-			"id":       node.Dept.Id,
-			"deptName": node.Dept.DeptName,
-			"parentId": node.Dept.ParentId,
-			"sort":     node.Dept.Sort,
-			"status":   node.Dept.Status,
+			"id":        node.Dept.Id,
+			"dept_name": node.Dept.DeptName,
+			"parent_id": node.Dept.ParentId,
+			"sort":      node.Dept.Sort,
+			"status":    node.Dept.Status,
 		}
 		if len(node.Children) > 0 {
 			item["children"] = deptTreeToResp(node.Children)
