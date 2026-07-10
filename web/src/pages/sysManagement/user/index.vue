@@ -313,7 +313,7 @@ function switchAction(username: string, active: boolean) {
           <el-table-column prop="email" label="邮箱" />
           <el-table-column label="角色">
             <template #default="scope">
-              <el-tag v-for="role in scope.row.roles" :key="role.id" type="success" style="margin-right: 5px;">
+              <el-tag v-for="role in (scope.row.roles || [])" :key="role.id" type="success" style="margin-right: 5px;">
                 {{ role.role_name }}
               </el-tag>
             </template>

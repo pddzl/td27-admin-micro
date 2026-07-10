@@ -20,12 +20,12 @@ export interface userDataModel extends Td27Model {
   phone: string
   email: string
   active: boolean
-  deptId?: number
-  dept_name?: string // 部门名称
-  // 多角色支持
-  roles: RoleInfo[]
-  role_name: string // 主角色名称（兼容旧版）
-  roleId: number // 主角色ID（兼容旧版）
+  dept_id?: number
+  dept_name?: string
+
+  roles?: RoleInfo[]
+  role_name?: string
+  roleId?: number
 }
 
 // 数据结构 - List
