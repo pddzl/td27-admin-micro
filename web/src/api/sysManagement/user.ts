@@ -104,7 +104,7 @@ export function modifyPasswdApi(data: reqModifyPass & CId) {
 // 切换用户状态
 export function switchActiveApi(data: { active: boolean, id: number }) {
   return request<ApiResponseData<null>>({
-    url: "/user/switchActive",
+    url: "/user/switch-active",
     method: "post",
     data
   })
