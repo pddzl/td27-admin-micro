@@ -320,7 +320,7 @@ function switchAction(username: string, active: boolean) {
           </el-table-column>
           <el-table-column label="部门">
             <template #default="scope">
-              <span>{{ scope.row.deptName || '-' }}</span>
+              <span>{{ scope.row.dept_name || '-' }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="active" label="状态">
@@ -405,7 +405,7 @@ function switchAction(username: string, active: boolean) {
           <el-tree-select
             v-model="formData.deptId"
             :data="deptOptions"
-            :props="{ label: 'deptName', value: 'id', children: 'children' }"
+            :props="{ label: 'dept_name', value: 'id', children: 'children' }"
             placeholder="请选择部门"
             clearable
             check-strictly

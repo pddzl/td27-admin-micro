@@ -21,7 +21,7 @@ export interface userDataModel extends Td27Model {
   email: string
   active: boolean
   deptId?: number
-  deptName?: string // 部门名称
+  dept_name?: string // 部门名称
   // 多角色支持
   roles: RoleInfo[]
   role_name: string // 主角色名称（兼容旧版）

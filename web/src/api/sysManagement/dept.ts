@@ -2,7 +2,7 @@ import { request } from "@/http/axios_n"
 
 export interface Dept {
   id?: number
-  deptName: string
+  dept_name: string
   parent_id: number
   path?: string
   sort: number
@@ -12,7 +12,7 @@ export interface Dept {
 }
 
 export interface CreateDeptReq {
-  deptName: string
+  dept_name: string
   parent_id: number
   path?: string
   sort: number
@@ -21,7 +21,7 @@ export interface CreateDeptReq {
 
 export interface UpdateDeptReq {
   id: number
-  deptName: string
+  dept_name: string
   parent_id: number
   path?: string
   sort: number
@@ -29,7 +29,7 @@ export interface UpdateDeptReq {
 }
 
 export interface DeptListReq {
-  deptName?: string
+  dept_name?: string
   status?: boolean
 }
 

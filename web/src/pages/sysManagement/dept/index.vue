@@ -12,7 +12,7 @@ import {
 
 // Search form
 const searchForm = reactive({
-  deptName: "",
+  dept_name: "",
   status: undefined as boolean | undefined
 })
 
@@ -32,19 +32,19 @@ const deptOptions = ref<Dept[]>([])
 
 const formData = reactive<{
   id?: number
-  deptName: string
+  dept_name: string
   parent_id: number | undefined
   sort: number
   status: boolean
 }>({
-  deptName: "",
+  dept_name: "",
   parent_id: undefined,
   sort: 0,
   status: true
 })
 
 const formRules: FormRules = {
-  deptName: [{ required: true, message: "请输入部门名称", trigger: "blur" }]
+  dept_name: [{ required: true, message: "请输入部门名称", trigger: "blur" }]
 }
 
 // Get department list
@@ -52,7 +52,7 @@ async function getDeptList() {
   loading.value = true
   try {
     const res = await deptListApi({
-      deptName: searchForm.deptName,
+      dept_name: searchForm.dept_name,
       status: searchForm.status
     })
     if (res.code === 0) {
@@ -99,7 +99,7 @@ function handleSearch() {
 
 // Reset
 function handleReset() {
-  searchForm.deptName = ""
+  searchForm.dept_name = ""
   searchForm.status = undefined
   getDeptList()
 }
@@ -126,7 +126,7 @@ function handleUpdate(row: Dept) {
   dialogTitle.value = "修改部门"
   Object.assign(formData, {
     id: row.id,
-    deptName: row.deptName,
+    dept_name: row.dept_name,
     parent_id: row.parent_id || undefined,
     sort: row.sort,
     status: row.status
@@ -147,7 +147,7 @@ function handleAddChild(row: Dept) {
 
 // Delete
 function handleDelete(row: Dept) {
-  ElMessageBox.confirm(`确定要删除部门 "${row.deptName}" 吗？`, "提示", {
+  ElMessageBox.confirm(`确定要删除部门 "${row.dept_name}" 吗？`, "提示", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     type: "warning"
@@ -206,7 +206,7 @@ function resetForm() {
     formRef.value.resetFields()
   }
   Object.assign(formData, {
-    deptName: "",
+    dept_name: "",
     parent_id: undefined,
     sort: 0,
     status: true
@@ -223,9 +223,9 @@ onMounted(() => {
     <!-- Search Form -->
     <el-card v-loading="loading" shadow="never" class="search-wrapper">
       <el-form :model="searchForm" :inline="true">
-        <el-form-item prop="deptName">
+        <el-form-item prop="dept_name">
           <template #label>部门名称</template>
-          <el-input v-model="searchForm.deptName" placeholder="请输入部门名称" clearable />
+          <el-input v-model="searchForm.dept_name" placeholder="请输入部门名称" clearable />
         </el-form-item>
         <el-form-item prop="status">
           <template #label>状态</template>
@@ -273,9 +273,9 @@ onMounted(() => {
           :default-expand-all="isExpandAll"
           highlight-current-row
         >
-          <el-table-column prop="deptName" label="部门名称" show-overflow-tooltip>
+          <el-table-column prop="dept_name" label="部门名称" show-overflow-tooltip>
             <template #default="{ row }">
-              <span class="dept-name">{{ row.deptName }}</span>
+              <span class="dept-name">{{ row.dept_name }}</span>
             </template>
           </el-table-column>
 
@@ -323,7 +323,7 @@ onMounted(() => {
           <el-tree-select
             v-model="formData.parent_id"
             :data="deptOptions"
-            :props="{ label: 'deptName', value: 'id', children: 'children' }"
+            :props="{ label: 'dept_name', value: 'id', children: 'children' }"
             placeholder="请选择上级部门"
             clearable
             check-strictly
@@ -331,8 +331,8 @@ onMounted(() => {
             style="width: 100%"
           />
         </el-form-item>
-        <el-form-item label="部门名称" prop="deptName">
-          <el-input v-model="formData.deptName" placeholder="请输入部门名称" />
+        <el-form-item label="部门名称" prop="dept_name">
+          <el-input v-model="formData.dept_name" placeholder="请输入部门名称" />
         </el-form-item>
         <el-form-item prop="sort">
           <template #label>排序</template>
