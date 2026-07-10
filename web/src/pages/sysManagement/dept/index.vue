@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { FormInstance, FormRules, TableInstance } from "element-plus"
 import type { CreateDeptReq, Dept, UpdateDeptReq } from "@/api/sysManagement/dept"
-import { nextTick, onMounted, reactive, ref } from "vue"
+import { onMounted, reactive, ref } from "vue"
 import {
   createDeptApi,
   deleteDeptApi,
@@ -20,8 +20,7 @@ const searchForm = reactive({
 const loading = ref(false)
 const deptTree = ref<Dept[]>([])
 const allDepts = ref<Dept[]>([])
-const isExpandAll = ref(true)
-const tableKey = ref(0)
+const expandedRowKeys = ref<number[]>([])
 const tableRef = ref<TableInstance>()
 
 // Dialog
@@ -105,10 +104,22 @@ function handleReset() {
   getDeptList()
 }
 
+// Collect all row IDs from a tree
 // Expand/Collapse all
 function handleExpandAll() {
-  isExpandAll.value = !isExpandAll.value
-  tableKey.value++
+  if (expandedRowKeys.value.length === 0) {
+    const ids: number[] = []
+    function collect(tree: Dept[]) {
+      for (const n of tree) {
+        if (n.id) ids.push(n.id)
+        if (n.children?.length) collect(n.children)
+      }
+    }
+    collect(deptTree.value)
+    expandedRowKeys.value = ids
+  } else {
+    expandedRowKeys.value = []
+  }
 }
 
 // Create
@@ -264,14 +275,13 @@ onMounted(() => {
       </div>
       <div class="table-wrapper">
         <el-table
-          :key="tableKey"
           ref="tableRef"
           v-loading="loading"
           :data="deptTree"
           row-key="id"
           :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
           border
-          :default-expand-all="isExpandAll"
+          :expand-row-keys="expandedRowKeys"
           highlight-current-row
         >
           <el-table-column prop="dept_name" label="部门名称" show-overflow-tooltip>
