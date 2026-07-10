@@ -334,7 +334,10 @@ function switchAction(username: string, active: boolean) {
           </el-table-column>
           <el-table-column label="部门">
             <template #default="scope">
-              <span>{{ getDeptName(scope.row.dept_id) || '-' }}</span>
+              <el-tag v-if="getDeptName(scope.row.dept_id)" type="info" effect="plain">
+                {{ getDeptName(scope.row.dept_id) }}
+              </el-tag>
+              <span v-else>-</span>
             </template>
           </el-table-column>
           <el-table-column prop="active" label="状态">
