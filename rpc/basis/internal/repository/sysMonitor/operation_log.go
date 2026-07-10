@@ -14,7 +14,7 @@ import (
 // OperationLogRepository defines interface for operation log data operations
 type OperationLogRepository interface {
 	Create(ctx context.Context, log *sysMonitor.OperationLogModel) error
-	List(ctx context.Context, page *common.PageInfo, userID *uint, status *int) ([]*sysMonitor.OperationLogModel, int64, error)
+	List(ctx context.Context, page *common.PageInfo, userID *uint, status *int, path, method *string) ([]*sysMonitor.OperationLogModel, int64, error)
 	DeleteExpired(ctx context.Context, days int) error
 	Delete(ctx context.Context, id uint) error
 	DeleteByIds(ctx context.Context, ids []uint) error
@@ -38,7 +38,7 @@ func (r *operationLogRepository) Create(ctx context.Context, log *sysMonitor.Ope
 
 const operationLogColumns = `id, COALESCE(created_at, NOW()) as created_at, COALESCE(updated_at, NOW()) as updated_at, deleted_at, ip, method, path, status, user_agent, req_param, resp_data, resp_time, user_id, user_name`
 
-func (r *operationLogRepository) List(ctx context.Context, page *common.PageInfo, userID *uint, status *int) ([]*sysMonitor.OperationLogModel, int64, error) {
+func (r *operationLogRepository) List(ctx context.Context, page *common.PageInfo, userID *uint, status *int, path, method *string) ([]*sysMonitor.OperationLogModel, int64, error) {
 	baseWhere := "WHERE deleted_at IS NULL"
 	args := []interface{}{}
 
@@ -49,6 +49,14 @@ func (r *operationLogRepository) List(ctx context.Context, page *common.PageInfo
 	if status != nil {
 		baseWhere += fmt.Sprintf(" AND status=$%d", len(args)+1)
 		args = append(args, *status)
+	}
+	if path != nil && *path != "" {
+		baseWhere += fmt.Sprintf(" AND path LIKE $%d", len(args)+1)
+		args = append(args, "%"+*path+"%")
+	}
+	if method != nil && *method != "" {
+		baseWhere += fmt.Sprintf(" AND method=$%d", len(args)+1)
+		args = append(args, *method)
 	}
 
 	var total int64

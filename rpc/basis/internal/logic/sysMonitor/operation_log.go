@@ -68,7 +68,7 @@ func (l *OperationLogLogic) ListOperationLog(in *operation_log_pb.ListOperationL
 		v := int(*in.Status)
 		statusVal = &v
 	}
-	logs, count, err := l.svcCtx.LogService.List(l.ctx, page, userID, statusVal)
+	logs, count, err := l.svcCtx.LogService.List(l.ctx, page, userID, statusVal, in.Path, in.Method)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "list logs failed: %v", err)
 	}

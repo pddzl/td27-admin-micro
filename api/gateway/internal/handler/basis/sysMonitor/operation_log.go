@@ -21,8 +21,11 @@ func NewOperationLogHandler(svcCtx *svc.ServiceContext) *OperationLogHandler {
 
 func (h *OperationLogHandler) ListOperationLog(w http.ResponseWriter, r *http.Request) {
 	var flat struct {
-		Page     int `json:"page"`
-		PageSize int `json:"pageSize"`
+		Page     int     `json:"page"`
+		PageSize int     `json:"pageSize"`
+		Path     *string `json:"path"`
+		Method   *string `json:"method"`
+		Status   *int32  `json:"status"`
 	}
 	if err := api.DecodeAndValidate(r.Body, &flat); err != nil {
 		api.FailWithRequest(w, http.StatusBadRequest, "invalid request body")
@@ -33,6 +36,9 @@ func (h *OperationLogHandler) ListOperationLog(w http.ResponseWriter, r *http.Re
 			Page:     uint32(flat.Page),
 			PageSize: uint32(flat.PageSize),
 		},
+		Path:   flat.Path,
+		Method: flat.Method,
+		Status: flat.Status,
 	}
 	resp, err := h.svcCtx.OperationLogClient.ListOperationLog(context.Background(), req)
 	if err != nil {
