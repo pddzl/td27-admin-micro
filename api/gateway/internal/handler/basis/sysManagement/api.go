@@ -160,5 +160,39 @@ func (h *APIHandler) GetAPITree(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	api.OkWithData(w, resp)
+	// Transform to frontend format: {list: [{key, children}], checkedIds: [...]}
+	type apiNode struct {
+		Id          uint       `json:"id"`
+		Key         string     `json:"key"`
+		Path        string     `json:"path,omitempty"`
+		Method      string     `json:"method,omitempty"`
+		GroupEN     string     `json:"group_en,omitempty"`
+		GroupCN     string     `json:"group_cn,omitempty"`
+		Description string     `json:"description,omitempty"`
+		Children    []apiNode  `json:"children,omitempty"`
+	}
+	tree := make([]apiNode, 0, len(resp.List))
+	for _, item := range resp.List {
+		node := apiNode{
+			Key:     item.GroupEn,
+			GroupEN: item.GroupEn,
+			GroupCN: item.GroupCn,
+		}
+		for _, api := range item.Apis {
+			node.Children = append(node.Children, apiNode{
+				Id:          uint(api.Id),
+				Key:         api.Path + ":" + api.Method,
+				Path:        api.Path,
+				Method:      api.Method,
+				GroupEN:     api.GroupEn,
+				GroupCN:     api.GroupCn,
+				Description: api.Description,
+			})
+		}
+		tree = append(tree, node)
+	}
+	api.OkWithDetailed(w, map[string]interface{}{
+		"list":        tree,
+		"checkedIds": resp.CheckedIds,
+	}, "获取成功")
 }
