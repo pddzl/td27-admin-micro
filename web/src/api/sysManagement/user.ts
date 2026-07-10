@@ -65,8 +65,8 @@ export function userCreateApi(data: userData & { password: string }) {
     method: "post",
     data: {
       ...rest,
-      role_ids: (roleIds || []).map(Number),
-      dept_id: deptId != null ? Number(deptId) : undefined,
+      role_ids: roleIds || [],
+      dept_id: deptId,
       password
     }
   })
@@ -80,9 +80,9 @@ export function userUpdateApi(data: userData & CId) {
     method: "post",
     data: {
       ...rest,
-      id: Number(data.id),
-      role_ids: (roleIds || []).map(Number),
-      dept_id: deptId != null ? Number(deptId) : undefined
+      id: data.id,
+      role_ids: roleIds || [],
+      dept_id: deptId
     }
   })
 }
