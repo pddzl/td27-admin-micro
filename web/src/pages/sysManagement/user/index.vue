@@ -290,8 +290,8 @@ function editDialog(row: userDataModel) {
 }
 
 // 切换用户状态
-function switchAction(username: string, active: boolean) {
-  switchActiveApi({ username, active })
+function switchAction(id: number, active: boolean) {
+  switchActiveApi({ id, active })
     .then((res) => {
       if (res.code === 0) {
         if (active) {
@@ -350,7 +350,7 @@ function switchAction(username: string, active: boolean) {
                 :inactive-value="false"
                 active-text="启用"
                 inactive-text="禁用"
-                @change="switchAction(scope.row.username, scope.row.active)"
+                @change="switchAction(scope.row.id, scope.row.active)"
                 :disabled="scope.row.username === 'admin'"
               />
             </template>

@@ -281,6 +281,11 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
+		Path:    "/user/switchActive",
+		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(userHandler.SwitchActive)),
+	})
+	server.AddRoute(rest.Route{
+		Method:  http.MethodPost,
 		Path:    "/user/assign-roles",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(userHandler.AssignRoles)),
 	})

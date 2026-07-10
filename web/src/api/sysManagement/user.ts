@@ -63,7 +63,12 @@ export function userCreateApi(data: userData & { password: string }) {
   return request<ApiResponseData<userDataModel>>({
     url: "/user/create",
     method: "post",
-    data: { ...rest, role_ids: roleIds, dept_id: deptId, password }
+    data: {
+      ...rest,
+      role_ids: (roleIds || []).map(Number),
+      dept_id: deptId != null ? Number(deptId) : undefined,
+      password
+    }
   })
 }
 
@@ -73,7 +78,12 @@ export function userUpdateApi(data: userData & CId) {
   return request<ApiResponseData<userDataModel>>({
     url: "/user/update",
     method: "post",
-    data: { ...rest, role_ids: roleIds, dept_id: deptId }
+    data: {
+      ...rest,
+      id: Number(data.id),
+      role_ids: (roleIds || []).map(Number),
+      dept_id: deptId != null ? Number(deptId) : undefined
+    }
   })
 }
 
@@ -92,7 +102,7 @@ export function modifyPasswdApi(data: reqModifyPass & CId) {
 }
 
 // 切换用户状态
-export function switchActiveApi(data: { active: boolean, username: string }) {
+export function switchActiveApi(data: { active: boolean, id: number }) {
   return request<ApiResponseData<null>>({
     url: "/user/switchActive",
     method: "post",
