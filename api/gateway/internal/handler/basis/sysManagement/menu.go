@@ -56,6 +56,28 @@ func (h *MenuHandler) GetElTreeMenus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Get role's user menus to find checked menu IDs
+	userMenuResp, err := h.svcCtx.MenuClient.GetUserMenus(context.Background(), &menu_pb.GetUserMenusReq{RoleIds: []int64{req.Id}})
+	if err != nil {
+		api.FailWithMessage(w, err.Error())
+		return
+	}
+
+	// Extract checked menu IDs from user's menu tree
+	var menuIds []int64
+	var collectIds func(nodes []*menu_pb.MenuTreeResp)
+	collectIds = func(nodes []*menu_pb.MenuTreeResp) {
+		for _, n := range nodes {
+			if n.Menu != nil {
+				menuIds = append(menuIds, n.Menu.Id)
+			}
+			if len(n.Children) > 0 {
+				collectIds(n.Children)
+			}
+		}
+	}
+	collectIds(userMenuResp.Tree)
+
 	// Transform MenuTreeResp to flat menu nodes (unwrap Menu wrapper)
 	var transform func(nodes []*menu_pb.MenuTreeResp) []map[string]interface{}
 	transform = func(nodes []*menu_pb.MenuTreeResp) []map[string]interface{} {
@@ -89,7 +111,7 @@ func (h *MenuHandler) GetElTreeMenus(w http.ResponseWriter, r *http.Request) {
 
 	api.OkWithDetailed(w, map[string]interface{}{
 		"list":    transform(treeResp.Tree),
-		"menuIds": []int64{},
+		"menuIds": menuIds,
 	}, "获取成功")
 }
 
