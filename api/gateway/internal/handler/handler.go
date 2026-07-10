@@ -90,7 +90,7 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(deptHandler.CreateDept)),
 	})
 	server.AddRoute(rest.Route{
-		Method:  http.MethodPut,
+		Method:  http.MethodPost,
 		Path:    "/dept/update",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(deptHandler.UpdateDept)),
 	})
@@ -122,7 +122,7 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(dictHandler.CreateDict)),
 	})
 	server.AddRoute(rest.Route{
-		Method:  http.MethodPut,
+		Method:  http.MethodPost,
 		Path:    "/dict/update",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(dictHandler.UpdateDict)),
 	})
@@ -139,7 +139,7 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(dictDetailHandler.CreateDictDetail)),
 	})
 	server.AddRoute(rest.Route{
-		Method:  http.MethodPut,
+		Method:  http.MethodPost,
 		Path:    "/dictDetail/update",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(dictDetailHandler.UpdateDictDetail)),
 	})
@@ -181,7 +181,7 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(apiHandler.CreateAPI)),
 	})
 	server.AddRoute(rest.Route{
-		Method:  http.MethodPut,
+		Method:  http.MethodPost,
 		Path:    "/api/update",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(apiHandler.UpdateAPI)),
 	})
@@ -228,7 +228,7 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(buttonHandler.CreateButton)),
 	})
 	server.AddRoute(rest.Route{
-		Method:  http.MethodPut,
+		Method:  http.MethodPost,
 		Path:    "/button/update",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(buttonHandler.UpdateButton)),
 	})
@@ -260,7 +260,7 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(userHandler.CreateUser)),
 	})
 	server.AddRoute(rest.Route{
-		Method:  http.MethodPut,
+		Method:  http.MethodPost,
 		Path:    "/user/update",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(userHandler.UpdateUser)),
 	})
@@ -312,7 +312,7 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(roleHandler.CreateRole)),
 	})
 	server.AddRoute(rest.Route{
-		Method:  http.MethodPut,
+		Method:  http.MethodPost,
 		Path:    "/role/update",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(roleHandler.UpdateRole)),
 	})
@@ -396,7 +396,7 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(permissionHandler.CreatePermission)),
 	})
 	server.AddRoute(rest.Route{
-		Method:  http.MethodPut,
+		Method:  http.MethodPost,
 		Path:    "/permission/update",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(permissionHandler.UpdatePermission)),
 	})
@@ -460,7 +460,7 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(cronHandler.CreateCron)),
 	})
 	server.AddRoute(rest.Route{
-		Method:  http.MethodPut,
+		Method:  http.MethodPost,
 		Path:    "/cron/update",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(cronHandler.UpdateCron)),
 	})
@@ -529,7 +529,7 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 		Handler: jwtMiddleware.Handle(serviceTokenHandler.ListServiceToken),
 	})
 	server.AddRoute(rest.Route{
-		Method:  http.MethodPut,
+		Method:  http.MethodPost,
 		Path:    "/service-token/update",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(serviceTokenHandler.UpdateServiceToken)),
 	})
