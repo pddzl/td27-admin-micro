@@ -41,7 +41,7 @@ func (cl *CronLogic) mapCronToResp(cron *sysToolModel.CronModel) *cron_pb.CronRe
 		})
 	}
 	return &cron_pb.CronResp{
-		Id: uint64(cron.ID), Name: cron.Name, Method: methodToProto(cron.Method),
+		Id: int64(cron.ID), Name: cron.Name, Method: methodToProto(cron.Method),
 		Expression: cron.Expression, Strategy: cron.Strategy, Open: cron.Open,
 		ExtraParams: extraParams, EntryId: int32(cron.EntryId), Comment: cron.Comment,
 		CreatedAt: util.ToProtoTimestamp(cron.CreatedAt), UpdatedAt: util.ToProtoTimestamp(cron.UpdatedAt),

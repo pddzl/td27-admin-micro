@@ -35,12 +35,12 @@ func (pl *PermissionLogic) mapPermissionToResp(perm *sysManagement.PermissionMod
 	}
 
 	return &permission_pb.PermissionResp{
-		Id:        uint64(perm.ID),
+		Id:        int64(perm.ID),
 		Name:      perm.Name,
 		Domain:    permissionDomainToProto(perm.Domain),
 		Resource:  perm.Resource,
 		Action:    actionToProto(perm.Action),
-		DomainId:  uint64(perm.DomainID),
+		DomainId:  int64(perm.DomainID),
 		CreatedAt: util.ToProtoTimestamp(perm.CreatedAt),
 		UpdatedAt: util.ToProtoTimestamp(perm.UpdatedAt),
 	}

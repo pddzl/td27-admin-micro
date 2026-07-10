@@ -20,9 +20,15 @@ const (
 	ERROR_RES = 7
 )
 
+var protoMarshaler = &protojson.MarshalOptions{
+	EmitUnpopulated: false,
+	UseProtoNames:   false,
+	UseEnumNumbers:  false,
+}
+
 func marshalData(v interface{}) ([]byte, error) {
 	if msg, ok := v.(proto.Message); ok {
-		return protojson.Marshal(msg)
+		return protoMarshaler.Marshal(msg)
 	}
 	return json.Marshal(v)
 }

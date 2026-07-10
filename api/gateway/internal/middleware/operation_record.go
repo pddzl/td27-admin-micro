@@ -68,7 +68,7 @@ func (m *OperationRecordMiddleware) Handle(next http.HandlerFunc) http.HandlerFu
 			ReqParam:  reqParam,
 			RespData:  rw.body.String(),
 			RespTime:  time.Since(now).Milliseconds(),
-			UserId:    uint64(userId),
+			UserId:    int64(userId),
 			UserName:  username,
 		}
 

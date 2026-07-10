@@ -21,7 +21,7 @@ func NewUserHandler(svcCtx *svc.ServiceContext) *UserHandler {
 
 func (h *UserHandler) GetUserInfo(w http.ResponseWriter, r *http.Request) {
 	userId, _ := r.Context().Value(middleware.UserIdKey).(float64)
-	resp, err := h.svcCtx.UserClient.GetUserInfo(context.Background(), &common_pb.IdReq{Id: uint64(userId)})
+	resp, err := h.svcCtx.UserClient.GetUserInfo(context.Background(), &common_pb.IdReq{Id: int64(userId)})
 	if err != nil {
 		api.FailWithMessage(w, err.Error())
 		return

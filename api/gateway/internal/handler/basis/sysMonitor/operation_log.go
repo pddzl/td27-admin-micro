@@ -58,7 +58,7 @@ func (h *OperationLogHandler) CleanupExpiredLogs(w http.ResponseWriter, r *http.
 
 func (h *OperationLogHandler) DeleteOperationLog(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		Id uint64 `json:"id"`
+		Id int64 `json:"id"`
 	}
 	if err := api.DecodeAndValidate(r.Body, &req); err != nil {
 		api.FailWithRequest(w, http.StatusBadRequest, "invalid request body")
@@ -80,13 +80,13 @@ func (h *OperationLogHandler) DeleteOperationLogByIds(w http.ResponseWriter, r *
 		api.FailWithRequest(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
-	ids := make([]uint64, 0, len(req.Ids))
+	ids := make([]int64, 0, len(req.Ids))
 	for _, v := range req.Ids {
 		switch val := v.(type) {
 		case float64:
-			ids = append(ids, uint64(val))
+			ids = append(ids, int64(val))
 		case string:
-			id, _ := strconv.ParseUint(val, 10, 64)
+			id, _ := strconv.ParseInt(val, 10, 64)
 			if id > 0 {
 				ids = append(ids, id)
 			}

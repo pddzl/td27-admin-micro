@@ -22,7 +22,7 @@ func NewDeptHandler(svcCtx *svc.ServiceContext) *DeptHandler {
 
 func (h *DeptHandler) GetDept(w http.ResponseWriter, r *http.Request) {
 	idStr := pathvar.Vars(r)["id"]
-	id, err := strconv.ParseUint(idStr, 10, 64)
+	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
 		api.FailWithRequest(w, http.StatusBadRequest, "invalid id")
 		return
@@ -44,10 +44,10 @@ func (h *DeptHandler) ListDept(w http.ResponseWriter, r *http.Request) {
 	page := uint32(1)
 	pageSize := uint32(20)
 
-	if p, err := strconv.ParseUint(pageStr, 10, 32); err == nil && pageStr != "" {
+	if p, err := strconv.ParseInt(pageStr, 10, 32); err == nil && pageStr != "" {
 		page = uint32(p)
 	}
-	if ps, err := strconv.ParseUint(pageSizeStr, 10, 32); err == nil && pageSizeStr != "" {
+	if ps, err := strconv.ParseInt(pageSizeStr, 10, 32); err == nil && pageSizeStr != "" {
 		pageSize = uint32(ps)
 	}
 
@@ -92,7 +92,7 @@ func (h *DeptHandler) GetElTreeDepts(w http.ResponseWriter, r *http.Request) {
 	}
 	api.OkWithData(w, map[string]interface{}{
 		"tree": deptTreeToResp(resp.Tree),
-		"ids":  []uint64{},
+		"ids":  []int64{},
 	})
 }
 
@@ -140,7 +140,7 @@ func (h *DeptHandler) UpdateDept(w http.ResponseWriter, r *http.Request) {
 
 func (h *DeptHandler) DeleteDept(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		Id uint64 `json:"id" validate:"required"`
+		Id int64 `json:"id" validate:"required"`
 	}
 	if err := api.DecodeAndValidate(r.Body, &req); err != nil {
 		api.FailWithRequest(w, http.StatusBadRequest, err.Error())

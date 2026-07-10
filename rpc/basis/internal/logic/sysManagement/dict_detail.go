@@ -94,7 +94,7 @@ func (dl *DictDetailLogic) UpdateDictDetail(in *dict_detail_pb.UpdateDictDetailR
 	}
 
 	return &dict_pb.DictDetailResp{
-		Id:          uint64(updatedDetail.ID),
+		Id:          int64(updatedDetail.ID),
 		Label:       updatedDetail.Label,
 		Value:       updatedDetail.Value,
 		Sort:        int32(updatedDetail.Sort),
@@ -138,7 +138,7 @@ func (dl *DictDetailLogic) FlatDictDetails(in *dict_detail_pb.FlatDictDetailsReq
 	list := make([]*dict_pb.DictDetailResp, 0, len(details))
 	for _, detail := range details {
 		list = append(list, &dict_pb.DictDetailResp{
-			Id:          uint64(detail.ID),
+			Id:          int64(detail.ID),
 			Label:       detail.Label,
 			Value:       detail.Value,
 			Sort:        int32(detail.Sort),
@@ -171,7 +171,7 @@ func (dl *DictDetailLogic) ListDictDetail(in *dict_detail_pb.ListDictDetailReq) 
 	list := make([]*dict_pb.DictDetailResp, 0, len(details))
 	for _, detail := range details {
 		list = append(list, &dict_pb.DictDetailResp{
-			Id:          uint64(detail.ID),
+			Id:          int64(detail.ID),
 			Label:       detail.Label,
 			Value:       detail.Value,
 			Sort:        int32(detail.Sort),

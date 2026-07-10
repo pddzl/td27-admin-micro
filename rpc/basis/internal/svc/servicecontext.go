@@ -86,7 +86,7 @@ func NewJWTManager(cfg config.JWT) *JWTManager {
 }
 
 // CreateToken generates a JWT token with the given user claims
-func (m *JWTManager) CreateToken(userId uint64, username string, roleIds []uint64) (string, time.Time, error) {
+func (m *JWTManager) CreateToken(userId int64, username string, roleIds []int64) (string, time.Time, error) {
 	now := time.Now()
 	expiresAt := now.Add(time.Duration(m.ExpiresTime) * time.Second)
 

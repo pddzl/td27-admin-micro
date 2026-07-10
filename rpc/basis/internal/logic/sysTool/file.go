@@ -35,7 +35,7 @@ func (fl *FileLogic) mapFileToResp(file *sysToolModel.FileModel) *file_pb.FileRe
 	}
 
 	return &file_pb.FileResp{
-		Id:        uint64(file.ID),
+		Id:        int64(file.ID),
 		FileName:  file.FileName,
 		FullPath:  file.FullPath,
 		Mime:      file.Mime,
@@ -51,7 +51,7 @@ func (fl *FileLogic) UploadFile(in *file_pb.UploadFileReq) (*file_pb.UploadFileR
 	}
 
 	return &file_pb.UploadFileResp{
-		FileId:   uint64(file.ID),
+		FileId:   int64(file.ID),
 		FileName: file.FileName,
 		FullPath: file.FullPath,
 		Mime:     file.Mime,

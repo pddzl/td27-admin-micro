@@ -30,7 +30,7 @@ type CreateMenuReq struct {
 	Path          string                 `protobuf:"bytes,3,opt,name=path,proto3" json:"path,omitempty"`
 	Component     *string                `protobuf:"bytes,4,opt,name=component,proto3,oneof" json:"component,omitempty"`
 	Redirect      *string                `protobuf:"bytes,5,opt,name=redirect,proto3,oneof" json:"redirect,omitempty"`
-	ParentId      *uint64                `protobuf:"varint,6,opt,name=parent_id,json=parentId,proto3,oneof" json:"parent_id,omitempty"`
+	ParentId      *int64                 `protobuf:"varint,6,opt,name=parent_id,json=parentId,proto3,oneof" json:"parent_id,omitempty"`
 	Sort          *uint32                `protobuf:"varint,7,opt,name=sort,proto3,oneof" json:"sort,omitempty"`
 	Hidden        *bool                  `protobuf:"varint,8,opt,name=hidden,proto3,oneof" json:"hidden,omitempty"`
 	KeepAlive     *bool                  `protobuf:"varint,9,opt,name=keep_alive,json=keepAlive,proto3,oneof" json:"keep_alive,omitempty"`
@@ -106,7 +106,7 @@ func (x *CreateMenuReq) GetRedirect() string {
 	return ""
 }
 
-func (x *CreateMenuReq) GetParentId() uint64 {
+func (x *CreateMenuReq) GetParentId() int64 {
 	if x != nil && x.ParentId != nil {
 		return *x.ParentId
 	}
@@ -157,13 +157,13 @@ func (x *CreateMenuReq) GetTitle() string {
 
 type UpdateMenuReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	MenuName      *string                `protobuf:"bytes,2,opt,name=menu_name,json=menuName,proto3,oneof" json:"menu_name,omitempty"`
 	Icon          *string                `protobuf:"bytes,3,opt,name=icon,proto3,oneof" json:"icon,omitempty"`
 	Path          *string                `protobuf:"bytes,4,opt,name=path,proto3,oneof" json:"path,omitempty"`
 	Component     *string                `protobuf:"bytes,5,opt,name=component,proto3,oneof" json:"component,omitempty"`
 	Redirect      *string                `protobuf:"bytes,6,opt,name=redirect,proto3,oneof" json:"redirect,omitempty"`
-	ParentId      *uint64                `protobuf:"varint,7,opt,name=parent_id,json=parentId,proto3,oneof" json:"parent_id,omitempty"`
+	ParentId      *int64                 `protobuf:"varint,7,opt,name=parent_id,json=parentId,proto3,oneof" json:"parent_id,omitempty"`
 	Sort          *uint32                `protobuf:"varint,8,opt,name=sort,proto3,oneof" json:"sort,omitempty"`
 	Hidden        *bool                  `protobuf:"varint,9,opt,name=hidden,proto3,oneof" json:"hidden,omitempty"`
 	KeepAlive     *bool                  `protobuf:"varint,10,opt,name=keep_alive,json=keepAlive,proto3,oneof" json:"keep_alive,omitempty"`
@@ -204,7 +204,7 @@ func (*UpdateMenuReq) Descriptor() ([]byte, []int) {
 	return file_sysManagement_menu_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *UpdateMenuReq) GetId() uint64 {
+func (x *UpdateMenuReq) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -246,7 +246,7 @@ func (x *UpdateMenuReq) GetRedirect() string {
 	return ""
 }
 
-func (x *UpdateMenuReq) GetParentId() uint64 {
+func (x *UpdateMenuReq) GetParentId() int64 {
 	if x != nil && x.ParentId != nil {
 		return *x.ParentId
 	}
@@ -297,13 +297,13 @@ func (x *UpdateMenuReq) GetTitle() string {
 
 type MenuResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint64                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	MenuName      string                 `protobuf:"bytes,2,opt,name=menu_name,json=menuName,proto3" json:"menu_name,omitempty"`
 	Icon          string                 `protobuf:"bytes,3,opt,name=icon,proto3" json:"icon,omitempty"`
 	Path          string                 `protobuf:"bytes,4,opt,name=path,proto3" json:"path,omitempty"`
 	Component     string                 `protobuf:"bytes,5,opt,name=component,proto3" json:"component,omitempty"`
 	Redirect      string                 `protobuf:"bytes,6,opt,name=redirect,proto3" json:"redirect,omitempty"`
-	ParentId      uint64                 `protobuf:"varint,7,opt,name=parent_id,json=parentId,proto3" json:"parent_id,omitempty"`
+	ParentId      int64                  `protobuf:"varint,7,opt,name=parent_id,json=parentId,proto3" json:"parent_id,omitempty"`
 	Sort          uint32                 `protobuf:"varint,8,opt,name=sort,proto3" json:"sort,omitempty"`
 	Hidden        bool                   `protobuf:"varint,9,opt,name=hidden,proto3" json:"hidden,omitempty"`
 	KeepAlive     bool                   `protobuf:"varint,10,opt,name=keep_alive,json=keepAlive,proto3" json:"keep_alive,omitempty"`
@@ -346,7 +346,7 @@ func (*MenuResp) Descriptor() ([]byte, []int) {
 	return file_sysManagement_menu_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *MenuResp) GetId() uint64 {
+func (x *MenuResp) GetId() int64 {
 	if x != nil {
 		return x.Id
 	}
@@ -388,7 +388,7 @@ func (x *MenuResp) GetRedirect() string {
 	return ""
 }
 
-func (x *MenuResp) GetParentId() uint64 {
+func (x *MenuResp) GetParentId() int64 {
 	if x != nil {
 		return x.ParentId
 	}
@@ -549,7 +549,7 @@ func (x *GetMenuTreeResp) GetTree() []*MenuTreeResp {
 
 type GetUserMenusReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	RoleIds       []uint64               `protobuf:"varint,1,rep,packed,name=role_ids,json=roleIds,proto3" json:"role_ids,omitempty"`
+	RoleIds       []int64                `protobuf:"varint,1,rep,packed,name=role_ids,json=roleIds,proto3" json:"role_ids,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -584,7 +584,7 @@ func (*GetUserMenusReq) Descriptor() ([]byte, []int) {
 	return file_sysManagement_menu_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *GetUserMenusReq) GetRoleIds() []uint64 {
+func (x *GetUserMenusReq) GetRoleIds() []int64 {
 	if x != nil {
 		return x.RoleIds
 	}
@@ -654,7 +654,7 @@ const file_sysManagement_menu_proto_rawDesc = "" +
 	"\x04path\x18\x03 \x01(\tR\x04path\x12!\n" +
 	"\tcomponent\x18\x04 \x01(\tH\x01R\tcomponent\x88\x01\x01\x12\x1f\n" +
 	"\bredirect\x18\x05 \x01(\tH\x02R\bredirect\x88\x01\x01\x12 \n" +
-	"\tparent_id\x18\x06 \x01(\x04H\x03R\bparentId\x88\x01\x01\x12\x17\n" +
+	"\tparent_id\x18\x06 \x01(\x03H\x03R\bparentId\x88\x01\x01\x12\x17\n" +
 	"\x04sort\x18\a \x01(\rH\x04R\x04sort\x88\x01\x01\x12\x1b\n" +
 	"\x06hidden\x18\b \x01(\bH\x05R\x06hidden\x88\x01\x01\x12\"\n" +
 	"\n" +
@@ -676,13 +676,13 @@ const file_sysManagement_menu_proto_rawDesc = "" +
 	"\x06_affixB\x0e\n" +
 	"\f_always_show\"\x9f\x04\n" +
 	"\rUpdateMenuReq\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x04R\x02id\x12 \n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12 \n" +
 	"\tmenu_name\x18\x02 \x01(\tH\x00R\bmenuName\x88\x01\x01\x12\x17\n" +
 	"\x04icon\x18\x03 \x01(\tH\x01R\x04icon\x88\x01\x01\x12\x17\n" +
 	"\x04path\x18\x04 \x01(\tH\x02R\x04path\x88\x01\x01\x12!\n" +
 	"\tcomponent\x18\x05 \x01(\tH\x03R\tcomponent\x88\x01\x01\x12\x1f\n" +
 	"\bredirect\x18\x06 \x01(\tH\x04R\bredirect\x88\x01\x01\x12 \n" +
-	"\tparent_id\x18\a \x01(\x04H\x05R\bparentId\x88\x01\x01\x12\x17\n" +
+	"\tparent_id\x18\a \x01(\x03H\x05R\bparentId\x88\x01\x01\x12\x17\n" +
 	"\x04sort\x18\b \x01(\rH\x06R\x04sort\x88\x01\x01\x12\x1b\n" +
 	"\x06hidden\x18\t \x01(\bH\aR\x06hidden\x88\x01\x01\x12\"\n" +
 	"\n" +
@@ -709,13 +709,13 @@ const file_sysManagement_menu_proto_rawDesc = "" +
 	"\f_always_showB\b\n" +
 	"\x06_title\"\xc4\x03\n" +
 	"\bMenuResp\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x04R\x02id\x12\x1b\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1b\n" +
 	"\tmenu_name\x18\x02 \x01(\tR\bmenuName\x12\x12\n" +
 	"\x04icon\x18\x03 \x01(\tR\x04icon\x12\x12\n" +
 	"\x04path\x18\x04 \x01(\tR\x04path\x12\x1c\n" +
 	"\tcomponent\x18\x05 \x01(\tR\tcomponent\x12\x1a\n" +
 	"\bredirect\x18\x06 \x01(\tR\bredirect\x12\x1b\n" +
-	"\tparent_id\x18\a \x01(\x04R\bparentId\x12\x12\n" +
+	"\tparent_id\x18\a \x01(\x03R\bparentId\x12\x12\n" +
 	"\x04sort\x18\b \x01(\rR\x04sort\x12\x16\n" +
 	"\x06hidden\x18\t \x01(\bR\x06hidden\x12\x1d\n" +
 	"\n" +
@@ -735,7 +735,7 @@ const file_sysManagement_menu_proto_rawDesc = "" +
 	"\x0fGetMenuTreeResp\x12:\n" +
 	"\x04tree\x18\x01 \x03(\v2&.basis.sysManagement.menu.MenuTreeRespR\x04tree\",\n" +
 	"\x0fGetUserMenusReq\x12\x19\n" +
-	"\brole_ids\x18\x01 \x03(\x04R\aroleIds\"\\\n" +
+	"\brole_ids\x18\x01 \x03(\x03R\aroleIds\"\\\n" +
 	"\fListMenuResp\x126\n" +
 	"\x04list\x18\x01 \x03(\v2\".basis.sysManagement.menu.MenuRespR\x04list\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x03R\x05total2\xb5\x04\n" +

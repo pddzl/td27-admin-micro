@@ -65,7 +65,7 @@ func (cl *CacheLogic) ListCache(in *common_pb.PageReq) (*cache_pb.ListCacheResp,
 	resp := &cache_pb.ListCacheResp{List: make([]*cache_pb.CacheResp, 0, len(caches)), Total: count	}
 	for _, c := range caches {
 		resp.List = append(resp.List, &cache_pb.CacheResp{
-			Id: uint64(c.ID), Username: c.Username, Key: c.Key, Value: c.Value,
+			Id: int64(c.ID), Username: c.Username, Key: c.Key, Value: c.Value,
 			ExpiresAt: util.ToProtoTimestamp(c.ExpiresAt),
 			CreatedAt: util.ToProtoTimestamp(c.CreatedAt), UpdatedAt: util.ToProtoTimestamp(c.UpdatedAt),
 		})

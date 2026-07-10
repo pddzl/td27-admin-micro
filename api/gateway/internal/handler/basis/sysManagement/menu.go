@@ -22,7 +22,7 @@ func NewMenuHandler(svcCtx *svc.ServiceContext) *MenuHandler {
 
 func (h *MenuHandler) GetMenu(w http.ResponseWriter, r *http.Request) {
 	idStr := r.URL.Query().Get("id")
-	id, _ := strconv.ParseUint(idStr, 10, 64)
+	id, _ := strconv.ParseInt(idStr, 10, 64)
 	resp, err := h.svcCtx.MenuClient.GetMenu(context.Background(), &common_pb.IdReq{Id: id})
 	if err != nil {
 		api.FailWithMessage(w, err.Error())
@@ -115,10 +115,10 @@ func menuTreeToResp(tree []*menu_pb.MenuTreeResp) []map[string]interface{} {
 
 func (h *MenuHandler) ListMenu(w http.ResponseWriter, r *http.Request) {
 	roleIds, _ := r.Context().Value(middleware.RoleIdsKey).([]interface{})
-	ids := make([]uint64, 0, len(roleIds))
+	ids := make([]int64, 0, len(roleIds))
 	for _, v := range roleIds {
 		if id, ok := v.(float64); ok {
-			ids = append(ids, uint64(id))
+			ids = append(ids, int64(id))
 		}
 	}
 	resp, err := h.svcCtx.MenuClient.GetUserMenus(context.Background(), &menu_pb.GetUserMenusReq{RoleIds: ids})

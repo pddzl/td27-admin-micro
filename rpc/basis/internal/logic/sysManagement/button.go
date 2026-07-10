@@ -35,7 +35,7 @@ func (bl *ButtonLogic) mapButtonToResp(button *sysManagement.ButtonModel) *butto
 	}
 
 	return &button_pb.ButtonResp{
-		Id:          uint64(button.ID),
+		Id:          int64(button.ID),
 		ButtonCode:  button.ButtonCode,
 		ButtonName:  button.ButtonName,
 		Description: button.Description,

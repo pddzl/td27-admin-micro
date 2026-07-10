@@ -37,7 +37,7 @@ func (dl *DictLogic) mapDictToResp(dict *sysManagement.DictModel) *dict_pb.DictR
 	details := make([]*dict_pb.DictDetailResp, 0, len(dict.DictDetails))
 	for _, detail := range dict.DictDetails {
 		details = append(details, &dict_pb.DictDetailResp{
-			Id:          uint64(detail.ID),
+			Id:          int64(detail.ID),
 			Label:       detail.Label,
 			Value:       detail.Value,
 			Sort:        int32(detail.Sort),
@@ -48,7 +48,7 @@ func (dl *DictLogic) mapDictToResp(dict *sysManagement.DictModel) *dict_pb.DictR
 	}
 
 	return &dict_pb.DictResp{
-		Id:        uint64(dict.ID),
+		Id:        int64(dict.ID),
 		CnName:    dict.CNName,
 		EnName:    dict.ENName,
 		Details:   details,

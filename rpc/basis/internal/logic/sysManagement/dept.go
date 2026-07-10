@@ -35,9 +35,9 @@ func (dl *DeptLogic) mapDeptToResp(dept *sysManagement.DeptModel) *dept_pb.DeptR
 	}
 
 	return &dept_pb.DeptResp{
-		Id:        uint64(dept.ID),
+		Id:        int64(dept.ID),
 		DeptName:  dept.DeptName,
-		ParentId:  uint64(dept.ParentID),
+		ParentId:  int64(dept.ParentID),
 		Path:      dept.Path,
 		Level:     uint32(dept.Level),
 		Sort:      uint32(dept.Sort),

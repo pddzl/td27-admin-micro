@@ -37,12 +37,12 @@ func (ul *UserLogic) mapUserToResp(user *sysManagement.UserModel) *user_pb.UserR
 
 	roles := make([]*role_pb.RoleResp, 0, len(user.Roles))
 	for _, role := range user.Roles {
-		var roleParentID uint64
+		var roleParentID int64
 		if role.ParentID != nil {
-			roleParentID = uint64(*role.ParentID)
+			roleParentID = int64(*role.ParentID)
 		}
 		roles = append(roles, &role_pb.RoleResp{
-			Id:        uint64(role.ID),
+			Id:        int64(role.ID),
 			RoleName:  role.RoleName,
 			ParentId:  &roleParentID,
 			CreatedAt: util.ToProtoTimestamp(role.CreatedAt),
@@ -51,12 +51,12 @@ func (ul *UserLogic) mapUserToResp(user *sysManagement.UserModel) *user_pb.UserR
 	}
 
 	return &user_pb.UserResp{
-		Id:        uint64(user.ID),
+		Id:        int64(user.ID),
 		Username:  user.Username,
 		Phone:     user.Phone,
 		Email:     user.Email,
 		Active:    user.Active,
-		DeptId:    uint64(user.DeptID),
+		DeptId:    int64(user.DeptID),
 		Roles:     roles,
 		CreatedAt: util.ToProtoTimestamp(user.CreatedAt),
 		UpdatedAt: util.ToProtoTimestamp(user.UpdatedAt),
@@ -82,12 +82,12 @@ func (ul *UserLogic) Login(in *user_pb.LoginReq) (*user_pb.LoginResp, error) {
 		return nil, status.Errorf(codes.Internal, "login failed: %v", err)
 	}
 
-	roleIds := make([]uint64, 0, len(userWithRoles.Roles))
+	roleIds := make([]int64, 0, len(userWithRoles.Roles))
 	for _, role := range userWithRoles.Roles {
-		roleIds = append(roleIds, uint64(role.ID))
+		roleIds = append(roleIds, int64(role.ID))
 	}
 
-	token, expireAt, err := ul.svcCtx.JWT.CreateToken(uint64(user.ID), user.Username, roleIds)
+	token, expireAt, err := ul.svcCtx.JWT.CreateToken(int64(user.ID), user.Username, roleIds)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to generate token: %v", err)
 	}

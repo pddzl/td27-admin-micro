@@ -31,7 +31,7 @@ func (l *DashboardLogic) mapOpsLogToResp(log *sysMonitorModel.OperationLogModel)
 		return nil
 	}
 	return &operation_log_pb.OperationLogResp{
-		Id:        uint64(log.ID),
+		Id:        int64(log.ID),
 		Ip:        log.Ip,
 		Method:    log.Method,
 		Path:      log.Path,
@@ -40,7 +40,7 @@ func (l *DashboardLogic) mapOpsLogToResp(log *sysMonitorModel.OperationLogModel)
 		ReqParam:  log.ReqParam,
 		RespData:  log.RespData,
 		RespTime:  log.RespTime,
-		UserId:    uint64(log.UserID),
+		UserId:    int64(log.UserID),
 		UserName:  log.UserName,
 		CreatedAt: util.ToProtoTimestamp(log.CreatedAt),
 	}

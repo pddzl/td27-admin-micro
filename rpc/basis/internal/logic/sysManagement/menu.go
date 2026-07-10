@@ -34,13 +34,13 @@ func (ml *MenuLogic) mapMenuToResp(menu *sysManagement.MenuModel) *menu_pb.MenuR
 	}
 
 	return &menu_pb.MenuResp{
-		Id:         uint64(menu.ID),
+		Id:         int64(menu.ID),
 		MenuName:   menu.MenuName,
 		Icon:       menu.Icon,
 		Path:       menu.Path,
 		Component:  menu.Component,
 		Redirect:   menu.Redirect,
-		ParentId:   uint64(menu.ParentID),
+		ParentId:   int64(menu.ParentID),
 		Sort:       uint32(menu.Sort),
 		Hidden:     menu.Hidden,
 		KeepAlive:  menu.KeepAlive,

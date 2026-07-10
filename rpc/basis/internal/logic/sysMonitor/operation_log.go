@@ -30,9 +30,9 @@ func (l *OperationLogLogic) mapToResp(log *sysMonitorModel.OperationLogModel) *o
 		return nil
 	}
 	return &operation_log_pb.OperationLogResp{
-		Id: uint64(log.ID), Ip: log.Ip, Method: log.Method, Path: log.Path,
+		Id: int64(log.ID), Ip: log.Ip, Method: log.Method, Path: log.Path,
 		Status: int32(log.Status), UserAgent: log.UserAgent, ReqParam: log.ReqParam,
-		RespData: log.RespData, RespTime: log.RespTime, UserId: uint64(log.UserID),
+		RespData: log.RespData, RespTime: log.RespTime, UserId: int64(log.UserID),
 		UserName: log.UserName, CreatedAt: util.ToProtoTimestamp(log.CreatedAt),
 	}
 }

@@ -34,13 +34,13 @@ func (rl *RoleLogic) mapRoleToResp(role *sysManagement.RoleModel) *role_pb.RoleR
 		return nil
 	}
 
-	var parentID uint64
+	var parentID int64
 	if role.ParentID != nil {
-		parentID = uint64(*role.ParentID)
+		parentID = int64(*role.ParentID)
 	}
 
 	return &role_pb.RoleResp{
-		Id:        uint64(role.ID),
+		Id:        int64(role.ID),
 		RoleName:  role.RoleName,
 		ParentId:  &parentID,
 		CreatedAt: util.ToProtoTimestamp(role.CreatedAt),
@@ -218,11 +218,11 @@ func (rl *RoleLogic) GetRolePermissions(in *common_pb.IdReq) (*role_pb.GetRolePe
 	}
 
 	resp := &role_pb.GetRolePermissionsResp{
-		PermissionIds: make([]uint64, 0, len(permIDs)),
+		PermissionIds: make([]int64, 0, len(permIDs)),
 	}
 
 	for _, pid := range permIDs {
-		resp.PermissionIds = append(resp.PermissionIds, uint64(pid))
+		resp.PermissionIds = append(resp.PermissionIds, int64(pid))
 	}
 
 	return resp, nil

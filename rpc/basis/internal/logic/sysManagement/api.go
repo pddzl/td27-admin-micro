@@ -36,7 +36,7 @@ func (al *APILogic) mapAPIToResp(api *sysManagement.ApiModel) *api_pb.APIResp {
 	}
 
 	return &api_pb.APIResp{
-		Id:          uint64(api.ID),
+		Id:          int64(api.ID),
 		Path:        api.Path,
 		Method:      api.Method,
 		GroupEn:     api.GroupEN,
@@ -240,7 +240,7 @@ func (al *APILogic) GetAPITree(in *api_pb.APITreeReq) (*api_pb.APITreeResp, erro
 		group.APIs = append(group.APIs, al.mapAPIToResp(api))
 	}
 
-	checkedIDs := make([]uint64, 0, len(checkedAPIMap))
+	checkedIDs := make([]int64, 0, len(checkedAPIMap))
 	list := make([]*api_pb.APITreeItem, 0, len(groupOrder))
 
 	for _, groupEn := range groupOrder {

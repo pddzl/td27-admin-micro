@@ -34,7 +34,7 @@ func (l *ServiceTokenLogic) mapToResp(token *sysToolModel.ServiceToken) *service
 		return nil
 	}
 	resp := &service_token_pb.ServiceTokenResp{
-		Id: uint64(token.ID), Name: token.Name, Status: token.Status,
+		Id: int64(token.ID), Name: token.Name, Status: token.Status,
 		CreatedAt: util.ToProtoTimestamp(token.CreatedAt), UpdatedAt: util.ToProtoTimestamp(token.UpdatedAt),
 	}
 	if token.ExpiresAt != nil {
@@ -60,7 +60,7 @@ func (l *ServiceTokenLogic) CreateServiceToken(in *service_token_pb.CreateServic
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "create token failed: %v", err)
 	}
-	return &service_token_pb.CreateServiceTokenResp{TokenId: uint64(token.ID), RawToken: rawToken}, nil
+	return &service_token_pb.CreateServiceTokenResp{TokenId: int64(token.ID), RawToken: rawToken}, nil
 }
 
 func (l *ServiceTokenLogic) GetServiceToken(in *common_pb.IdReq) (*service_token_pb.ServiceTokenResp, error) {
@@ -155,9 +155,9 @@ func (l *ServiceTokenLogic) GetTokenPermissions(in *common_pb.IdReq) (*service_t
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "get permissions failed: %v", err)
 	}
-	resp := &service_token_pb.GetTokenPermissionsResp{PermissionIds: make([]uint64, len(permIDs))}
+	resp := &service_token_pb.GetTokenPermissionsResp{PermissionIds: make([]int64, len(permIDs))}
 	for i, id := range permIDs {
-		resp.PermissionIds[i] = uint64(id)
+		resp.PermissionIds[i] = int64(id)
 	}
 	return resp, nil
 }
