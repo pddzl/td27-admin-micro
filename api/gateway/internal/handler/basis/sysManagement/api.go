@@ -147,14 +147,14 @@ func (h *APIHandler) DeleteByIds(w http.ResponseWriter, r *http.Request) {
 
 func (h *APIHandler) GetAPITree(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		RoleId int64 `json:"role_id" validate:"required"`
+		Id int64 `json:"id"`
 	}
 	if err := api.DecodeAndValidate(r.Body, &req); err != nil {
 		api.FailWithRequest(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	resp, err := h.svcCtx.APIClient.GetAPITree(context.Background(), &api_pb.APITreeReq{RoleId: req.RoleId})
+	resp, err := h.svcCtx.APIClient.GetAPITree(context.Background(), &api_pb.APITreeReq{RoleId: req.Id})
 	if err != nil {
 		api.FailWithMessage(w, err.Error())
 		return
