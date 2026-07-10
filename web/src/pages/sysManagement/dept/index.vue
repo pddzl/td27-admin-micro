@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { FormInstance, FormRules, TableInstance } from "element-plus"
 import type { CreateDeptReq, Dept, UpdateDeptReq } from "@/api/sysManagement/dept"
-import { onMounted, reactive, ref } from "vue"
+import { nextTick, onMounted, reactive, ref } from "vue"
 import {
   createDeptApi,
   deleteDeptApi,
@@ -21,6 +21,7 @@ const loading = ref(false)
 const deptTree = ref<Dept[]>([])
 const allDepts = ref<Dept[]>([])
 const isExpandAll = ref(true)
+const tableKey = ref(0)
 const tableRef = ref<TableInstance>()
 
 // Dialog
@@ -107,8 +108,7 @@ function handleReset() {
 // Expand/Collapse all
 function handleExpandAll() {
   isExpandAll.value = !isExpandAll.value
-  // Note: Element Plus table doesn't have a direct method to expand/collapse all
-  // This is a simplified implementation
+  tableKey.value++
 }
 
 // Create
@@ -264,6 +264,7 @@ onMounted(() => {
       </div>
       <div class="table-wrapper">
         <el-table
+          :key="tableKey"
           ref="tableRef"
           v-loading="loading"
           :data="deptTree"
