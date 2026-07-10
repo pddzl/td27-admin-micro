@@ -33,7 +33,7 @@ func NewCronRepository(db *sqlx.DB) CronRepository {
 	return &cronRepository{db: db}
 }
 
-const cronColumns = `id, COALESCE(created_at, NOW()) as created_at, COALESCE(updated_at, NOW()) as updated_at, deleted_at, name, method, expression, strategy, open, extraParams, entryId, comment`
+const cronColumns = `id, COALESCE(created_at, NOW()) as created_at, COALESCE(updated_at, NOW()) as updated_at, deleted_at, name, method, expression, strategy, open, "extraParams", "entryId", comment`
 
 func (r *cronRepository) FindOne(ctx context.Context, id uint) (*sysTool.CronModel, error) {
 	var cron sysTool.CronModel
@@ -80,14 +80,14 @@ func (r *cronRepository) List(ctx context.Context, page *common.PageInfo) ([]*sy
 
 func (r *cronRepository) Create(ctx context.Context, cron *sysTool.CronModel) error {
 	_, err := r.db.ExecContext(ctx,
-		"INSERT INTO sys_tool_cron (name, method, expression, strategy, open, extraParams, entryId, comment, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
+		`INSERT INTO sys_tool_cron (name, method, expression, strategy, open, "extraParams", "entryId", comment, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
 		cron.Name, cron.Method, cron.Expression, cron.Strategy, cron.Open, cron.ExtraParams, cron.EntryId, cron.Comment, cron.CreatedAt, cron.UpdatedAt)
 	return err
 }
 
 func (r *cronRepository) Update(ctx context.Context, cron *sysTool.CronModel) error {
 	_, err := r.db.ExecContext(ctx,
-		"UPDATE sys_tool_cron SET name=$1, method=$2, expression=$3, strategy=$4, open=$5, extraParams=$6, entryId=$7, comment=$8, updated_at=NOW() WHERE id=$9 AND deleted_at IS NULL",
+		`UPDATE sys_tool_cron SET name=$1, method=$2, expression=$3, strategy=$4, open=$5, "extraParams"=$6, "entryId"=$7, comment=$8, updated_at=NOW() WHERE id=$9 AND deleted_at IS NULL`,
 		cron.Name, cron.Method, cron.Expression, cron.Strategy, cron.Open, cron.ExtraParams, cron.EntryId, cron.Comment, cron.ID)
 	return err
 }
