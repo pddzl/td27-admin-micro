@@ -26,9 +26,9 @@ interface ApiListData<T> {
 
 interface Td27Model {
   id: number // 主键ID
-  createdAt: string // 创建时间
-  updatedAt: string // 更新时间
-  deletedAt: string // 删除时间
+  createdAt?: string // 创建时间
+  updatedAt?: string // 更新时间
+  deletedAt?: string // 删除时间
 }
 
 interface MongoModel {
