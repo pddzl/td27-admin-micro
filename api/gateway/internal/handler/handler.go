@@ -513,25 +513,31 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 	})
 
 	// Service token routes
+	// ServiceToken - camelCase routes matching frontend
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/service-token/create",
+		Path:    "/serviceToken/create",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(serviceTokenHandler.CreateServiceToken)),
+	})
+	server.AddRoute(rest.Route{
+		Method:  http.MethodPost,
+		Path:    "/serviceToken/list",
+		Handler: jwtMiddleware.Handle(serviceTokenHandler.ListServiceToken),
+	})
+	server.AddRoute(rest.Route{
+		Method:  http.MethodPost,
+		Path:    "/serviceToken/update",
+		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(serviceTokenHandler.UpdateServiceToken)),
+	})
+	server.AddRoute(rest.Route{
+		Method:  http.MethodPost,
+		Path:    "/serviceToken/delete",
+		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(serviceTokenHandler.DeleteServiceToken)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
 		Path:    "/service-token/:id",
 		Handler: jwtMiddleware.Handle(serviceTokenHandler.GetServiceToken),
-	})
-	server.AddRoute(rest.Route{
-		Method:  http.MethodPost,
-		Path:    "/service-token/list",
-		Handler: jwtMiddleware.Handle(serviceTokenHandler.ListServiceToken),
-	})
-	server.AddRoute(rest.Route{
-		Method:  http.MethodPost,
-		Path:    "/service-token/update",
-		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(serviceTokenHandler.UpdateServiceToken)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
@@ -547,11 +553,6 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 		Method:  http.MethodGet,
 		Path:    "/service-token/permissions/:id",
 		Handler: jwtMiddleware.Handle(serviceTokenHandler.GetTokenPermissions),
-	})
-	server.AddRoute(rest.Route{
-		Method:  http.MethodPost,
-		Path:    "/service-token/delete",
-		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(serviceTokenHandler.DeleteServiceToken)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
