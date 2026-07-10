@@ -102,7 +102,7 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 
 	// Dict routes
 	server.AddRoute(rest.Route{
-		Method:  http.MethodGet,
+		Method:  http.MethodPost,
 		Path:    "/dict/list",
 		Handler: jwtMiddleware.Handle(dictHandler.ListDict),
 	})
