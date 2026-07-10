@@ -227,6 +227,13 @@ func (ml *MenuLogic) DeleteMenu(in *common_pb.IdReq) (*common_pb.SuccessResp, er
 }
 
 func (ml *MenuLogic) ListMenu(in *common_pb.PageReq) (*menu_pb.ListMenuResp, error) {
+	if in.Page <= 0 {
+		in.Page = 1
+	}
+	if in.PageSize <= 0 {
+		in.PageSize = 10
+	}
+
 	menus, err := ml.svcCtx.MenuService.GetAll(ml.ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "list menus failed: %v", err)
