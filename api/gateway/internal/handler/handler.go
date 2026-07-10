@@ -346,7 +346,7 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
 		Path:    "/menu/elTree",
-		Handler: jwtMiddleware.Handle(menuHandler.GetMenuTree),
+		Handler: jwtMiddleware.Handle(menuHandler.GetElTreeMenus),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,

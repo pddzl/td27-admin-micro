@@ -40,6 +40,59 @@ func (h *MenuHandler) GetMenuTree(w http.ResponseWriter, r *http.Request) {
 	api.OkWithData(w, resp)
 }
 
+func (h *MenuHandler) GetElTreeMenus(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Id int64 `json:"id"`
+	}
+	if err := api.DecodeAndValidate(r.Body, &req); err != nil {
+		api.FailWithRequest(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	// Get all menus as tree
+	treeResp, err := h.svcCtx.MenuClient.GetMenuTree(context.Background(), &common_pb.Empty{})
+	if err != nil {
+		api.FailWithMessage(w, err.Error())
+		return
+	}
+
+	// Transform MenuTreeResp to flat menu nodes (unwrap Menu wrapper)
+	var transform func(nodes []*menu_pb.MenuTreeResp) []map[string]interface{}
+	transform = func(nodes []*menu_pb.MenuTreeResp) []map[string]interface{} {
+		out := make([]map[string]interface{}, 0, len(nodes))
+		for _, n := range nodes {
+			if n.Menu == nil {
+				continue
+			}
+			item := map[string]interface{}{
+				"id":        n.Menu.Id,
+				"menu_name": n.Menu.MenuName,
+				"icon":      n.Menu.Icon,
+				"path":      n.Menu.Path,
+				"component": n.Menu.Component,
+				"redirect":  n.Menu.Redirect,
+				"parentId":  n.Menu.ParentId,
+				"sort":      n.Menu.Sort,
+				"hidden":    n.Menu.Hidden,
+				"keepAlive": n.Menu.KeepAlive,
+				"affix":     n.Menu.Affix,
+				"alwaysShow": n.Menu.AlwaysShow,
+				"title":     n.Menu.Title,
+			}
+			if len(n.Children) > 0 {
+				item["children"] = transform(n.Children)
+			}
+			out = append(out, item)
+		}
+		return out
+	}
+
+	api.OkWithDetailed(w, map[string]interface{}{
+		"list":    transform(treeResp.Tree),
+		"menuIds": []int64{},
+	}, "获取成功")
+}
+
 func (h *MenuHandler) GetUserMenus(w http.ResponseWriter, r *http.Request) {
 	var req menu_pb.GetUserMenusReq
 	if err := api.DecodeAndValidate(r.Body, &req); err != nil {
