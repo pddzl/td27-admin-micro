@@ -268,7 +268,7 @@ function editDialog(row: userDataModel) {
   formData.active = row.active
   // 多角色支持
   formData.roleIds = row.roles ? row.roles.map((r: RoleInfo) => r.id) : []
-  formData.deptId = row.deptId
+  formData.deptId = row.dept_id
   kind.value = "Edit"
   title.value = "编辑用户"
   dialogVisible.value = true
