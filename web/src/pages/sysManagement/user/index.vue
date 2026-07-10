@@ -194,9 +194,7 @@ function operateAction(formEl: FormInstance | undefined) {
         })
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
-          // 替换数据
-          const index = tableData.value.indexOf(activeRow)
-          tableData.value.splice(index, 1, res.data)
+          getTableData()
         }
       }
       closeDialog()
