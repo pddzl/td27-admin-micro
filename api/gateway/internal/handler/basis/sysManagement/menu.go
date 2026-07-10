@@ -82,15 +82,33 @@ func (h *MenuHandler) UpdateMenu(w http.ResponseWriter, r *http.Request) {
 	api.OkWithData(w, resp)
 }
 
-func flattenMenuTree(tree []*menu_pb.MenuTreeResp) []*menu_pb.MenuResp {
-	var result []*menu_pb.MenuResp
+func menuTreeToResp(tree []*menu_pb.MenuTreeResp) []map[string]interface{} {
+	var result []map[string]interface{}
 	for _, node := range tree {
-		if node.Menu != nil {
-			result = append(result, node.Menu)
+		if node.Menu == nil {
+			continue
+		}
+		item := map[string]interface{}{
+			"id":          node.Menu.Id,
+			"menu_name":   node.Menu.MenuName,
+			"icon":        node.Menu.Icon,
+			"path":        node.Menu.Path,
+			"component":   node.Menu.Component,
+			"redirect":    node.Menu.Redirect,
+			"parentId":    node.Menu.ParentId,
+			"sort":        node.Menu.Sort,
+			"hidden":      node.Menu.Hidden,
+			"keepAlive":   node.Menu.KeepAlive,
+			"affix":       node.Menu.Affix,
+			"alwaysShow":  node.Menu.AlwaysShow,
+			"title":       node.Menu.Title,
+			"createdAt":   node.Menu.CreatedAt,
+			"updatedAt":   node.Menu.UpdatedAt,
 		}
 		if len(node.Children) > 0 {
-			result = append(result, flattenMenuTree(node.Children)...)
+			item["children"] = menuTreeToResp(node.Children)
 		}
+		result = append(result, item)
 	}
 	return result
 }
@@ -108,7 +126,7 @@ func (h *MenuHandler) ListMenu(w http.ResponseWriter, r *http.Request) {
 		api.FailWithMessage(w, err.Error())
 		return
 	}
-	api.OkWithData(w, flattenMenuTree(resp.Tree))
+	api.OkWithData(w, menuTreeToResp(resp.Tree))
 }
 
 func (h *MenuHandler) DeleteMenu(w http.ResponseWriter, r *http.Request) {
