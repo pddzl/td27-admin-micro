@@ -3,6 +3,7 @@ package sysMonitor
 import (
 	"context"
 	"net/http"
+	"strconv"
 
 	"td27/api/gateway/internal/svc"
 	"td27/pkg/api"
@@ -73,13 +74,25 @@ func (h *OperationLogHandler) DeleteOperationLog(w http.ResponseWriter, r *http.
 
 func (h *OperationLogHandler) DeleteOperationLogByIds(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		Ids []uint64 `json:"ids"`
+		Ids []interface{} `json:"ids"`
 	}
 	if err := api.DecodeAndValidate(r.Body, &req); err != nil {
 		api.FailWithRequest(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
-	_, err := h.svcCtx.OperationLogClient.DeleteByIds(context.Background(), &common_pb.IdsReq{Ids: req.Ids})
+	ids := make([]uint64, 0, len(req.Ids))
+	for _, v := range req.Ids {
+		switch val := v.(type) {
+		case float64:
+			ids = append(ids, uint64(val))
+		case string:
+			id, _ := strconv.ParseUint(val, 10, 64)
+			if id > 0 {
+				ids = append(ids, id)
+			}
+		}
+	}
+	_, err := h.svcCtx.OperationLogClient.DeleteByIds(context.Background(), &common_pb.IdsReq{Ids: ids})
 	if err != nil {
 		api.FailWithMessage(w, err.Error())
 		return
