@@ -595,7 +595,17 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
+		Path:    "/opl/delete",
+		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(operationLogHandler.DeleteOperationLog)),
+	})
+	server.AddRoute(rest.Route{
+		Method:  http.MethodPost,
 		Path:    "/operation-log/delete-by-ids",
+		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(operationLogHandler.DeleteOperationLogByIds)),
+	})
+	server.AddRoute(rest.Route{
+		Method:  http.MethodPost,
+		Path:    "/opl/deleteByIds",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(operationLogHandler.DeleteOperationLogByIds)),
 	})
 	server.AddRoute(rest.Route{
