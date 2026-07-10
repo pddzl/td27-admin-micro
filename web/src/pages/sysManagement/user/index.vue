@@ -4,7 +4,7 @@ import type { Dept } from "@/api/sysManagement/dept"
 import type { RoleInfo, userDataModel } from "@/api/sysManagement/user"
 import { usePagination } from "@@/composables/usePagination_n"
 import { useValidateEmail, useValidatePassword, useValidatePhone } from "@@/utils/useValidate"
-import { reactive, ref } from "vue"
+import { computed, reactive, ref } from "vue"
 import { getElTreeDeptsApi } from "@/api/sysManagement/dept"
 import { roleListApi } from "@/api/sysManagement/role"
 import {
@@ -146,13 +146,15 @@ const formData = reactive({
   roleIds: [] as number[], // 多角色
   deptId: undefined as number | undefined
 })
-const formRules: FormRules = reactive({
+const formRules = computed<FormRules>(() => ({
   username: [{ required: true, trigger: "blur", message: "请填写用户名" }],
-  password: [{ required: true, trigger: "blur", validator: useValidatePassword }],
+  password: kind.value === "Add"
+    ? [{ required: true, trigger: "blur", validator: useValidatePassword }]
+    : [{ trigger: "blur", validator: useValidatePassword }],
   phone: [{ validator: useValidatePhone, trigger: "blur" }],
   email: [{ validator: useValidateEmail, trigger: "blur" }],
   roleIds: [{ required: true, trigger: "change", message: "请选择角色", type: "array" }]
-})
+}))
 const kind = ref("")
 const title = ref("")
 function addDialog() {
