@@ -94,7 +94,7 @@ async function deleteByIdsFunc() {
   const ids: number[] = []
   multipleSelection.value
   && multipleSelection.value.forEach((item) => {
-    ids.push(item.id)
+    ids.push(Number(item.id))
   })
   if (ids.length === 0) {
     ElNotification({
