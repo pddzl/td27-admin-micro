@@ -63,12 +63,12 @@ func (h *OperationLogHandler) DeleteOperationLog(w http.ResponseWriter, r *http.
 		api.FailWithRequest(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
-	resp, err := h.svcCtx.OperationLogClient.Delete(context.Background(), &common_pb.IdReq{Id: req.Id})
+	_, err := h.svcCtx.OperationLogClient.Delete(context.Background(), &common_pb.IdReq{Id: req.Id})
 	if err != nil {
 		api.FailWithMessage(w, err.Error())
 		return
 	}
-	api.OkWithDetailed(w, resp, "删除成功")
+	api.OkWithMessage(w, "删除成功")
 }
 
 func (h *OperationLogHandler) DeleteOperationLogByIds(w http.ResponseWriter, r *http.Request) {
@@ -79,10 +79,10 @@ func (h *OperationLogHandler) DeleteOperationLogByIds(w http.ResponseWriter, r *
 		api.FailWithRequest(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
-	resp, err := h.svcCtx.OperationLogClient.DeleteByIds(context.Background(), &common_pb.IdsReq{Ids: req.Ids})
+	_, err := h.svcCtx.OperationLogClient.DeleteByIds(context.Background(), &common_pb.IdsReq{Ids: req.Ids})
 	if err != nil {
 		api.FailWithMessage(w, err.Error())
 		return
 	}
-	api.OkWithDetailed(w, resp, "删除成功")
+	api.OkWithMessage(w, "删除成功")
 }
