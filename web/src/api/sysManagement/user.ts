@@ -49,7 +49,7 @@ export function userListApi(data: PageInfo) {
 }
 
 // 删除用户
-export function userDeleteApi(data: { username: string }) {
+export function userDeleteApi(data: { id: number }) {
   return request<ApiResponseData<null>>({
     url: "/user/delete",
     method: "post",

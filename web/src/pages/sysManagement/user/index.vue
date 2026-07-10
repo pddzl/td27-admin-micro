@@ -213,7 +213,7 @@ function deleteUserAction(row: userDataModel) {
   })
     .then(() => {
       const index = tableData.value.indexOf(row)
-      userDeleteApi({ username: row.username }).then((res) => {
+      userDeleteApi({ id: Number(row.id) }).then((res) => {
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
           tableData.value.splice(index, 1)
