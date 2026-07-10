@@ -161,7 +161,7 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 
 	// API routes
 	server.AddRoute(rest.Route{
-		Method:  http.MethodGet,
+		Method:  http.MethodPost,
 		Path:    "/api/list",
 		Handler: jwtMiddleware.Handle(apiHandler.ListAPI),
 	})
