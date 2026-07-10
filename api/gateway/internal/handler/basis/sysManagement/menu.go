@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"td27/api/gateway/internal/middleware"
 	"td27/api/gateway/internal/svc"
 	"td27/pkg/api"
 	"td27/rpc/basis/types/common_pb"
@@ -82,7 +83,14 @@ func (h *MenuHandler) UpdateMenu(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *MenuHandler) ListMenu(w http.ResponseWriter, r *http.Request) {
-	resp, err := h.svcCtx.MenuClient.ListMenu(context.Background(), &common_pb.PageReq{Page: 1, PageSize: 999})
+	roleIds, _ := r.Context().Value(middleware.RoleIdsKey).([]interface{})
+	ids := make([]uint64, 0, len(roleIds))
+	for _, v := range roleIds {
+		if id, ok := v.(float64); ok {
+			ids = append(ids, uint64(id))
+		}
+	}
+	resp, err := h.svcCtx.MenuClient.GetUserMenus(context.Background(), &menu_pb.GetUserMenusReq{RoleIds: ids})
 	if err != nil {
 		api.FailWithMessage(w, err.Error())
 		return
