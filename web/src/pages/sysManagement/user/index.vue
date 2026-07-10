@@ -252,6 +252,20 @@ getRoleOption()
 
 // 部门选项
 const deptOptions = ref<Dept[]>([])
+function findDeptName(tree: Dept[], id: number): string | undefined {
+  for (const node of tree) {
+    if (node.id === id) return node.dept_name
+    if (node.children) {
+      const found = findDeptName(node.children, id)
+      if (found) return found
+    }
+  }
+  return undefined
+}
+function getDeptName(id: number | undefined): string | undefined {
+  if (id == null) return undefined
+  return findDeptName(deptOptions.value, id)
+}
 async function getDeptOptions() {
   const res = await getElTreeDeptsApi()
   if (res.code === 0) {
@@ -320,7 +334,7 @@ function switchAction(username: string, active: boolean) {
           </el-table-column>
           <el-table-column label="部门">
             <template #default="scope">
-              <span>{{ scope.row.dept_name || '-' }}</span>
+              <span>{{ getDeptName(scope.row.dept_id) || '-' }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="active" label="状态">
