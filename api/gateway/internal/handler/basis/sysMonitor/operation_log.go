@@ -68,7 +68,7 @@ func (h *OperationLogHandler) DeleteOperationLog(w http.ResponseWriter, r *http.
 		api.FailWithMessage(w, err.Error())
 		return
 	}
-	api.OkWithData(w, resp)
+	api.OkWithDetailed(w, resp, "删除成功")
 }
 
 func (h *OperationLogHandler) DeleteOperationLogByIds(w http.ResponseWriter, r *http.Request) {
@@ -84,5 +84,5 @@ func (h *OperationLogHandler) DeleteOperationLogByIds(w http.ResponseWriter, r *
 		api.FailWithMessage(w, err.Error())
 		return
 	}
-	api.OkWithData(w, resp)
+	api.OkWithDetailed(w, resp, "删除成功")
 }
