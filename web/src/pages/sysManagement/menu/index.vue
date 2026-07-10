@@ -79,7 +79,7 @@ function editMenuDialog(row: MenuDataModel) {
   dialogTitle.value = "编辑菜单"
   oKind.value = operationKind.Edit
   activeRowId = row.id
-  formData.parentId = row.parentId
+  formData.parent_id = row.parent_id
   if (row.menu_name) {
     formData.menu_name = row.menu_name
   }
@@ -125,7 +125,7 @@ function deleteMenuAction(row: MenuDataModel) {
 const formRef = ref<FormInstance>()
 
 const formRules: FormRules = reactive({
-  parentId: [{ required: true, trigger: "blur", message: "请选择父节点" }],
+  parent_id: [{ required: true, trigger: "blur", message: "请选择父节点" }],
   path: [{ required: true, trigger: "blur", message: "请填写路由路径" }],
   component: [{ required: true, trigger: "blur", message: "请填写前端组件路径" }]
 })
@@ -135,7 +135,7 @@ function initForm() {
   formData.path = ""
   formData.component = ""
   formData.redirect = ""
-  formData.parentId = 0
+  formData.parent_id = 0
   formData.sort = 0
   formData.title = ""
   formData.icon = ""
@@ -160,7 +160,7 @@ const formData = reactive<{
   path: string
   component: string
   redirect: string
-  parentId: number
+  parent_id: number
   sort: number
   title: string
   icon: IconName | ""
@@ -173,7 +173,7 @@ const formData = reactive<{
   path: "",
   component: "",
   redirect: "",
-  parentId: 0,
+  parent_id: 0,
   sort: 0,
   title: "",
   icon: "",
@@ -188,7 +188,7 @@ function operateAction(formEl: FormInstance | undefined) {
   formEl.validate(async (valid) => {
     if (valid) {
       const tempMenu = {
-        parentId: formData.parentId,
+        parent_id: formData.parent_id,
         menu_name: formData.menu_name,
         path: formData.path,
         component: formData.component,
@@ -241,7 +241,7 @@ function operateAction(formEl: FormInstance | undefined) {
           <el-table-column prop="parentId" label="父节点" />
           <el-table-column prop="title" label="展示名称">
             <template #default="scope">
-              <el-tag :effect="scope.row.parentId === 0 ? 'light' : 'plain'">
+              <el-tag :effect="scope.row.parent_id === 0 ? 'light' : 'plain'">
                 {{ scope.row.title }}
               </el-tag>
             </template>
@@ -284,7 +284,7 @@ function operateAction(formEl: FormInstance | undefined) {
       >
         <el-form-item label="父节点" prop="parentId" style="width: 30%">
           <el-cascader
-            v-model="formData.parentId" style="width: 100%" :options="menuOption"
+            v-model="formData.parent_id" style="width: 100%" :options="menuOption"
             :props="{ checkStrictly: true, emitPath: false }" clearable filterable
           />
         </el-form-item>

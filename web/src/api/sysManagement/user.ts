@@ -3,7 +3,7 @@ import { request } from "@/http/axios_n"
 // 角色信息
 export interface RoleInfo {
   id: number
-  roleName: string
+  role_name: string
 }
 
 interface userData {
@@ -24,7 +24,7 @@ export interface userDataModel extends Td27Model {
   deptName?: string // 部门名称
   // 多角色支持
   roles: RoleInfo[]
-  roleName: string // 主角色名称（兼容旧版）
+  role_name: string // 主角色名称（兼容旧版）
   roleId: number // 主角色ID（兼容旧版）
 }
 

@@ -34,7 +34,7 @@ const formData = reactive({
   value: "",
   sort: 0,
   dictId: props.dictId,
-  parentId: undefined as number | undefined,
+  parent_id: undefined as number | undefined,
   description: ""
 })
 
@@ -136,7 +136,7 @@ async function editDictDetailApiFunc(row: dictDetailDataModel) {
   formData.label = row.label
   formData.value = row.value
   formData.sort = row.sort
-  formData.parentId = row.parentId
+  formData.parent_id = row.parent_id
   formData.description = row.description
   dialogVisible.value = true
 }
@@ -145,7 +145,7 @@ function closeDialog() {
   formData.label = ""
   formData.value = ""
   formData.sort = 0
-  formData.parentId = undefined
+  formData.parent_id = undefined
   formData.description = ""
   oKind = operationKind.Add
   dialogVisible.value = false
@@ -208,7 +208,7 @@ function openAddDialog(parent?: dictDetailDataModel) {
   formData.value = ""
   formData.sort = 0
   formData.dictId = props.dictId
-  formData.parentId = parent ? parent.id : undefined
+  formData.parent_id = parent ? parent.id : undefined
   dialogVisible.value = true
 }
 
@@ -282,7 +282,7 @@ watch(
         <el-form ref="formRef" :model="formData" :rules="rules">
           <el-form-item label="父级" prop="parentId">
             <el-cascader
-              v-model="formData.parentId" style="width: 100%" :options="treeOptions" placeholder="选择父级字典项" clearable
+              v-model="formData.parent_id" style="width: 100%" :options="treeOptions" placeholder="选择父级字典项" clearable
               :props="{ checkStrictly: true, emitPath: false }"
             />
           </el-form-item>

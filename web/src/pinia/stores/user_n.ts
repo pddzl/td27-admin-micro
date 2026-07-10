@@ -57,7 +57,7 @@ export const useUserStore = defineStore("user", () => {
       // 多角色支持
       userInfo.roles = res.data.roles || []
       if (userInfo.roles.length > 0) {
-        userInfo.role = userInfo.roles[0].roleName
+        userInfo.role = userInfo.roles[0].role_name
         userInfo.roleId = userInfo.roles[0].id
       }
     }

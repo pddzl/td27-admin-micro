@@ -10,7 +10,7 @@ export interface MenuData {
   path: string
   component: string
   redirect: string
-  parentId: number
+  parent_id: number
   sort: number
   hidden: boolean
   keepAlive: boolean

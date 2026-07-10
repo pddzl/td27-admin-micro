@@ -236,7 +236,7 @@ function handleCurrentChange(value: number) {
 // 角色选项（支持多选）
 interface option {
   id: number
-  roleName: string
+  role_name: string
 }
 const roleOptions = ref<option[]>([])
 async function getRoleOption() {
@@ -244,7 +244,7 @@ async function getRoleOption() {
   if (res.code === 0) {
     roleOptions.value = res.data.list.map((item: any) => ({
       id: item.id,
-      roleName: item.roleName
+      role_name: item.role_name
     }))
   }
 }
@@ -314,7 +314,7 @@ function switchAction(username: string, active: boolean) {
           <el-table-column label="角色">
             <template #default="scope">
               <el-tag v-for="role in scope.row.roles" :key="role.id" type="success" style="margin-right: 5px;">
-                {{ role.roleName }}
+                {{ role.role_name }}
               </el-tag>
             </template>
           </el-table-column>
@@ -398,7 +398,7 @@ function switchAction(username: string, active: boolean) {
         </el-form-item>
         <el-form-item label="角色" prop="roleIds" required>
           <el-select v-model="formData.roleIds" multiple placeholder="请选择角色" style="width: 100%">
-            <el-option v-for="role in roleOptions" :key="role.id" :label="role.roleName" :value="role.id" />
+            <el-option v-for="role in roleOptions" :key="role.id" :label="role.role_name" :value="role.id" />
           </el-select>
         </el-form-item>
         <el-form-item label="部门">

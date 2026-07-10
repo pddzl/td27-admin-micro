@@ -1,12 +1,12 @@
 import { request } from "@/http/axios_n"
 
 export interface roleData {
-  roleName: string
-  parentId?: number // 父角色ID（支持角色层级）
+  role_name: string
+  parent_id?: number // 父角色ID（支持角色层级）
 }
 
 export interface roleDataModel extends roleData, Td27Model {
-  parentId?: number
+  parent_id?: number
   parent?: roleDataModel
   children?: roleDataModel[]
   menus?: any[]

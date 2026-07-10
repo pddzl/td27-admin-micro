@@ -33,12 +33,12 @@ const deptOptions = ref<Dept[]>([])
 const formData = reactive<{
   id?: number
   deptName: string
-  parentId: number | undefined
+  parent_id: number | undefined
   sort: number
   status: boolean
 }>({
   deptName: "",
-  parentId: undefined,
+  parent_id: undefined,
   sort: 0,
   status: true
 })
@@ -126,7 +126,7 @@ function handleUpdate(row: Dept) {
   Object.assign(formData, {
     id: row.id,
     deptName: row.deptName,
-    parentId: row.parentId || undefined,
+    parent_id: row.parent_id || undefined,
     sort: row.sort,
     status: row.status
   })
@@ -139,7 +139,7 @@ function handleAddChild(row: Dept) {
   isEdit.value = false
   dialogTitle.value = "新增子部门"
   resetForm()
-  formData.parentId = row.id
+  formData.parent_id = row.id
   getDeptOptions()
   dialogVisible.value = true
 }
@@ -206,7 +206,7 @@ function resetForm() {
   }
   Object.assign(formData, {
     deptName: "",
-    parentId: undefined,
+    parent_id: undefined,
     sort: 0,
     status: true
   })
@@ -320,7 +320,7 @@ onMounted(() => {
         <el-form-item prop="parentId">
           <template #label>上级部门</template>
           <el-tree-select
-            v-model="formData.parentId"
+            v-model="formData.parent_id"
             :data="deptOptions"
             :props="{ label: 'deptName', value: 'id', children: 'children' }"
             placeholder="请选择上级部门"

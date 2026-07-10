@@ -45,8 +45,8 @@ async function getTableData() {
 getTableData()
 
 function initForm() {
-  formData.roleName = ""
-  formData.parentId = undefined
+  formData.role_name = ""
+  formData.parent_id = undefined
 }
 
 const dialogVisible = ref<boolean>(false)
@@ -58,11 +58,11 @@ function handleClose(done: () => void) {
 const formRef = ref<FormInstance>()
 const formData = reactive({
   id: 0,
-  roleName: "",
-  parentId: undefined as number | undefined // 父角色ID
+  role_name: "",
+  parent_id: undefined as number | undefined // 父角色ID
 })
 const formRules: FormRules = reactive({
-  roleName: [{ required: true, trigger: "blur", message: "请填写角色名称" }]
+  role_name: [{ required: true, trigger: "blur", message: "请填写角色名称" }]
 })
 
 const kind = ref("")
@@ -77,8 +77,8 @@ function editDialog(row: roleDataModel) {
   kind.value = "Edit"
   title.value = "编辑角色"
   activeRow = row
-  formData.roleName = row.roleName
-  formData.parentId = row.parentId
+  formData.role_name = row.role_name
+  formData.parent_id = row.parent_id
   dialogVisible.value = true
 }
 
@@ -93,8 +93,8 @@ function operateAction(formEl: FormInstance | undefined) {
     if (valid) {
       if (kind.value === "Add") {
         const res = await roleCreateApi({
-          roleName: formData.roleName,
-          parentId: formData.parentId
+          role_name: formData.role_name,
+          parent_id: formData.parent_id
         })
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
@@ -103,14 +103,14 @@ function operateAction(formEl: FormInstance | undefined) {
       } else if (kind.value === "Edit") {
         const res = await roleUpdateApi({
           id: activeRow.id,
-          roleName: formData.roleName,
-          parentId: formData.parentId
+          role_name: formData.role_name,
+          parent_id: formData.parent_id
         })
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
           const index = tableData.value.indexOf(activeRow)
-          tableData.value[index].roleName = formData.roleName
-          tableData.value[index].parentId = formData.parentId
+          tableData.value[index].role_name = formData.role_name
+          tableData.value[index].parent_id = formData.parent_id
         }
       }
       closeDialog()
@@ -153,7 +153,7 @@ const inheritForm = reactive({
 
 function openInheritDialog(row: roleDataModel) {
   inheritForm.childRoleId = row.id
-  inheritForm.parentRoleId = row.parentId
+  inheritForm.parentRoleId = row.parent_id
   inheritDialogVisible.value = true
 }
 
@@ -177,7 +177,7 @@ async function saveInheritance() {
 function getParentName(parentId?: number) {
   if (!parentId) return "-"
   const parent = tableData.value.find(r => r.id === parentId)
-  return parent ? parent.roleName : "-"
+  return parent ? parent.role_name : "-"
 }
 </script>
 
@@ -199,11 +199,11 @@ function getParentName(parentId?: number) {
       <div class="table-wrapper">
         <el-table :data="tableData" row-key="id" default-expand-all>
           <el-table-column prop="id" label="ID" width="80" />
-          <el-table-column prop="roleName" label="角色名称" />
+          <el-table-column prop="role_name" label="角色名称" />
           <el-table-column label="父角色" width="150">
             <template #default="scope">
-              <el-tag v-if="scope.row.parentId" type="info">
-                {{ getParentName(scope.row.parentId) }}
+              <el-tag v-if="scope.row.parent_id" type="info">
+                {{ getParentName(scope.row.parent_id) }}
               </el-tag>
               <span v-else>-</span>
             </template>
@@ -225,7 +225,7 @@ function getParentName(parentId?: number) {
                 icon="Delete"
                 size="small"
                 @click="deleteRoleAction(scope.row)"
-                :disabled="scope.row.roleName === 'root'"
+                :disabled="scope.row.role_name === 'root'"
               >
                 删除
               </el-button>
@@ -255,15 +255,15 @@ function getParentName(parentId?: number) {
         label-position="left"
         style="width: 95%; margin-top: 15px"
       >
-        <el-form-item label="角色名称" prop="roleName">
-          <el-input v-model="formData.roleName" autocomplete="off" />
+        <el-form-item label="角色名称" prop="role_name">
+          <el-input v-model="formData.role_name" autocomplete="off" />
         </el-form-item>
         <el-form-item label="父角色">
-          <el-select v-model="formData.parentId" clearable placeholder="请选择父角色（可选）" style="width: 100%">
+          <el-select v-model="formData.parent_id" clearable placeholder="请选择父角色（可选）" style="width: 100%">
             <el-option
               v-for="role in tableData.filter(r => r.id !== formData.id)"
               :key="role.id"
-              :label="role.roleName"
+              :label="role.role_name"
               :value="role.id"
             />
           </el-select>
@@ -300,7 +300,7 @@ function getParentName(parentId?: number) {
             <el-option
               v-for="role in tableData.filter(r => r.id !== inheritForm.childRoleId)"
               :key="role.id"
-              :label="role.roleName"
+              :label="role.role_name"
               :value="role.id"
             />
           </el-select>
