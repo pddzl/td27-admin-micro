@@ -82,6 +82,19 @@ func (h *MenuHandler) UpdateMenu(w http.ResponseWriter, r *http.Request) {
 	api.OkWithData(w, resp)
 }
 
+func flattenMenuTree(tree []*menu_pb.MenuTreeResp) []*menu_pb.MenuResp {
+	var result []*menu_pb.MenuResp
+	for _, node := range tree {
+		if node.Menu != nil {
+			result = append(result, node.Menu)
+		}
+		if len(node.Children) > 0 {
+			result = append(result, flattenMenuTree(node.Children)...)
+		}
+	}
+	return result
+}
+
 func (h *MenuHandler) ListMenu(w http.ResponseWriter, r *http.Request) {
 	roleIds, _ := r.Context().Value(middleware.RoleIdsKey).([]interface{})
 	ids := make([]uint64, 0, len(roleIds))
@@ -95,7 +108,7 @@ func (h *MenuHandler) ListMenu(w http.ResponseWriter, r *http.Request) {
 		api.FailWithMessage(w, err.Error())
 		return
 	}
-	api.OkWithData(w, resp)
+	api.OkWithData(w, flattenMenuTree(resp.Tree))
 }
 
 func (h *MenuHandler) DeleteMenu(w http.ResponseWriter, r *http.Request) {
