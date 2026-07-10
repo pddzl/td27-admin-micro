@@ -1,11 +1,9 @@
 package api
 
 import (
-	"encoding/json"
 	"net/http"
 
-	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
+	"github.com/zeromicro/go-zero/rest/httpx"
 )
 
 type Response struct {
@@ -20,38 +18,10 @@ const (
 	ERROR_RES = 7
 )
 
-var protoMarshaler = &protojson.MarshalOptions{
-	EmitUnpopulated: false,
-	UseProtoNames:   true,
-	UseEnumNumbers:  false,
-}
-
-func marshalData(v interface{}) ([]byte, error) {
-	if msg, ok := v.(proto.Message); ok {
-		return protoMarshaler.Marshal(msg)
-	}
-	return json.Marshal(v)
-}
-
-func writeJson(w http.ResponseWriter, status int, v interface{}) {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(status)
-	json.NewEncoder(w).Encode(v)
-}
-
 func result(w http.ResponseWriter, status int, code int, data interface{}, msg string) {
-	dataBytes, err := marshalData(data)
-	if err != nil {
-		writeJson(w, http.StatusInternalServerError, Response{Code: ERROR_RES, Msg: "marshal error: " + err.Error()})
-		return
-	}
-	writeJson(w, status, struct {
-		Code int             `json:"code"`
-		Data json.RawMessage `json:"data"`
-		Msg  string          `json:"msg"`
-	}{
+	httpx.WriteJson(w, status, Response{
 		Code: code,
-		Data: dataBytes,
+		Data: data,
 		Msg:  msg,
 	})
 }
