@@ -22,7 +22,7 @@ const (
 
 var protoMarshaler = &protojson.MarshalOptions{
 	EmitUnpopulated: false,
-	UseProtoNames:   false,
+	UseProtoNames:   true,
 	UseEnumNumbers:  false,
 }
 
