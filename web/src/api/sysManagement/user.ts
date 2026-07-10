@@ -59,19 +59,21 @@ export function userDeleteApi(data: { username: string }) {
 
 // 添加用户
 export function userCreateApi(data: userData & { password: string }) {
+  const { roleIds, deptId, password, ...rest } = data
   return request<ApiResponseData<userDataModel>>({
     url: "/user/create",
     method: "post",
-    data
+    data: { ...rest, role_ids: roleIds, dept_id: deptId, password }
   })
 }
 
 // 编辑用户
 export function userUpdateApi(data: userData & CId) {
+  const { roleIds, deptId, ...rest } = data
   return request<ApiResponseData<userDataModel>>({
     url: "/user/update",
     method: "post",
-    data
+    data: { ...rest, role_ids: roleIds, dept_id: deptId }
   })
 }
 
