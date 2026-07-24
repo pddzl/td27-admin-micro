@@ -39,14 +39,20 @@ func (dl *DictDetailLogic) CreateDictDetail(in *dict_detail_pb.CreateDictDetailR
 		return nil, status.Errorf(codes.NotFound, "dictionary not found")
 	}
 
-	parentID := int(*in.ParentId)
 	detail := &sysManagement.DictDetailModel{
 		DictModelID: int(in.DictId),
 		Label:       in.Label,
 		Value:       in.Value,
-		Sort:        int(*in.Sort),
-		Description: *in.Description,
-		ParentID:    &parentID,
+	}
+	if in.Sort != nil {
+		detail.Sort = int(*in.Sort)
+	}
+	if in.Description != nil {
+		detail.Description = *in.Description
+	}
+	if in.ParentId != nil {
+		v := int(*in.ParentId)
+		detail.ParentID = &v
 	}
 
 	err = dl.svcCtx.DictDetRepo.Create(dl.ctx, detail)
