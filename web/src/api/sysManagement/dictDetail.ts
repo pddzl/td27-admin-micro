@@ -24,7 +24,7 @@ export function dictDetailListApi(data: reqDictDetail) {
   return request<ApiResponseData<dictDetailListData>>({
     url: "/dictDetail/list",
     method: "post",
-    data: { ...data, dict_id: data.dictId }
+    data: { page: data.page, page_size: data.pageSize, dict_id: data.dictId }
   })
 }
 
