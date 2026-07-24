@@ -24,7 +24,7 @@ export function dictDetailListApi(data: reqDictDetail) {
   return request<ApiResponseData<dictDetailListData>>({
     url: "/dictDetail/list",
     method: "post",
-    data
+    data: { ...data, dict_id: data.dictId }
   })
 }
 
@@ -32,15 +32,20 @@ export function dictDetailFlatApi(data: { dictId: number }) {
   return request<ApiResponseData<dictDetailFlatData>>({
     url: "/dictDetail/flat",
     method: "post",
-    data
+    data: { dict_id: data.dictId }
   })
 }
 
 export function dictDetailCreateApi(data: dictDetailData) {
+  const { dictId, parentId, ...rest } = data
   return request<ApiResponseData<dictDetailDataModel>>({
     url: "/dictDetail/create",
     method: "post",
-    data
+    data: {
+      ...rest,
+      dict_id: dictId,
+      parent_id: parentId
+    }
   })
 }
 
@@ -53,9 +58,14 @@ export function dictDetailDeleteApi(data: CId) {
 }
 
 export function dictDetailUpdateApi(data: dictDetailData & CId) {
+  const { dictId, parentId, ...rest } = data
   return request<ApiResponseData<dictDetailDataModel>>({
     url: "/dictDetail/update",
     method: "post",
-    data
+    data: {
+      ...rest,
+      dict_id: dictId,
+      parent_id: parentId
+    }
   })
 }
