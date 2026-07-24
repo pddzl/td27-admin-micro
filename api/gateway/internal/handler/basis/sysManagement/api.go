@@ -39,21 +39,24 @@ func (h *APIHandler) GetAPI(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *APIHandler) ListAPI(w http.ResponseWriter, r *http.Request) {
-	pageStr := r.URL.Query().Get("page")
-	pageSizeStr := r.URL.Query().Get("page_size")
-
-	page, _ := strconv.ParseInt(pageStr, 10, 32)
-	pageSize, _ := strconv.ParseInt(pageSizeStr, 10, 32)
-	if page == 0 {
-		page = 1
+	var req struct {
+		Page     int `json:"page"`
+		PageSize int `json:"pageSize"`
 	}
-	if pageSize == 0 {
-		pageSize = 10
+	if err := api.DecodeAndValidate(r.Body, &req); err != nil {
+		api.FailWithRequest(w, http.StatusBadRequest, "invalid request body")
+		return
+	}
+	if req.Page <= 0 {
+		req.Page = 1
+	}
+	if req.PageSize <= 0 {
+		req.PageSize = 10
 	}
 
 	resp, err := h.svcCtx.APIClient.ListAPI(context.Background(), &common_pb.PageReq{
-		Page:     uint32(page),
-		PageSize: uint32(pageSize),
+		Page:     uint32(req.Page),
+		PageSize: uint32(req.PageSize),
 	})
 	if err != nil {
 		api.FailWithMessage(w, err.Error())
