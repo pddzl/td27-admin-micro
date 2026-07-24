@@ -4,7 +4,6 @@ import type { dictDetailDataModel } from "@/api/sysManagement/dictDetail"
 import {
   dictDetailCreateApi,
   dictDetailDeleteApi,
-  dictDetailFlatApi,
   dictDetailListApi,
   dictDetailUpdateApi
 } from "@/api/sysManagement/dictDetail"
@@ -85,19 +84,6 @@ function mapTreeOptions(list: dictDetailDataModel[]): CascaderOption[] {
   }))
 }
 
-async function setTreeOptions() {
-  if (!props.dictId) return
-  const res = await dictDetailListApi({
-    page: 1,
-    pageSize: 1000,
-    dictId: props.dictId
-  })
-
-  if (res.code === 0) {
-    treeOptions.value = mapTreeOptions(res.data?.list || [])
-  }
-}
-
 // 查询
 async function getTableData() {
   if (!props.dictId) return
@@ -109,20 +95,10 @@ async function getTableData() {
   if (res.code === 0) {
     tableData.value = res.data?.list || []
     paginationData.total = res.data?.total || 0
+    treeOptions.value = mapTreeOptions(tableData.value)
   }
 }
 getTableData()
-
-async function getTableDataFlat() {
-  if (!props.dictId) return
-  const res = await dictDetailFlatApi({
-    dictId: props.dictId
-  })
-  if (res.code === 0) {
-    console.log("flat", res.data)
-  }
-}
-getTableDataFlat()
 
 enum operationKind {
   Add = "Add",
@@ -217,7 +193,6 @@ watch(
   () => props.dictId,
   () => {
     getTableData()
-    setTreeOptions()
   }
 )
 </script>
