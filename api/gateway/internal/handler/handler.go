@@ -135,27 +135,27 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 	// DictDetail route
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/dictDetail/create",
+		Path:    "/dict-detail/create",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(dictDetailHandler.CreateDictDetail)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/dictDetail/update",
+		Path:    "/dict-detail/update",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(dictDetailHandler.UpdateDictDetail)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/dictDetail/delete",
+		Path:    "/dict-detail/delete",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(dictDetailHandler.DeleteDictDetail)),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/dictDetail/flat",
+		Path:    "/dict-detail/flat",
 		Handler: jwtMiddleware.Handle(dictDetailHandler.FlatDictDetails),
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/dictDetail/list",
+		Path:    "/dict-detail/list",
 		Handler: jwtMiddleware.Handle(dictDetailHandler.ListDictDetail),
 	})
 

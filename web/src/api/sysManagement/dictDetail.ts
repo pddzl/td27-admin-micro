@@ -22,7 +22,7 @@ interface reqDictDetail extends PageInfo {
 
 export function dictDetailListApi(data: reqDictDetail) {
   return request<ApiResponseData<dictDetailListData>>({
-    url: "/dictDetail/list",
+    url: "/dict-detail/list",
     method: "post",
     data: { page: data.page, page_size: data.pageSize, dict_id: data.dictId }
   })
@@ -30,7 +30,7 @@ export function dictDetailListApi(data: reqDictDetail) {
 
 export function dictDetailFlatApi(data: { dictId: number }) {
   return request<ApiResponseData<dictDetailFlatData>>({
-    url: "/dictDetail/flat",
+    url: "/dict-detail/flat",
     method: "post",
     data: { dict_id: data.dictId }
   })
@@ -39,7 +39,7 @@ export function dictDetailFlatApi(data: { dictId: number }) {
 export function dictDetailCreateApi(data: dictDetailData) {
   const { dictId, parentId, ...rest } = data
   return request<ApiResponseData<dictDetailDataModel>>({
-    url: "/dictDetail/create",
+    url: "/dict-detail/create",
     method: "post",
     data: {
       ...rest,
@@ -51,7 +51,7 @@ export function dictDetailCreateApi(data: dictDetailData) {
 
 export function dictDetailDeleteApi(data: CId) {
   return request<ApiResponseData<dictDetailDataModel>>({
-    url: "/dictDetail/delete",
+    url: "/dict-detail/delete",
     method: "post",
     data
   })
@@ -60,7 +60,7 @@ export function dictDetailDeleteApi(data: CId) {
 export function dictDetailUpdateApi(data: dictDetailData & CId) {
   const { dictId, parentId, ...rest } = data
   return request<ApiResponseData<dictDetailDataModel>>({
-    url: "/dictDetail/update",
+    url: "/dict-detail/update",
     method: "post",
     data: {
       ...rest,
