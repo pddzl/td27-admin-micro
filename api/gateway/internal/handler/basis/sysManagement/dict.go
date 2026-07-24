@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/zeromicro/go-zero/rest/pathvar"
 
@@ -12,6 +13,17 @@ import (
 	"td27/rpc/basis/types/common_pb"
 	"td27/rpc/basis/types/sysManagement/dict_pb"
 )
+
+// extractErrMsg extracts the user-facing message from a gRPC error.
+// gRPC errors look like "rpc error: code = X desc = message"
+// Returns just "message" if the format matches, otherwise the full error.
+func extractErrMsg(err error) string {
+	s := err.Error()
+	if idx := strings.LastIndex(s, "desc = "); idx >= 0 {
+		return s[idx+len("desc = "):]
+	}
+	return s
+}
 
 type DictHandler struct {
 	svcCtx *svc.ServiceContext
@@ -128,7 +140,7 @@ func (h *DictHandler) DeleteDict(w http.ResponseWriter, r *http.Request) {
 
 	_, err := h.svcCtx.DictClient.DeleteDict(context.Background(), &common_pb.IdReq{Id: req.Id})
 	if err != nil {
-		api.FailWithMessage(w, err.Error())
+		api.FailWithMessage(w, extractErrMsg(err))
 		return
 	}
 
