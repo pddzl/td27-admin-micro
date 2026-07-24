@@ -21,6 +21,7 @@ type ButtonRepository interface {
 	Create(ctx context.Context, button *sysManagement.ButtonModel) error
 	Update(ctx context.Context, button *sysManagement.ButtonModel) error
 	Delete(ctx context.Context, id uint) error
+	BatchCheckPermission(ctx context.Context, roleIDs []uint, buttonCodes []string) (map[string]bool, error)
 }
 
 type buttonRepository struct {
@@ -33,7 +34,7 @@ func NewButtonRepository(db *sqlx.DB) ButtonRepository {
 }
 
 const buttonTable = "sys_management_button"
-const buttonColumns = `id, COALESCE(created_at, NOW()) as created_at, COALESCE(updated_at, NOW()) as updated_at, deleted_at, button_code, button_name, description, page_path`
+const buttonColumns = `id, created_at, updated_at, deleted_at, button_code, button_name, description, page_path`
 
 func (r *buttonRepository) FindOne(ctx context.Context, id uint) (*sysManagement.ButtonModel, error) {
 	var button sysManagement.ButtonModel
@@ -67,7 +68,7 @@ func (r *buttonRepository) FindByPagePath(ctx context.Context, pagePath string) 
 
 func (r *buttonRepository) FindByRoleIDs(ctx context.Context, roleIDs []uint) ([]*sysManagement.ButtonModel, error) {
 	query, args, err := sqlx.In(`
-		SELECT DISTINCT b.id, COALESCE(b.created_at, NOW()) as created_at, COALESCE(b.updated_at, NOW()) as updated_at, b.deleted_at, b.button_code, b.button_name, b.description, b.page_path FROM `+buttonTable+` b
+		SELECT DISTINCT b.id, b.created_at as created_at, b.updated_at as updated_at, b.deleted_at, b.button_code, b.button_name, b.description, b.page_path FROM `+buttonTable+` b
 		JOIN sys_management_permission p ON p.domain_id = b.id AND p.domain = 'button'
 		JOIN sys_management_role_permissions rp ON rp.permission_id = p.id
 		WHERE rp.role_id IN (?) AND b.deleted_at IS NULL`, roleIDs)
@@ -113,20 +114,51 @@ func (r *buttonRepository) List(ctx context.Context, page *common.PageInfo, page
 
 func (r *buttonRepository) Create(ctx context.Context, button *sysManagement.ButtonModel) error {
 	err := r.db.QueryRowContext(ctx,
-		`INSERT INTO `+buttonTable+` (button_code, button_name, description, page_path, created_at, updated_at)
-		 VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
-		button.ButtonCode, button.ButtonName, button.Description, button.PagePath, button.CreatedAt, button.UpdatedAt).Scan(&button.ID)
+		`INSERT INTO `+buttonTable+` (created_at, updated_at, button_code, button_name, description, page_path)
+		 VALUES (NOW(), NOW(), $1, $2, $3, $4) RETURNING id`,
+		button.ButtonCode, button.ButtonName, button.Description, button.PagePath).Scan(&button.ID)
 	return err
 }
 
 func (r *buttonRepository) Update(ctx context.Context, button *sysManagement.ButtonModel) error {
 	_, err := r.db.ExecContext(ctx,
-		`UPDATE `+buttonTable+` SET button_code=$1, button_name=$2, description=$3, page_path=$4, updated_at=$5 WHERE id=$6`,
-		button.ButtonCode, button.ButtonName, button.Description, button.PagePath, button.UpdatedAt, button.ID)
+		`UPDATE `+buttonTable+` SET button_code=$1, button_name=$2, description=$3, page_path=$4, updated_at=NOW() WHERE id=$5`,
+		button.ButtonCode, button.ButtonName, button.Description, button.PagePath, button.ID)
 	return err
 }
 
+func (r *buttonRepository) BatchCheckPermission(ctx context.Context, roleIDs []uint, buttonCodes []string) (map[string]bool, error) {
+	result := make(map[string]bool, len(buttonCodes))
+	for _, code := range buttonCodes {
+		result[code] = false
+	}
+
+	if len(roleIDs) == 0 || len(buttonCodes) == 0 {
+		return result, nil
+	}
+
+	query, args, err := sqlx.In(`
+		SELECT DISTINCT p.resource FROM sys_management_permission p
+		JOIN sys_management_role_permissions rp ON p.id = rp.permission_id
+		WHERE rp.role_id IN (?) AND p.domain = 'button' AND p.resource IN (?)`, roleIDs, buttonCodes)
+	if err != nil {
+		return nil, err
+	}
+	query = r.db.Rebind(query)
+
+	var permittedCodes []string
+	if err = r.db.SelectContext(ctx, &permittedCodes, query, args...); err != nil {
+		return nil, err
+	}
+
+	for _, code := range permittedCodes {
+		result[code] = true
+	}
+
+	return result, nil
+}
+
 func (r *buttonRepository) Delete(ctx context.Context, id uint) error {
-	_, err := r.db.ExecContext(ctx, "UPDATE "+buttonTable+" SET deleted_at=NOW() WHERE id=$1", id)
+	_, err := r.db.ExecContext(ctx, "DELETE FROM "+buttonTable+" WHERE id=$1", id)
 	return err
 }

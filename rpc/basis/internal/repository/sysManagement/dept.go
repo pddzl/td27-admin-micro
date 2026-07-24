@@ -35,7 +35,7 @@ func NewDeptRepository(db *sqlx.DB) DeptRepository {
 }
 
 const deptTable = "sys_management_dept"
-const deptColumns = `id, COALESCE(created_at, NOW()) as created_at, COALESCE(updated_at, NOW()) as updated_at, deleted_at, dept_name, parent_id, path, level, sort, status`
+const deptColumns = `id, created_at, updated_at, deleted_at, dept_name, parent_id, path, level, sort, status`
 
 func (r *deptRepository) FindOne(ctx context.Context, id uint) (*sysManagement.DeptModel, error) {
 	var dept sysManagement.DeptModel
@@ -144,9 +144,9 @@ func (r *deptRepository) Create(ctx context.Context, dept *sysManagement.DeptMod
 	defer tx.Rollback() // no-op if already committed
 
 	err = tx.QueryRowContext(ctx,
-		`INSERT INTO `+deptTable+` (dept_name, parent_id, path, level, sort, status, created_at, updated_at)
-		 VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
-		dept.DeptName, dept.ParentID, dept.Path, dept.Level, dept.Sort, dept.Status, dept.CreatedAt, dept.UpdatedAt).Scan(&dept.ID)
+		`INSERT INTO `+deptTable+` (created_at, updated_at, dept_name, parent_id, path, level, sort, status)
+		 VALUES (NOW(), NOW(), $1, $2, $3, $4, $5, $6) RETURNING id`,
+		dept.DeptName, dept.ParentID, dept.Path, dept.Level, dept.Sort, dept.Status).Scan(&dept.ID)
 	if err != nil {
 		return err
 	}
@@ -156,8 +156,8 @@ func (r *deptRepository) Create(ctx context.Context, dept *sysManagement.DeptMod
 
 func (r *deptRepository) Update(ctx context.Context, dept *sysManagement.DeptModel) error {
 	_, err := r.db.ExecContext(ctx,
-		`UPDATE `+deptTable+` SET dept_name=$1, parent_id=$2, path=$3, level=$4, sort=$5, status=$6, updated_at=$7 WHERE id=$8`,
-		dept.DeptName, dept.ParentID, dept.Path, dept.Level, dept.Sort, dept.Status, dept.UpdatedAt, dept.ID)
+		`UPDATE `+deptTable+` SET dept_name=$1, parent_id=$2, path=$3, level=$4, sort=$5, status=$6, updated_at=NOW() WHERE id=$7`,
+		dept.DeptName, dept.ParentID, dept.Path, dept.Level, dept.Sort, dept.Status, dept.ID)
 	return err
 }
 
@@ -174,12 +174,12 @@ func (r *deptRepository) Delete(ctx context.Context, id uint) error {
 	defer tx.Rollback() // no-op if already committed
 
 	for _, d := range descendants {
-		if _, err = tx.ExecContext(ctx, "UPDATE "+deptTable+" SET deleted_at=NOW() WHERE id=$1", d.ID); err != nil {
+		if _, err = tx.ExecContext(ctx, "DELETE FROM "+deptTable+" WHERE id=$1", d.ID); err != nil {
 			return err
 		}
 	}
 
-	if _, err = tx.ExecContext(ctx, "UPDATE "+deptTable+" SET deleted_at=NOW() WHERE id=$1", id); err != nil {
+	if _, err = tx.ExecContext(ctx, "DELETE FROM "+deptTable+" WHERE id=$1", id); err != nil {
 		return err
 	}
 

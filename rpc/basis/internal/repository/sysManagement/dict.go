@@ -31,7 +31,7 @@ func NewDictRepository(db *sqlx.DB) DictRepository {
 }
 
 const dictTable = "sys_management_dict"
-const dictColumns = `id, COALESCE(created_at, NOW()) as created_at, COALESCE(updated_at, NOW()) as updated_at, deleted_at, cn_name, en_name`
+const dictColumns = `id, created_at, updated_at, deleted_at, cn_name, en_name`
 
 func (r *dictRepository) FindOne(ctx context.Context, id uint) (*sysManagement.DictModel, error) {
 	var dict sysManagement.DictModel
@@ -86,9 +86,10 @@ func (r *dictRepository) List(ctx context.Context, page *common.PageInfo) ([]*sy
 }
 
 func (r *dictRepository) Create(ctx context.Context, dict *sysManagement.DictModel) error {
-	err := r.db.GetContext(ctx, &dict.ID,
-		`INSERT INTO sys_management_dict (cn_name, en_name)
-		 VALUES ($1, $2) RETURNING id`, dict.CNName, dict.ENName)
+	err := r.db.QueryRowContext(ctx,
+		`INSERT INTO sys_management_dict (created_at, updated_at, cn_name, en_name)
+		 VALUES (NOW(), NOW(), $1, $2) RETURNING id, created_at, updated_at`,
+		dict.CNName, dict.ENName).Scan(&dict.ID, &dict.CreatedAt, &dict.UpdatedAt)
 	return err
 }
 
@@ -107,13 +108,13 @@ func (r *dictRepository) Delete(ctx context.Context, id uint) error {
 	defer tx.Rollback()
 
 	_, err = tx.ExecContext(ctx,
-		"UPDATE sys_management_dict_detail SET deleted_at=NOW() WHERE dict_id=$1 AND deleted_at IS NULL", id)
+		"DELETE FROM sys_management_dict_detail WHERE dict_id=$1", id)
 	if err != nil {
 		return err
 	}
 
 	_, err = tx.ExecContext(ctx,
-		"UPDATE sys_management_dict SET deleted_at=NOW() WHERE id=$1 AND deleted_at IS NULL", id)
+		"DELETE FROM sys_management_dict WHERE id=$1", id)
 	if err != nil {
 		return err
 	}

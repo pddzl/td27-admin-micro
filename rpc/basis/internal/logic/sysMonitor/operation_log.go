@@ -9,10 +9,10 @@ import (
 	"td27/rpc/basis/internal/model/common"
 	sysMonitorModel "td27/rpc/basis/internal/model/sysMonitor"
 	"td27/rpc/basis/internal/svc"
-	"td27/rpc/basis/internal/util"
 	
 	"td27/rpc/basis/types/common_pb"
 	"td27/rpc/basis/types/sysMonitor/operation_log_pb"
+"td27/rpc/basis/internal/util"
 )
 
 type OperationLogLogic struct {
@@ -33,7 +33,7 @@ func (l *OperationLogLogic) mapToResp(log *sysMonitorModel.OperationLogModel) *o
 		Id: int64(log.ID), Ip: log.Ip, Method: log.Method, Path: log.Path,
 		Status: int32(log.Status), UserAgent: log.UserAgent, ReqParam: log.ReqParam,
 		RespData: log.RespData, RespTime: log.RespTime, UserId: int64(log.UserID),
-		UserName: log.UserName, CreatedAt: util.ToProtoTimestamp(log.CreatedAt),
+		UserName: log.UserName, CreatedAt: util.Ts(log.CreatedAt),
 	}
 }
 

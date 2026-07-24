@@ -35,7 +35,7 @@ func NewServiceTokenRepository(db *sqlx.DB) ServiceTokenRepository {
 	return &serviceTokenRepository{db: db}
 }
 
-const serviceTokenColumns = `id, COALESCE(created_at, NOW()) as created_at, COALESCE(updated_at, NOW()) as updated_at, deleted_at, name, token_hash, status, expires_at`
+const serviceTokenColumns = `id, created_at, updated_at, deleted_at, name, token_hash, status, expires_at`
 
 func (r *serviceTokenRepository) FindOne(ctx context.Context, id uint) (*sysTool.ServiceToken, error) {
 	var token sysTool.ServiceToken
@@ -94,8 +94,8 @@ func (r *serviceTokenRepository) List(ctx context.Context, page *common.PageInfo
 
 func (r *serviceTokenRepository) Create(ctx context.Context, token *sysTool.ServiceToken) error {
 	_, err := r.db.ExecContext(ctx,
-		"INSERT INTO sys_tool_service_token (name, token_hash, status, expires_at, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6)",
-		token.Name, token.TokenHash, token.Status, token.ExpiresAt, token.CreatedAt, token.UpdatedAt)
+		"INSERT INTO sys_tool_service_token (created_at, updated_at, name, token_hash, status, expires_at) VALUES (NOW(), NOW(), $1, $2, $3, $4)",
+		token.Name, token.TokenHash, token.Status, token.ExpiresAt)
 	return err
 }
 
@@ -129,7 +129,7 @@ func (r *serviceTokenRepository) Delete(ctx context.Context, id uint) error {
 		return err
 	}
 
-	_, err = tx.ExecContext(ctx, "UPDATE sys_tool_service_token SET deleted_at=NOW() WHERE id=$1", id)
+	_, err = tx.ExecContext(ctx, "DELETE FROM sys_tool_service_token WHERE id=$1", id)
 	if err != nil {
 		return err
 	}

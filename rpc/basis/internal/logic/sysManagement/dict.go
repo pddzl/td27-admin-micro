@@ -10,9 +10,9 @@ import (
 	"td27/rpc/basis/internal/model/common"
 	"td27/rpc/basis/internal/model/sysManagement"
 	"td27/rpc/basis/internal/svc"
-	"td27/rpc/basis/internal/util"
 	"td27/rpc/basis/types/common_pb"
 	"td27/rpc/basis/types/sysManagement/dict_pb"
+"td27/rpc/basis/internal/util"
 )
 
 type DictLogic struct {
@@ -36,15 +36,19 @@ func (dl *DictLogic) mapDictToResp(dict *sysManagement.DictModel) *dict_pb.DictR
 
 	details := make([]*dict_pb.DictDetailResp, 0, len(dict.DictDetails))
 	for _, detail := range dict.DictDetails {
-		details = append(details, &dict_pb.DictDetailResp{
+		resp := &dict_pb.DictDetailResp{
 			Id:          int64(detail.ID),
 			Label:       detail.Label,
 			Value:       detail.Value,
 			Sort:        int32(detail.Sort),
 			Description: detail.Description,
-			CreatedAt:   util.ToProtoTimestamp(detail.CreatedAt),
-			UpdatedAt:   util.ToProtoTimestamp(detail.UpdatedAt),
-		})
+			CreatedAt:   util.Ts(detail.CreatedAt),
+			UpdatedAt:   util.Ts(detail.UpdatedAt),
+		}
+		if detail.ParentID != nil {
+			resp.ParentId = int64(*detail.ParentID)
+		}
+		details = append(details, resp)
 	}
 
 	return &dict_pb.DictResp{
@@ -52,8 +56,8 @@ func (dl *DictLogic) mapDictToResp(dict *sysManagement.DictModel) *dict_pb.DictR
 		CnName:    dict.CNName,
 		EnName:    dict.ENName,
 		Details:   details,
-		CreatedAt: util.ToProtoTimestamp(dict.CreatedAt),
-		UpdatedAt: util.ToProtoTimestamp(dict.UpdatedAt),
+		CreatedAt: util.Ts(dict.CreatedAt),
+		UpdatedAt: util.Ts(dict.UpdatedAt),
 	}
 }
 

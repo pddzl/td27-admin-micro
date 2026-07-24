@@ -10,10 +10,10 @@ import (
 	"td27/rpc/basis/internal/model/common"
 	sysToolModel "td27/rpc/basis/internal/model/sysTool"
 	"td27/rpc/basis/internal/svc"
-	"td27/rpc/basis/internal/util"
 	
 	"td27/rpc/basis/types/common_pb"
 	"td27/rpc/basis/types/sysTool/cron_pb"
+"td27/rpc/basis/internal/util"
 )
 
 type CronLogic struct {
@@ -44,7 +44,7 @@ func (cl *CronLogic) mapCronToResp(cron *sysToolModel.CronModel) *cron_pb.CronRe
 		Id: int64(cron.ID), Name: cron.Name, Method: methodToProto(cron.Method),
 		Expression: cron.Expression, Strategy: cron.Strategy, Open: cron.Open,
 		ExtraParams: extraParams, EntryId: int32(cron.EntryId), Comment: cron.Comment,
-		CreatedAt: util.ToProtoTimestamp(cron.CreatedAt), UpdatedAt: util.ToProtoTimestamp(cron.UpdatedAt),
+		CreatedAt: util.Ts(cron.CreatedAt), UpdatedAt: util.Ts(cron.UpdatedAt),
 	}
 }
 

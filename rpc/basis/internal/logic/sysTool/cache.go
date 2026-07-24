@@ -10,9 +10,9 @@ import (
 
 	"td27/rpc/basis/internal/model/common"
 	"td27/rpc/basis/internal/svc"
-	"td27/rpc/basis/internal/util"
 	"td27/rpc/basis/types/common_pb"
 	"td27/rpc/basis/types/sysTool/cache_pb"
+"td27/rpc/basis/internal/util"
 )
 
 type CacheLogic struct {
@@ -66,8 +66,8 @@ func (cl *CacheLogic) ListCache(in *common_pb.PageReq) (*cache_pb.ListCacheResp,
 	for _, c := range caches {
 		resp.List = append(resp.List, &cache_pb.CacheResp{
 			Id: int64(c.ID), Username: c.Username, Key: c.Key, Value: c.Value,
-			ExpiresAt: util.ToProtoTimestamp(c.ExpiresAt),
-			CreatedAt: util.ToProtoTimestamp(c.CreatedAt), UpdatedAt: util.ToProtoTimestamp(c.UpdatedAt),
+			ExpiresAt: c.ExpiresAt.Format("2006-01-02 15:04:05.000000"),
+			CreatedAt: util.Ts(c.CreatedAt), UpdatedAt: util.Ts(c.UpdatedAt),
 		})
 	}
 	return resp, nil

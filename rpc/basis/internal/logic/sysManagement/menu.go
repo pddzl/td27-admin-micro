@@ -9,9 +9,9 @@ import (
 
 	"td27/rpc/basis/internal/model/sysManagement"
 	"td27/rpc/basis/internal/svc"
-	"td27/rpc/basis/internal/util"
 	"td27/rpc/basis/types/common_pb"
 	"td27/rpc/basis/types/sysManagement/menu_pb"
+"td27/rpc/basis/internal/util"
 )
 
 type MenuLogic struct {
@@ -47,8 +47,8 @@ func (ml *MenuLogic) mapMenuToResp(menu *sysManagement.MenuModel) *menu_pb.MenuR
 		Affix:      menu.Affix,
 		AlwaysShow: menu.AlwaysShow,
 		Title:      menu.Title,
-		CreatedAt:  util.ToProtoTimestamp(menu.CreatedAt),
-		UpdatedAt:  util.ToProtoTimestamp(menu.UpdatedAt),
+		CreatedAt:  util.Ts(menu.CreatedAt),
+		UpdatedAt:  util.Ts(menu.UpdatedAt),
 	}
 }
 

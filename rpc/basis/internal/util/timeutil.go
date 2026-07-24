@@ -1,14 +1,12 @@
 package util
 
-import (
-	"time"
+import "time"
 
-	"google.golang.org/protobuf/types/known/timestamppb"
-)
-
-func ToProtoTimestamp(t time.Time) *timestamppb.Timestamp {
-	if t.IsZero() {
-		return nil
+// Ts formats a *time.Time as the standard DB-style timestamp string.
+// Returns empty string if t is nil.
+func Ts(t *time.Time) string {
+	if t == nil || t.IsZero() {
+		return ""
 	}
-	return timestamppb.New(t)
+	return t.Format("2006-01-02 15:04:05.000000")
 }

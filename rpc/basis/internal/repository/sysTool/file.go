@@ -28,7 +28,7 @@ func NewFileRepository(db *sqlx.DB) FileRepository {
 	return &fileRepository{db: db}
 }
 
-const fileColumns = `id, COALESCE(created_at, NOW()) as created_at, COALESCE(updated_at, NOW()) as updated_at, deleted_at, file_name, full_path, mime`
+const fileColumns = `id, created_at, updated_at, deleted_at, file_name, full_path, mime`
 
 func (r *fileRepository) FindOne(ctx context.Context, id uint) (*sysTool.FileModel, error) {
 	var file sysTool.FileModel
@@ -45,14 +45,14 @@ func (r *fileRepository) FindOne(ctx context.Context, id uint) (*sysTool.FileMod
 
 func (r *fileRepository) Create(ctx context.Context, file *sysTool.FileModel) error {
 	_, err := r.db.ExecContext(ctx,
-		"INSERT INTO sys_tool_file (file_name, full_path, mime, created_at, updated_at) VALUES ($1, $2, $3, $4, $5)",
-		file.FileName, file.FullPath, file.Mime, file.CreatedAt, file.UpdatedAt)
+		"INSERT INTO sys_tool_file (created_at, updated_at, file_name, full_path, mime) VALUES (NOW(), NOW(), $1, $2, $3)",
+		file.FileName, file.FullPath, file.Mime)
 	return err
 }
 
 func (r *fileRepository) Delete(ctx context.Context, id uint) error {
 	_, err := r.db.ExecContext(ctx,
-		"UPDATE sys_tool_file SET deleted_at=NOW() WHERE id=$1", id)
+		"DELETE FROM sys_tool_file WHERE id=$1", id)
 	return err
 }
 

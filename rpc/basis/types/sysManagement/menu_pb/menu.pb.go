@@ -9,7 +9,6 @@ package menu_pb
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	common_pb "td27/rpc/basis/types/common_pb"
@@ -310,8 +309,8 @@ type MenuResp struct {
 	Affix         bool                   `protobuf:"varint,11,opt,name=affix,proto3" json:"affix,omitempty"`
 	AlwaysShow    bool                   `protobuf:"varint,12,opt,name=always_show,json=alwaysShow,proto3" json:"always_show,omitempty"`
 	Title         string                 `protobuf:"bytes,13,opt,name=title,proto3" json:"title,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,14,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,15,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,14,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     string                 `protobuf:"bytes,15,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -437,18 +436,18 @@ func (x *MenuResp) GetTitle() string {
 	return ""
 }
 
-func (x *MenuResp) GetCreatedAt() *timestamppb.Timestamp {
+func (x *MenuResp) GetCreatedAt() string {
 	if x != nil {
 		return x.CreatedAt
 	}
-	return nil
+	return ""
 }
 
-func (x *MenuResp) GetUpdatedAt() *timestamppb.Timestamp {
+func (x *MenuResp) GetUpdatedAt() string {
 	if x != nil {
 		return x.UpdatedAt
 	}
-	return nil
+	return ""
 }
 
 type MenuTreeResp struct {
@@ -647,7 +646,7 @@ var File_sysManagement_menu_proto protoreflect.FileDescriptor
 
 const file_sysManagement_menu_proto_rawDesc = "" +
 	"\n" +
-	"\x18sysManagement/menu.proto\x12\x18basis.sysManagement.menu\x1a\x13common/common.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdf\x03\n" +
+	"\x18sysManagement/menu.proto\x12\x18basis.sysManagement.menu\x1a\x13common/common.proto\"\xdf\x03\n" +
 	"\rCreateMenuReq\x12\x1b\n" +
 	"\tmenu_name\x18\x01 \x01(\tR\bmenuName\x12\x17\n" +
 	"\x04icon\x18\x02 \x01(\tH\x00R\x04icon\x88\x01\x01\x12\x12\n" +
@@ -707,7 +706,7 @@ const file_sysManagement_menu_proto_rawDesc = "" +
 	"\v_keep_aliveB\b\n" +
 	"\x06_affixB\x0e\n" +
 	"\f_always_showB\b\n" +
-	"\x06_title\"\xc4\x03\n" +
+	"\x06_title\"\x8c\x03\n" +
 	"\bMenuResp\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1b\n" +
 	"\tmenu_name\x18\x02 \x01(\tR\bmenuName\x12\x12\n" +
@@ -724,11 +723,11 @@ const file_sysManagement_menu_proto_rawDesc = "" +
 	"\x05affix\x18\v \x01(\bR\x05affix\x12\x1f\n" +
 	"\valways_show\x18\f \x01(\bR\n" +
 	"alwaysShow\x12\x14\n" +
-	"\x05title\x18\r \x01(\tR\x05title\x129\n" +
+	"\x05title\x18\r \x01(\tR\x05title\x12\x1d\n" +
 	"\n" +
-	"created_at\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"created_at\x18\x0e \x01(\tR\tcreatedAt\x12\x1d\n" +
 	"\n" +
-	"updated_at\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\x8a\x01\n" +
+	"updated_at\x18\x0f \x01(\tR\tupdatedAt\"\x8a\x01\n" +
 	"\fMenuTreeResp\x126\n" +
 	"\x04menu\x18\x01 \x01(\v2\".basis.sysManagement.menu.MenuRespR\x04menu\x12B\n" +
 	"\bchildren\x18\x02 \x03(\v2&.basis.sysManagement.menu.MenuTreeRespR\bchildren\"M\n" +
@@ -772,38 +771,35 @@ var file_sysManagement_menu_proto_goTypes = []any{
 	(*GetMenuTreeResp)(nil),       // 4: basis.sysManagement.menu.GetMenuTreeResp
 	(*GetUserMenusReq)(nil),       // 5: basis.sysManagement.menu.GetUserMenusReq
 	(*ListMenuResp)(nil),          // 6: basis.sysManagement.menu.ListMenuResp
-	(*timestamppb.Timestamp)(nil), // 7: google.protobuf.Timestamp
-	(*common_pb.IdReq)(nil),       // 8: basis.common.IdReq
-	(*common_pb.PageReq)(nil),     // 9: basis.common.PageReq
-	(*common_pb.Empty)(nil),       // 10: basis.common.Empty
-	(*common_pb.SuccessResp)(nil), // 11: basis.common.SuccessResp
+	(*common_pb.IdReq)(nil),       // 7: basis.common.IdReq
+	(*common_pb.PageReq)(nil),     // 8: basis.common.PageReq
+	(*common_pb.Empty)(nil),       // 9: basis.common.Empty
+	(*common_pb.SuccessResp)(nil), // 10: basis.common.SuccessResp
 }
 var file_sysManagement_menu_proto_depIdxs = []int32{
-	7,  // 0: basis.sysManagement.menu.MenuResp.created_at:type_name -> google.protobuf.Timestamp
-	7,  // 1: basis.sysManagement.menu.MenuResp.updated_at:type_name -> google.protobuf.Timestamp
-	2,  // 2: basis.sysManagement.menu.MenuTreeResp.menu:type_name -> basis.sysManagement.menu.MenuResp
-	3,  // 3: basis.sysManagement.menu.MenuTreeResp.children:type_name -> basis.sysManagement.menu.MenuTreeResp
-	3,  // 4: basis.sysManagement.menu.GetMenuTreeResp.tree:type_name -> basis.sysManagement.menu.MenuTreeResp
-	2,  // 5: basis.sysManagement.menu.ListMenuResp.list:type_name -> basis.sysManagement.menu.MenuResp
-	8,  // 6: basis.sysManagement.menu.Menu.GetMenu:input_type -> basis.common.IdReq
-	9,  // 7: basis.sysManagement.menu.Menu.ListMenu:input_type -> basis.common.PageReq
-	10, // 8: basis.sysManagement.menu.Menu.GetMenuTree:input_type -> basis.common.Empty
-	5,  // 9: basis.sysManagement.menu.Menu.GetUserMenus:input_type -> basis.sysManagement.menu.GetUserMenusReq
-	0,  // 10: basis.sysManagement.menu.Menu.CreateMenu:input_type -> basis.sysManagement.menu.CreateMenuReq
-	1,  // 11: basis.sysManagement.menu.Menu.UpdateMenu:input_type -> basis.sysManagement.menu.UpdateMenuReq
-	8,  // 12: basis.sysManagement.menu.Menu.DeleteMenu:input_type -> basis.common.IdReq
-	2,  // 13: basis.sysManagement.menu.Menu.GetMenu:output_type -> basis.sysManagement.menu.MenuResp
-	6,  // 14: basis.sysManagement.menu.Menu.ListMenu:output_type -> basis.sysManagement.menu.ListMenuResp
-	4,  // 15: basis.sysManagement.menu.Menu.GetMenuTree:output_type -> basis.sysManagement.menu.GetMenuTreeResp
-	4,  // 16: basis.sysManagement.menu.Menu.GetUserMenus:output_type -> basis.sysManagement.menu.GetMenuTreeResp
-	11, // 17: basis.sysManagement.menu.Menu.CreateMenu:output_type -> basis.common.SuccessResp
-	2,  // 18: basis.sysManagement.menu.Menu.UpdateMenu:output_type -> basis.sysManagement.menu.MenuResp
-	11, // 19: basis.sysManagement.menu.Menu.DeleteMenu:output_type -> basis.common.SuccessResp
-	13, // [13:20] is the sub-list for method output_type
-	6,  // [6:13] is the sub-list for method input_type
-	6,  // [6:6] is the sub-list for extension type_name
-	6,  // [6:6] is the sub-list for extension extendee
-	0,  // [0:6] is the sub-list for field type_name
+	2,  // 0: basis.sysManagement.menu.MenuTreeResp.menu:type_name -> basis.sysManagement.menu.MenuResp
+	3,  // 1: basis.sysManagement.menu.MenuTreeResp.children:type_name -> basis.sysManagement.menu.MenuTreeResp
+	3,  // 2: basis.sysManagement.menu.GetMenuTreeResp.tree:type_name -> basis.sysManagement.menu.MenuTreeResp
+	2,  // 3: basis.sysManagement.menu.ListMenuResp.list:type_name -> basis.sysManagement.menu.MenuResp
+	7,  // 4: basis.sysManagement.menu.Menu.GetMenu:input_type -> basis.common.IdReq
+	8,  // 5: basis.sysManagement.menu.Menu.ListMenu:input_type -> basis.common.PageReq
+	9,  // 6: basis.sysManagement.menu.Menu.GetMenuTree:input_type -> basis.common.Empty
+	5,  // 7: basis.sysManagement.menu.Menu.GetUserMenus:input_type -> basis.sysManagement.menu.GetUserMenusReq
+	0,  // 8: basis.sysManagement.menu.Menu.CreateMenu:input_type -> basis.sysManagement.menu.CreateMenuReq
+	1,  // 9: basis.sysManagement.menu.Menu.UpdateMenu:input_type -> basis.sysManagement.menu.UpdateMenuReq
+	7,  // 10: basis.sysManagement.menu.Menu.DeleteMenu:input_type -> basis.common.IdReq
+	2,  // 11: basis.sysManagement.menu.Menu.GetMenu:output_type -> basis.sysManagement.menu.MenuResp
+	6,  // 12: basis.sysManagement.menu.Menu.ListMenu:output_type -> basis.sysManagement.menu.ListMenuResp
+	4,  // 13: basis.sysManagement.menu.Menu.GetMenuTree:output_type -> basis.sysManagement.menu.GetMenuTreeResp
+	4,  // 14: basis.sysManagement.menu.Menu.GetUserMenus:output_type -> basis.sysManagement.menu.GetMenuTreeResp
+	10, // 15: basis.sysManagement.menu.Menu.CreateMenu:output_type -> basis.common.SuccessResp
+	2,  // 16: basis.sysManagement.menu.Menu.UpdateMenu:output_type -> basis.sysManagement.menu.MenuResp
+	10, // 17: basis.sysManagement.menu.Menu.DeleteMenu:output_type -> basis.common.SuccessResp
+	11, // [11:18] is the sub-list for method output_type
+	4,  // [4:11] is the sub-list for method input_type
+	4,  // [4:4] is the sub-list for extension type_name
+	4,  // [4:4] is the sub-list for extension extendee
+	0,  // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_sysManagement_menu_proto_init() }

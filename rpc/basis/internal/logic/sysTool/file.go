@@ -10,9 +10,9 @@ import (
 	"td27/rpc/basis/internal/model/common"
 	sysToolModel "td27/rpc/basis/internal/model/sysTool"
 	"td27/rpc/basis/internal/svc"
-	"td27/rpc/basis/internal/util"
 	"td27/rpc/basis/types/common_pb"
 	"td27/rpc/basis/types/sysTool/file_pb"
+"td27/rpc/basis/internal/util"
 )
 
 type FileLogic struct {
@@ -39,8 +39,8 @@ func (fl *FileLogic) mapFileToResp(file *sysToolModel.FileModel) *file_pb.FileRe
 		FileName:  file.FileName,
 		FullPath:  file.FullPath,
 		Mime:      file.Mime,
-		CreatedAt: util.ToProtoTimestamp(file.CreatedAt),
-		UpdatedAt: util.ToProtoTimestamp(file.UpdatedAt),
+		CreatedAt: util.Ts(file.CreatedAt),
+		UpdatedAt: util.Ts(file.UpdatedAt),
 	}
 }
 
@@ -51,7 +51,7 @@ func (fl *FileLogic) UploadFile(in *file_pb.UploadFileReq) (*file_pb.UploadFileR
 	}
 
 	return &file_pb.UploadFileResp{
-		FileId:   int64(file.ID),
+		FileId:   uint64(file.ID),
 		FileName: file.FileName,
 		FullPath: file.FullPath,
 		Mime:     file.Mime,

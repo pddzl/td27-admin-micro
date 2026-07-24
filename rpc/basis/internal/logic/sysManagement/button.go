@@ -10,9 +10,9 @@ import (
 	"td27/rpc/basis/internal/model/common"
 	"td27/rpc/basis/internal/model/sysManagement"
 	"td27/rpc/basis/internal/svc"
-	"td27/rpc/basis/internal/util"
 	"td27/rpc/basis/types/common_pb"
 	"td27/rpc/basis/types/sysManagement/button_pb"
+"td27/rpc/basis/internal/util"
 )
 
 type ButtonLogic struct {
@@ -40,8 +40,8 @@ func (bl *ButtonLogic) mapButtonToResp(button *sysManagement.ButtonModel) *butto
 		ButtonName:  button.ButtonName,
 		Description: button.Description,
 		PagePath:    button.PagePath,
-		CreatedAt:   util.ToProtoTimestamp(button.CreatedAt),
-		UpdatedAt:   util.ToProtoTimestamp(button.UpdatedAt),
+		CreatedAt:   util.Ts(button.CreatedAt),
+		UpdatedAt:   util.Ts(button.UpdatedAt),
 	}
 }
 

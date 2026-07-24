@@ -87,19 +87,19 @@ func (h *MenuHandler) GetElTreeMenus(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 			item := map[string]interface{}{
-				"id":        n.Menu.Id,
-				"menu_name": n.Menu.MenuName,
-				"icon":      n.Menu.Icon,
-				"path":      n.Menu.Path,
-				"component": n.Menu.Component,
-				"redirect":  n.Menu.Redirect,
-				"parentId":  n.Menu.ParentId,
-				"sort":      n.Menu.Sort,
-				"hidden":    n.Menu.Hidden,
-				"keepAlive": n.Menu.KeepAlive,
-				"affix":     n.Menu.Affix,
-				"alwaysShow": n.Menu.AlwaysShow,
-				"title":     n.Menu.Title,
+				"id":          n.Menu.Id,
+				"menu_name":   n.Menu.MenuName,
+				"icon":        n.Menu.Icon,
+				"path":        n.Menu.Path,
+				"component":   n.Menu.Component,
+				"redirect":    n.Menu.Redirect,
+				"parent_id":   n.Menu.ParentId,
+				"sort":        n.Menu.Sort,
+				"hidden":      n.Menu.Hidden,
+				"keep_alive":  n.Menu.KeepAlive,
+				"affix":       n.Menu.Affix,
+				"always_show": n.Menu.AlwaysShow,
+				"title":       n.Menu.Title,
 			}
 			if len(n.Children) > 0 {
 				item["children"] = transform(n.Children)
@@ -170,15 +170,15 @@ func menuTreeToResp(tree []*menu_pb.MenuTreeResp) []map[string]interface{} {
 			"path":        node.Menu.Path,
 			"component":   node.Menu.Component,
 			"redirect":    node.Menu.Redirect,
-			"parentId":    node.Menu.ParentId,
+			"parent_id":   node.Menu.ParentId,
 			"sort":        node.Menu.Sort,
 			"hidden":      node.Menu.Hidden,
-			"keepAlive":   node.Menu.KeepAlive,
+			"keep_alive":  node.Menu.KeepAlive,
 			"affix":       node.Menu.Affix,
-			"alwaysShow":  node.Menu.AlwaysShow,
+			"always_show": node.Menu.AlwaysShow,
 			"title":       node.Menu.Title,
-			"createdAt":   node.Menu.CreatedAt,
-			"updatedAt":   node.Menu.UpdatedAt,
+			"created_at":  node.Menu.CreatedAt,
+			"updated_at":  node.Menu.UpdatedAt,
 		}
 		if len(node.Children) > 0 {
 			item["children"] = menuTreeToResp(node.Children)

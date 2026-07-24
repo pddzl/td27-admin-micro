@@ -12,6 +12,7 @@ import (
 	casbinModel "github.com/casbin/casbin/v2/model"
 	"github.com/robfig/cron/v3"
 
+	casbinAdapter "td27/rpc/basis/internal/casbin"
 	"td27/rpc/basis/internal/config"
 	"td27/rpc/basis/internal/initialization"
 	sysManagementRepo "td27/rpc/basis/internal/repository/sysManagement"
@@ -189,9 +190,8 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		return nil
 	}
 
-	// TODO: Implement PermissionAdapter when repository layer is done
-	// For now, use a dummy adapter, will replace with proper adapter later
-	casbinEnforcer, err := casbin.NewSyncedCachedEnforcer(casbinModel)
+	pgAdapter := casbinAdapter.NewPostgresAdapter(db)
+	casbinEnforcer, err := casbin.NewSyncedCachedEnforcer(casbinModel, pgAdapter)
 	if err != nil {
 		logx.Errorf("init casbin enforcer err: %v", err)
 		panic(err)
@@ -204,12 +204,18 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	}
 	casbinEnforcer.SetExpireTime(time.Duration(cacheTTL) * time.Second)
 
+	// Load policies from DB
+	if err = casbinEnforcer.LoadPolicy(); err != nil {
+		logx.Errorf("load casbin policy err: %v", err)
+		panic(err)
+	}
+
 	// Start auto load policy if enabled
 	if c.Casbin.AutoLoadInterval > 0 {
 		casbinEnforcer.StartAutoLoadPolicy(time.Duration(c.Casbin.AutoLoadInterval) * time.Second)
 	}
 
-	logx.Infof("init casbin enforcer success")
+	logx.Infof("init casbin enforcer success, policies loaded")
 
 	// Initialize JWT manager
 	jwtManager := NewJWTManager(c.JWT)
@@ -241,7 +247,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 
 	// Initialize Services
 	userService := sysManagementService.NewUserService(userRepo, roleRepo)
-	roleService := sysManagementService.NewRoleService(roleRepo, permRepo, userRepo)
+	roleService := sysManagementService.NewRoleService(roleRepo, permRepo, userRepo, casbinEnforcer)
 	permService := sysManagementService.NewPermissionService(permRepo, roleRepo, casbinEnforcer)
 	menuService := sysManagementService.NewMenuService(menuRepo)
 	deptService := sysManagementService.NewDeptService(deptRepo)

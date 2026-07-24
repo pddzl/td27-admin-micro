@@ -10,10 +10,10 @@ import (
 	"td27/rpc/basis/internal/model/common"
 	"td27/rpc/basis/internal/model/sysManagement"
 	"td27/rpc/basis/internal/svc"
-	"td27/rpc/basis/internal/util"
 	"td27/rpc/basis/types/common_pb"
 	"td27/rpc/basis/types/sysManagement/role_pb"
 	"td27/rpc/basis/types/sysManagement/user_pb"
+"td27/rpc/basis/internal/util"
 )
 
 type UserLogic struct {
@@ -45,8 +45,8 @@ func (ul *UserLogic) mapUserToResp(user *sysManagement.UserModel) *user_pb.UserR
 			Id:        int64(role.ID),
 			RoleName:  role.RoleName,
 			ParentId:  &roleParentID,
-			CreatedAt: util.ToProtoTimestamp(role.CreatedAt),
-			UpdatedAt: util.ToProtoTimestamp(role.UpdatedAt),
+			CreatedAt: util.Ts(role.CreatedAt),
+			UpdatedAt: util.Ts(role.UpdatedAt),
 		})
 	}
 
@@ -58,8 +58,8 @@ func (ul *UserLogic) mapUserToResp(user *sysManagement.UserModel) *user_pb.UserR
 		Active:    user.Active,
 		DeptId:    int64(user.DeptID),
 		Roles:     roles,
-		CreatedAt: util.ToProtoTimestamp(user.CreatedAt),
-		UpdatedAt: util.ToProtoTimestamp(user.UpdatedAt),
+		CreatedAt: util.Ts(user.CreatedAt),
+		UpdatedAt: util.Ts(user.UpdatedAt),
 	}
 }
 
@@ -95,7 +95,7 @@ func (ul *UserLogic) Login(in *user_pb.LoginReq) (*user_pb.LoginResp, error) {
 	return &user_pb.LoginResp{
 		Token:     token,
 		User:      ul.mapUserToResp(userWithRoles),
-		ExpiresAt: util.ToProtoTimestamp(expireAt),
+		ExpiresAt: expireAt.Format("2006-01-02 15:04:05.000000"),
 	}, nil
 }
 

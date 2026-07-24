@@ -31,7 +31,7 @@ func NewCacheRepository(db *sqlx.DB) CacheRepository {
 	return &cacheRepository{db: db}
 }
 
-const cacheColumns = `id, COALESCE(created_at, NOW()) as created_at, COALESCE(updated_at, NOW()) as updated_at, deleted_at, username, key, value, expires_at`
+const cacheColumns = `id, created_at, updated_at, deleted_at, username, key, value, expires_at`
 
 func (r *cacheRepository) FindOne(ctx context.Context, key string) (*sysTool.CacheModel, error) {
 	var cache sysTool.CacheModel
@@ -49,8 +49,8 @@ func (r *cacheRepository) FindOne(ctx context.Context, key string) (*sysTool.Cac
 
 func (r *cacheRepository) Create(ctx context.Context, cache *sysTool.CacheModel) error {
 	_, err := r.db.ExecContext(ctx,
-		"INSERT INTO sys_tool_cache (username, key, value, expires_at, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6)",
-		cache.Username, cache.Key, cache.Value, cache.ExpiresAt, cache.CreatedAt, cache.UpdatedAt)
+		"INSERT INTO sys_tool_cache (created_at, updated_at, username, key, value, expires_at) VALUES (NOW(), NOW(), $1, $2, $3, $4)",
+		cache.Username, cache.Key, cache.Value, cache.ExpiresAt)
 	return err
 }
 
@@ -63,13 +63,13 @@ func (r *cacheRepository) Update(ctx context.Context, cache *sysTool.CacheModel)
 
 func (r *cacheRepository) Delete(ctx context.Context, key string) error {
 	_, err := r.db.ExecContext(ctx,
-		"UPDATE sys_tool_cache SET deleted_at=NOW() WHERE key=$1", key)
+		"DELETE FROM sys_tool_cache WHERE key=$1", key)
 	return err
 }
 
 func (r *cacheRepository) DeleteExpired(ctx context.Context) error {
 	_, err := r.db.ExecContext(ctx,
-		"UPDATE sys_tool_cache SET deleted_at=NOW() WHERE expires_at <= $1", time.Now())
+		"DELETE FROM sys_tool_cache WHERE expires_at <= $1", time.Now())
 	return err
 }
 

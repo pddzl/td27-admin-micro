@@ -6,8 +6,8 @@ import (
 
 type Td27Model struct {
 	ID        uint       `json:"id" db:"id"`
-	CreatedAt time.Time  `json:"createdAt" db:"created_at"`
-	UpdatedAt time.Time  `json:"updatedAt" db:"updated_at"`
+	CreatedAt *time.Time `json:"createdAt" db:"created_at"`
+	UpdatedAt *time.Time `json:"updatedAt" db:"updated_at"`
 	DeletedAt *time.Time `json:"-" db:"deleted_at"`
 }
 

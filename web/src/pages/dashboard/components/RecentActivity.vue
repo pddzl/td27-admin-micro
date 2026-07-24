@@ -26,6 +26,7 @@ function getAvatarColor(name: string): string {
 }
 
 function getActionText(method: string): string {
+  if (!method) return "操作"
   const actionMap: Record<string, string> = {
     GET: "访问",
     POST: "创建",

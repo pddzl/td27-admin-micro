@@ -8,12 +8,12 @@ import (
 	"google.golang.org/grpc/status"
 
 	"td27/rpc/basis/internal/svc"
-	"td27/rpc/basis/internal/util"
 	sysMonitorModel "td27/rpc/basis/internal/model/sysMonitor"
 
 	"td27/rpc/basis/types/common_pb"
 	"td27/rpc/basis/types/sysMonitor/dashboard_pb"
 	"td27/rpc/basis/types/sysMonitor/operation_log_pb"
+"td27/rpc/basis/internal/util"
 )
 
 type DashboardLogic struct {
@@ -42,7 +42,7 @@ func (l *DashboardLogic) mapOpsLogToResp(log *sysMonitorModel.OperationLogModel)
 		RespTime:  log.RespTime,
 		UserId:    int64(log.UserID),
 		UserName:  log.UserName,
-		CreatedAt: util.ToProtoTimestamp(log.CreatedAt),
+		CreatedAt: util.Ts(log.CreatedAt),
 	}
 }
 

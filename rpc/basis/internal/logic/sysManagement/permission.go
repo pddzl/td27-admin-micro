@@ -10,9 +10,9 @@ import (
 	"td27/rpc/basis/internal/model/common"
 	"td27/rpc/basis/internal/model/sysManagement"
 	"td27/rpc/basis/internal/svc"
-	"td27/rpc/basis/internal/util"
 	"td27/rpc/basis/types/common_pb"
 	"td27/rpc/basis/types/sysManagement/permission_pb"
+"td27/rpc/basis/internal/util"
 )
 
 type PermissionLogic struct {
@@ -41,8 +41,8 @@ func (pl *PermissionLogic) mapPermissionToResp(perm *sysManagement.PermissionMod
 		Resource:  perm.Resource,
 		Action:    actionToProto(perm.Action),
 		DomainId:  int64(perm.DomainID),
-		CreatedAt: util.ToProtoTimestamp(perm.CreatedAt),
-		UpdatedAt: util.ToProtoTimestamp(perm.UpdatedAt),
+		CreatedAt: util.Ts(perm.CreatedAt),
+		UpdatedAt: util.Ts(perm.UpdatedAt),
 	}
 }
 

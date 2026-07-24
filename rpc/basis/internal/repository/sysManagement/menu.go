@@ -20,7 +20,7 @@ type MenuRepository interface {
 	Delete(ctx context.Context, id uint) error
 }
 
-const menuColumns = `id, COALESCE(created_at, NOW()) as created_at, COALESCE(updated_at, NOW()) as updated_at, deleted_at,
+const menuColumns = `id, created_at, updated_at, deleted_at,
 	COALESCE(menu_name, '') as menu_name, COALESCE(icon, '') as icon, COALESCE(path, '') as path,
 	COALESCE(component, '') as component, COALESCE(redirect, '') as redirect, parent_id, sort, hidden, keep_alive, affix, always_show, COALESCE(title, '') as title`
 
@@ -70,7 +70,7 @@ func (r *menuRepository) FindByRoleIDs(ctx context.Context, roleIDs []uint) ([]*
 		return []*sysManagement.MenuModel{}, nil
 	}
 
-	query := `SELECT DISTINCT m.id, COALESCE(m.created_at, NOW()) as created_at, COALESCE(m.updated_at, NOW()) as updated_at, m.deleted_at,
+	query := `SELECT DISTINCT m.id, m.created_at as created_at, m.updated_at as updated_at, m.deleted_at,
 		COALESCE(m.menu_name, '') as menu_name, COALESCE(m.icon, '') as icon, COALESCE(m.path, '') as path,
 		COALESCE(m.component, '') as component, COALESCE(m.redirect, '') as redirect, m.parent_id, m.sort, m.hidden, m.keep_alive, m.affix, m.always_show, COALESCE(m.title, '') as title
 		FROM sys_management_menu m
@@ -95,8 +95,8 @@ func (r *menuRepository) FindByRoleIDs(ctx context.Context, roleIDs []uint) ([]*
 
 func (r *menuRepository) Create(ctx context.Context, menu *sysManagement.MenuModel) error {
 	_, err := r.db.ExecContext(ctx,
-		`INSERT INTO sys_management_menu (menu_name, icon, path, component, redirect, parent_id, sort, hidden, keep_alive, affix, always_show, title)
-		 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+		`INSERT INTO sys_management_menu (created_at, updated_at, menu_name, icon, path, component, redirect, parent_id, sort, hidden, keep_alive, affix, always_show, title)
+		 VALUES (NOW(), NOW(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
 		menu.MenuName, menu.Icon, menu.Path, menu.Component, menu.Redirect,
 		menu.ParentID, menu.Sort, menu.Hidden, menu.KeepAlive, menu.Affix, menu.AlwaysShow, menu.Title)
 	return err
@@ -122,13 +122,13 @@ func (r *menuRepository) Delete(ctx context.Context, id uint) error {
 	defer tx.Rollback()
 
 	_, err = tx.ExecContext(ctx,
-		"UPDATE sys_management_menu SET deleted_at=NOW() WHERE parent_id=$1 AND deleted_at IS NULL", id)
+		"DELETE FROM sys_management_menu WHERE parent_id=$1", id)
 	if err != nil {
 		return err
 	}
 
 	_, err = tx.ExecContext(ctx,
-		"UPDATE sys_management_menu SET deleted_at=NOW() WHERE id=$1 AND deleted_at IS NULL", id)
+		"DELETE FROM sys_management_menu WHERE id=$1", id)
 	if err != nil {
 		return err
 	}

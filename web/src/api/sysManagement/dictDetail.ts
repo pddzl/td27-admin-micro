@@ -5,7 +5,7 @@ interface dictDetailData {
   value: string
   sort: number
   dictId: number | null
-  parentId?: number
+  parent_id?: number
   children?: dictDetailDataModel[]
   description: string
 }
@@ -37,14 +37,14 @@ export function dictDetailFlatApi(data: { dictId: number }) {
 }
 
 export function dictDetailCreateApi(data: dictDetailData) {
-  const { dictId, parentId, ...rest } = data
+  const { dictId, parent_id, ...rest } = data
   return request<ApiResponseData<dictDetailDataModel>>({
     url: "/dict-detail/create",
     method: "post",
     data: {
       ...rest,
       dict_id: dictId,
-      parent_id: parentId
+      parent_id
     }
   })
 }
@@ -58,14 +58,14 @@ export function dictDetailDeleteApi(data: CId) {
 }
 
 export function dictDetailUpdateApi(data: dictDetailData & CId) {
-  const { dictId, parentId, ...rest } = data
+  const { dictId, parent_id, ...rest } = data
   return request<ApiResponseData<dictDetailDataModel>>({
     url: "/dict-detail/update",
     method: "post",
     data: {
       ...rest,
       dict_id: dictId,
-      parent_id: parentId
+      parent_id
     }
   })
 }

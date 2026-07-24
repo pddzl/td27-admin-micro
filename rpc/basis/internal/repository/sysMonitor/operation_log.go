@@ -31,12 +31,12 @@ func NewOperationLogRepository(db *sqlx.DB) OperationLogRepository {
 
 func (r *operationLogRepository) Create(ctx context.Context, log *sysMonitor.OperationLogModel) error {
 	_, err := r.db.ExecContext(ctx,
-		"INSERT INTO sys_monitor_operation_log (ip, method, path, status, user_agent, req_param, resp_data, resp_time, user_id, user_name, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)",
-		log.Ip, log.Method, log.Path, log.Status, log.UserAgent, log.ReqParam, log.RespData, log.RespTime, log.UserID, log.UserName, log.CreatedAt, log.UpdatedAt)
+		"INSERT INTO sys_monitor_operation_log (created_at, updated_at, ip, method, path, status, user_agent, req_param, resp_data, resp_time, user_id, user_name) VALUES (NOW(), NOW(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
+		log.Ip, log.Method, log.Path, log.Status, log.UserAgent, log.ReqParam, log.RespData, log.RespTime, log.UserID, log.UserName)
 	return err
 }
 
-const operationLogColumns = `id, COALESCE(created_at, NOW()) as created_at, COALESCE(updated_at, NOW()) as updated_at, deleted_at, ip, method, path, status, user_agent, req_param, resp_data, resp_time, user_id, user_name`
+const operationLogColumns = `id, created_at, updated_at, deleted_at, ip, method, path, status, user_agent, req_param, resp_data, resp_time, user_id, user_name`
 
 func (r *operationLogRepository) List(ctx context.Context, page *common.PageInfo, userID *uint, status *int, path, method *string) ([]*sysMonitor.OperationLogModel, int64, error) {
 	baseWhere := "WHERE deleted_at IS NULL"
@@ -82,18 +82,18 @@ func (r *operationLogRepository) List(ctx context.Context, page *common.PageInfo
 func (r *operationLogRepository) DeleteExpired(ctx context.Context, days int) error {
 	cutoff := time.Now().AddDate(0, 0, -days)
 	_, err := r.db.ExecContext(ctx,
-		"UPDATE sys_monitor_operation_log SET deleted_at=NOW() WHERE created_at < $1", cutoff)
+		"DELETE FROM sys_monitor_operation_log WHERE created_at < $1", cutoff)
 	return err
 }
 
 func (r *operationLogRepository) Delete(ctx context.Context, id uint) error {
 	_, err := r.db.ExecContext(ctx,
-		"UPDATE sys_monitor_operation_log SET deleted_at=NOW() WHERE id=$1", id)
+		"DELETE FROM sys_monitor_operation_log WHERE id=$1", id)
 	return err
 }
 
 func (r *operationLogRepository) DeleteByIds(ctx context.Context, ids []uint) error {
-	query, args, err := sqlx.In("UPDATE sys_monitor_operation_log SET deleted_at=NOW() WHERE id IN (?)", ids)
+	query, args, err := sqlx.In("DELETE FROM sys_monitor_operation_log WHERE id IN (?)", ids)
 	if err != nil {
 		return err
 	}

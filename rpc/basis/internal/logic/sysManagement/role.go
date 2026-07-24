@@ -10,9 +10,9 @@ import (
 	"td27/rpc/basis/internal/model/common"
 	"td27/rpc/basis/internal/model/sysManagement"
 	"td27/rpc/basis/internal/svc"
-	"td27/rpc/basis/internal/util"
 	"td27/rpc/basis/types/common_pb"
 	"td27/rpc/basis/types/sysManagement/role_pb"
+"td27/rpc/basis/internal/util"
 )
 
 type RoleLogic struct {
@@ -43,8 +43,8 @@ func (rl *RoleLogic) mapRoleToResp(role *sysManagement.RoleModel) *role_pb.RoleR
 		Id:        int64(role.ID),
 		RoleName:  role.RoleName,
 		ParentId:  &parentID,
-		CreatedAt: util.ToProtoTimestamp(role.CreatedAt),
-		UpdatedAt: util.ToProtoTimestamp(role.UpdatedAt),
+		CreatedAt: util.Ts(role.CreatedAt),
+		UpdatedAt: util.Ts(role.UpdatedAt),
 	}
 }
 

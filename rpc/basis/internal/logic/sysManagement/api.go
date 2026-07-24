@@ -10,10 +10,10 @@ import (
 	"td27/rpc/basis/internal/model/common"
 	"td27/rpc/basis/internal/model/sysManagement"
 	"td27/rpc/basis/internal/svc"
-	"td27/rpc/basis/internal/util"
 
 	"td27/rpc/basis/types/common_pb"
 	"td27/rpc/basis/types/sysManagement/api_pb"
+"td27/rpc/basis/internal/util"
 )
 
 type APILogic struct {
@@ -42,8 +42,8 @@ func (al *APILogic) mapAPIToResp(api *sysManagement.ApiModel) *api_pb.APIResp {
 		GroupEn:     api.GroupEN,
 		GroupCn:     api.GroupCN,
 		Description: api.Description,
-		CreatedAt:   util.ToProtoTimestamp(api.CreatedAt),
-		UpdatedAt:   util.ToProtoTimestamp(api.UpdatedAt),
+		CreatedAt:   util.Ts(api.CreatedAt),
+		UpdatedAt:   util.Ts(api.UpdatedAt),
 	}
 }
 

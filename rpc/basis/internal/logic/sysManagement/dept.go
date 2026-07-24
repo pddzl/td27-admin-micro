@@ -10,9 +10,9 @@ import (
 	"td27/rpc/basis/internal/model/common"
 	"td27/rpc/basis/internal/model/sysManagement"
 	"td27/rpc/basis/internal/svc"
-	"td27/rpc/basis/internal/util"
 	"td27/rpc/basis/types/common_pb"
 	"td27/rpc/basis/types/sysManagement/dept_pb"
+"td27/rpc/basis/internal/util"
 )
 
 type DeptLogic struct {
@@ -42,8 +42,8 @@ func (dl *DeptLogic) mapDeptToResp(dept *sysManagement.DeptModel) *dept_pb.DeptR
 		Level:     uint32(dept.Level),
 		Sort:      uint32(dept.Sort),
 		Status:    dept.Status,
-		CreatedAt: util.ToProtoTimestamp(dept.CreatedAt),
-		UpdatedAt: util.ToProtoTimestamp(dept.UpdatedAt),
+		CreatedAt: util.Ts(dept.CreatedAt),
+		UpdatedAt: util.Ts(dept.UpdatedAt),
 	}
 }
 

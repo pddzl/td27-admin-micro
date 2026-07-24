@@ -35,7 +35,7 @@ func NewUserRepository(db *sqlx.DB) UserRepository {
 	return &userRepository{db: db}
 }
 
-const userColumns = `id, COALESCE(created_at, NOW()) as created_at, COALESCE(updated_at, NOW()) as updated_at, deleted_at, username, password, phone, email, active, dept_id`
+const userColumns = `id, created_at, updated_at, deleted_at, username, password, phone, email, active, dept_id`
 
 func (r *userRepository) FindOne(ctx context.Context, id uint) (*sysManagement.UserModel, error) {
 	var user sysManagement.UserModel
@@ -74,7 +74,7 @@ func (r *userRepository) FindOneWithRoles(ctx context.Context, id uint) (*sysMan
 	// Load associated roles
 	var roles []*sysManagement.RoleModel
 	err = r.db.SelectContext(ctx, &roles,
-		`SELECT r.id, COALESCE(r.created_at, NOW()) as created_at, COALESCE(r.updated_at, NOW()) as updated_at, r.deleted_at, r.role_name, r.parent_id, COALESCE(r.permission_hash, '') as permission_hash
+		`SELECT r.id, r.created_at as created_at, r.updated_at as updated_at, r.deleted_at, r.role_name, r.parent_id, COALESCE(r.permission_hash, '') as permission_hash
 		 FROM sys_management_role r
 		 JOIN sys_management_user_roles ur ON ur.role_id = r.id
 		 WHERE ur.user_id = $1 AND r.deleted_at IS NULL`, id)
@@ -123,8 +123,8 @@ func (r *userRepository) List(ctx context.Context, page *common.PageInfo, deptID
 
 func (r *userRepository) Create(ctx context.Context, user *sysManagement.UserModel) error {
 	now := time.Now()
-	user.CreatedAt = now
-	user.UpdatedAt = now
+	user.CreatedAt = &now
+	user.UpdatedAt = &now
 
 	query := `INSERT INTO sys_management_user (created_at, updated_at, username, password, phone, email, active, dept_id)
 	           VALUES (:created_at, :updated_at, :username, :password, :phone, :email, :active, :dept_id)
@@ -151,8 +151,21 @@ func (r *userRepository) Update(ctx context.Context, user *sysManagement.UserMod
 }
 
 func (r *userRepository) Delete(ctx context.Context, id uint) error {
-	_, err := r.db.ExecContext(ctx, "UPDATE sys_management_user SET deleted_at = NOW() WHERE id = $1 AND deleted_at IS NULL", id)
-	return err
+	tx, err := r.db.BeginTxx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	if _, err := tx.ExecContext(ctx, "DELETE FROM sys_management_user_roles WHERE user_id = $1", id); err != nil {
+		return err
+	}
+
+	if _, err := tx.ExecContext(ctx, "DELETE FROM sys_management_user WHERE id = $1", id); err != nil {
+		return err
+	}
+
+	return tx.Commit()
 }
 
 func (r *userRepository) UpdatePassword(ctx context.Context, id uint, newPasswordHash string) error {

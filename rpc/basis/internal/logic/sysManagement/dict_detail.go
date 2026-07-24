@@ -10,10 +10,10 @@ import (
 	"td27/rpc/basis/internal/model/common"
 	"td27/rpc/basis/internal/model/sysManagement"
 	"td27/rpc/basis/internal/svc"
-	"td27/rpc/basis/internal/util"
 	"td27/rpc/basis/types/common_pb"
 	"td27/rpc/basis/types/sysManagement/dict_detail_pb"
 	"td27/rpc/basis/types/sysManagement/dict_pb"
+"td27/rpc/basis/internal/util"
 )
 
 type DictDetailLogic struct {
@@ -30,7 +30,7 @@ func NewDictDetailLogic(ctx context.Context, svcCtx *svc.ServiceContext) *DictDe
 	}
 }
 
-func (dl *DictDetailLogic) CreateDictDetail(in *dict_detail_pb.CreateDictDetailReq) (*common_pb.SuccessResp, error) {
+func (dl *DictDetailLogic) CreateDictDetail(in *dict_detail_pb.CreateDictDetailReq) (*dict_pb.DictDetailResp, error) {
 	dict, err := dl.svcCtx.DictService.GetByID(dl.ctx, uint(in.DictId))
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "get dictionary failed: %v", err)
@@ -60,7 +60,19 @@ func (dl *DictDetailLogic) CreateDictDetail(in *dict_detail_pb.CreateDictDetailR
 		return nil, status.Errorf(codes.Internal, "create dictionary detail failed: %v", err)
 	}
 
-	return &common_pb.SuccessResp{Success: true}, nil
+	resp := &dict_pb.DictDetailResp{
+		Id:          int64(detail.ID),
+		Label:       detail.Label,
+		Value:       detail.Value,
+		Sort:        int32(detail.Sort),
+		Description: detail.Description,
+		CreatedAt:   util.Ts(detail.CreatedAt),
+		UpdatedAt:   util.Ts(detail.UpdatedAt),
+	}
+	if detail.ParentID != nil {
+		resp.ParentId = int64(*detail.ParentID)
+	}
+	return resp, nil
 }
 
 func (dl *DictDetailLogic) UpdateDictDetail(in *dict_detail_pb.UpdateDictDetailReq) (*dict_pb.DictDetailResp, error) {
@@ -99,15 +111,19 @@ func (dl *DictDetailLogic) UpdateDictDetail(in *dict_detail_pb.UpdateDictDetailR
 		return nil, status.Errorf(codes.Internal, "get updated detail failed: %v", err)
 	}
 
-	return &dict_pb.DictDetailResp{
+	resp := &dict_pb.DictDetailResp{
 		Id:          int64(updatedDetail.ID),
 		Label:       updatedDetail.Label,
 		Value:       updatedDetail.Value,
 		Sort:        int32(updatedDetail.Sort),
 		Description: updatedDetail.Description,
-		CreatedAt:   util.ToProtoTimestamp(updatedDetail.CreatedAt),
-		UpdatedAt:   util.ToProtoTimestamp(updatedDetail.UpdatedAt),
-	}, nil
+		CreatedAt:   util.Ts(updatedDetail.CreatedAt),
+		UpdatedAt:   util.Ts(updatedDetail.UpdatedAt),
+	}
+	if updatedDetail.ParentID != nil {
+		resp.ParentId = int64(*updatedDetail.ParentID)
+	}
+	return resp, nil
 }
 
 func (dl *DictDetailLogic) DeleteDictDetail(in *common_pb.IdReq) (*common_pb.SuccessResp, error) {
@@ -159,18 +175,44 @@ func (dl *DictDetailLogic) FlatDictDetails(in *dict_detail_pb.FlatDictDetailsReq
 
 	list := make([]*dict_pb.DictDetailResp, 0, len(details))
 	for _, detail := range details {
-		list = append(list, &dict_pb.DictDetailResp{
+		resp := &dict_pb.DictDetailResp{
 			Id:          int64(detail.ID),
 			Label:       detail.Label,
 			Value:       detail.Value,
 			Sort:        int32(detail.Sort),
 			Description: detail.Description,
-			CreatedAt:   util.ToProtoTimestamp(detail.CreatedAt),
-			UpdatedAt:   util.ToProtoTimestamp(detail.UpdatedAt),
-		})
+			CreatedAt:   util.Ts(detail.CreatedAt),
+			UpdatedAt:   util.Ts(detail.UpdatedAt),
+		}
+		if detail.ParentID != nil {
+			resp.ParentId = int64(*detail.ParentID)
+		}
+		list = append(list, resp)
 	}
 
 	return &dict_detail_pb.FlatDictDetailsResp{List: list}, nil
+}
+
+func mapDetailToResp(detail *sysManagement.DictDetailModel) *dict_pb.DictDetailResp {
+	resp := &dict_pb.DictDetailResp{
+		Id:          int64(detail.ID),
+		Label:       detail.Label,
+		Value:       detail.Value,
+		Sort:        int32(detail.Sort),
+		Description: detail.Description,
+		CreatedAt:   util.Ts(detail.CreatedAt),
+		UpdatedAt:   util.Ts(detail.UpdatedAt),
+	}
+	if detail.ParentID != nil {
+		resp.ParentId = int64(*detail.ParentID)
+	}
+	if len(detail.Children) > 0 {
+		resp.Children = make([]*dict_pb.DictDetailResp, 0, len(detail.Children))
+		for _, child := range detail.Children {
+			resp.Children = append(resp.Children, mapDetailToResp(child))
+		}
+	}
+	return resp
 }
 
 func (dl *DictDetailLogic) ListDictDetail(in *dict_detail_pb.ListDictDetailReq) (*dict_detail_pb.ListDictDetailResp, error) {
@@ -192,15 +234,7 @@ func (dl *DictDetailLogic) ListDictDetail(in *dict_detail_pb.ListDictDetailReq) 
 
 	list := make([]*dict_pb.DictDetailResp, 0, len(details))
 	for _, detail := range details {
-		list = append(list, &dict_pb.DictDetailResp{
-			Id:          int64(detail.ID),
-			Label:       detail.Label,
-			Value:       detail.Value,
-			Sort:        int32(detail.Sort),
-			Description: detail.Description,
-			CreatedAt:   util.ToProtoTimestamp(detail.CreatedAt),
-			UpdatedAt:   util.ToProtoTimestamp(detail.UpdatedAt),
-		})
+		list = append(list, mapDetailToResp(detail))
 	}
 
 	return &dict_detail_pb.ListDictDetailResp{

@@ -31,7 +31,7 @@ func NewPermissionRepository(db *sqlx.DB) PermissionRepository {
 	return &permissionRepository{db: db}
 }
 
-const permColumns = `id, COALESCE(created_at, NOW()) as created_at, COALESCE(updated_at, NOW()) as updated_at, deleted_at, name, domain, resource, action, domain_id`
+const permColumns = `id, created_at, updated_at, deleted_at, name, domain, resource, action, domain_id`
 
 func (r *permissionRepository) FindOne(ctx context.Context, id uint) (*sysManagement.PermissionModel, error) {
 	var perm sysManagement.PermissionModel
@@ -67,7 +67,7 @@ func (r *permissionRepository) FindByDomain(ctx context.Context, domain sysManag
 func (r *permissionRepository) FindByRoleID(ctx context.Context, roleID uint) ([]*sysManagement.PermissionModel, error) {
 	var perms []*sysManagement.PermissionModel
 	err := r.db.SelectContext(ctx, &perms,
-		`SELECT p.id, COALESCE(p.created_at, NOW()) as created_at, COALESCE(p.updated_at, NOW()) as updated_at, p.deleted_at, p.name, p.domain, p.resource, p.action, p.domain_id
+		`SELECT p.id, p.created_at as created_at, p.updated_at as updated_at, p.deleted_at, p.name, p.domain, p.resource, p.action, p.domain_id
 		 FROM sys_management_permission p
 		 JOIN sys_management_role_permissions rp ON rp.permission_id = p.id
 		 WHERE rp.role_id = $1 AND p.deleted_at IS NULL`, roleID)
@@ -126,7 +126,7 @@ func (r *permissionRepository) Delete(ctx context.Context, id uint) error {
 	if _, err := tx.ExecContext(ctx, "DELETE FROM sys_management_role_permissions WHERE permission_id = $1", id); err != nil {
 		return err
 	}
-	if _, err := tx.ExecContext(ctx, "UPDATE sys_management_permission SET deleted_at = NOW() WHERE id = $1 AND deleted_at IS NULL", id); err != nil {
+	if _, err := tx.ExecContext(ctx, "DELETE FROM sys_management_permission WHERE id = $1", id); err != nil {
 		return err
 	}
 	return tx.Commit()

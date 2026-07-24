@@ -25,23 +25,13 @@ func (h *DictDetailHandler) CreateDictDetail(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	_, err := h.svcCtx.DictDetailClient.CreateDictDetail(context.Background(), &req)
+	resp, err := h.svcCtx.DictDetailClient.CreateDictDetail(context.Background(), &req)
 	if err != nil {
 		api.FailWithMessage(w, err.Error())
 		return
 	}
 
-	// Fetch created detail from flat list
-	flatResp, err := h.svcCtx.DictDetailClient.FlatDictDetails(context.Background(), &dict_detail_pb.FlatDictDetailsReq{DictId: req.DictId})
-	if err != nil {
-		api.OkWithMessage(w, "创建成功")
-		return
-	}
-	if len(flatResp.List) > 0 {
-		api.OkWithDetailed(w, flatResp.List[len(flatResp.List)-1], "创建成功")
-	} else {
-		api.OkWithMessage(w, "创建成功")
-	}
+	api.OkWithDetailed(w, resp, "创建成功")
 }
 
 func (h *DictDetailHandler) UpdateDictDetail(w http.ResponseWriter, r *http.Request) {
@@ -71,7 +61,7 @@ func (h *DictDetailHandler) DeleteDictDetail(w http.ResponseWriter, r *http.Requ
 
 	resp, err := h.svcCtx.DictDetailClient.DeleteDictDetail(context.Background(), &common_pb.IdReq{Id: req.Id})
 	if err != nil {
-		api.FailWithMessage(w, err.Error())
+		api.FailWithMessage(w, api.ExtractErrMsg(err))
 		return
 	}
 

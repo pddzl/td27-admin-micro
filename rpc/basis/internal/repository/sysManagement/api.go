@@ -24,7 +24,7 @@ type APIRepository interface {
 	DeleteByIds(ctx context.Context, ids []uint) error
 }
 
-const apiColumns = `id, COALESCE(created_at, NOW()) as created_at, COALESCE(updated_at, NOW()) as updated_at, deleted_at, COALESCE(path, '') as path, COALESCE(method, '') as method, COALESCE(group_en, '') as group_en, COALESCE(group_cn, '') as group_cn, COALESCE(description, '') as description`
+const apiColumns = `id, created_at, updated_at, deleted_at, COALESCE(path, '') as path, COALESCE(method, '') as method, COALESCE(group_en, '') as group_en, COALESCE(group_cn, '') as group_cn, COALESCE(description, '') as description`
 
 type apiRepository struct {
 	db *sqlx.DB
@@ -106,26 +106,26 @@ func (r *apiRepository) List(ctx context.Context, page *common.PageInfo, groupEN
 
 func (r *apiRepository) Create(ctx context.Context, api *sysManagement.ApiModel) error {
 	err := r.db.QueryRowContext(ctx,
-		`INSERT INTO `+apiTable+` (path, method, group_en, group_cn, description, created_at, updated_at)
-		 VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
-		api.Path, api.Method, api.GroupEN, api.GroupCN, api.Description, api.CreatedAt, api.UpdatedAt).Scan(&api.ID)
+		`INSERT INTO `+apiTable+` (created_at, updated_at, path, method, group_en, group_cn, description)
+		 VALUES (NOW(), NOW(), $1, $2, $3, $4, $5) RETURNING id`,
+		api.Path, api.Method, api.GroupEN, api.GroupCN, api.Description).Scan(&api.ID)
 	return err
 }
 
 func (r *apiRepository) Update(ctx context.Context, api *sysManagement.ApiModel) error {
 	_, err := r.db.ExecContext(ctx,
-		`UPDATE `+apiTable+` SET path=$1, method=$2, group_en=$3, group_cn=$4, description=$5, updated_at=$6 WHERE id=$7`,
-		api.Path, api.Method, api.GroupEN, api.GroupCN, api.Description, api.UpdatedAt, api.ID)
+		`UPDATE `+apiTable+` SET path=$1, method=$2, group_en=$3, group_cn=$4, description=$5, updated_at=NOW() WHERE id=$6`,
+		api.Path, api.Method, api.GroupEN, api.GroupCN, api.Description, api.ID)
 	return err
 }
 
 func (r *apiRepository) Delete(ctx context.Context, id uint) error {
-	_, err := r.db.ExecContext(ctx, "UPDATE "+apiTable+" SET deleted_at=NOW() WHERE id=$1", id)
+	_, err := r.db.ExecContext(ctx, "DELETE FROM "+apiTable+" WHERE id=$1", id)
 	return err
 }
 
 func (r *apiRepository) DeleteByIds(ctx context.Context, ids []uint) error {
-	query, args, err := sqlx.In("UPDATE "+apiTable+" SET deleted_at=NOW() WHERE id IN (?) AND deleted_at IS NULL", ids)
+	query, args, err := sqlx.In("DELETE FROM "+apiTable+" WHERE id IN (?)", ids)
 	if err != nil {
 		return err
 	}

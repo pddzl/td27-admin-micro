@@ -11,10 +11,10 @@ import (
 	"td27/rpc/basis/internal/model/common"
 	sysToolModel "td27/rpc/basis/internal/model/sysTool"
 	"td27/rpc/basis/internal/svc"
-	"td27/rpc/basis/internal/util"
 	
 	"td27/rpc/basis/types/common_pb"
 	"td27/rpc/basis/types/sysTool/service_token_pb"
+"td27/rpc/basis/internal/util"
 )
 
 type ServiceTokenLogic struct {
@@ -35,7 +35,7 @@ func (l *ServiceTokenLogic) mapToResp(token *sysToolModel.ServiceToken) *service
 	}
 	resp := &service_token_pb.ServiceTokenResp{
 		Id: int64(token.ID), Name: token.Name, Status: token.Status,
-		CreatedAt: util.ToProtoTimestamp(token.CreatedAt), UpdatedAt: util.ToProtoTimestamp(token.UpdatedAt),
+		CreatedAt: util.Ts(token.CreatedAt), UpdatedAt: util.Ts(token.UpdatedAt),
 	}
 	if token.ExpiresAt != nil {
 		resp.ExpiresAt = token.ExpiresAt

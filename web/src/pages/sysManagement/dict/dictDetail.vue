@@ -128,6 +128,18 @@ function closeDialog() {
   dialogVisible.value = false
 }
 
+function removeFromTree(list: dictDetailDataModel[], id: number): boolean {
+  const idx = list.findIndex(item => item.id === id)
+  if (idx !== -1) {
+    list.splice(idx, 1)
+    return true
+  }
+  for (const item of list) {
+    if (item.children && removeFromTree(item.children, id)) return true
+  }
+  return false
+}
+
 async function delDictDetailApiFunc(id: number) {
   ElMessageBox.confirm("确定要删除吗?", "提示", {
     confirmButtonText: "确定",
@@ -137,8 +149,7 @@ async function delDictDetailApiFunc(id: number) {
     const res = await dictDetailDeleteApi({ id })
     if (res.code === 0) {
       ElMessage({ type: "success", message: res.msg })
-      const index = tableData.value.indexOf(activeRow)
-      tableData.value.splice(index, 1)
+      removeFromTree(tableData.value, id)
     }
   })
 }
