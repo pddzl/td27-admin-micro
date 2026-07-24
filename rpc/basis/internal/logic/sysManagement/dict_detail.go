@@ -115,7 +115,23 @@ func (dl *DictDetailLogic) DeleteDictDetail(in *common_pb.IdReq) (*common_pb.Suc
 		return nil, status.Errorf(codes.InvalidArgument, "invalid detail id")
 	}
 
-	err := dl.svcCtx.DictDetRepo.Delete(dl.ctx, uint(in.Id))
+	// Check for children
+	detail, err := dl.svcCtx.DictDetRepo.FindOne(dl.ctx, uint(in.Id))
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "get detail failed: %v", err)
+	}
+	if detail != nil {
+		allDetails, err := dl.svcCtx.DictDetRepo.FindByDictID(dl.ctx, uint(detail.DictModelID))
+		if err == nil {
+			for _, d := range allDetails {
+				if d.ParentID != nil && *d.ParentID == int(in.Id) {
+					return nil, status.Errorf(codes.FailedPrecondition, "该字典项下存在子项，无法删除")
+				}
+			}
+		}
+	}
+
+	err = dl.svcCtx.DictDetRepo.Delete(dl.ctx, uint(in.Id))
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "delete detail failed: %v", err)
 	}
