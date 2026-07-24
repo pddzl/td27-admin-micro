@@ -57,7 +57,7 @@ func (h *DictDetailHandler) UpdateDictDetail(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	api.OkWithData(w, resp)
+	api.OkWithDetailed(w, resp, "更新成功")
 }
 
 func (h *DictDetailHandler) DeleteDictDetail(w http.ResponseWriter, r *http.Request) {
