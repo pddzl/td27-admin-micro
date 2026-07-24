@@ -34,7 +34,7 @@ export type userListData = ListData<userDataModel[]>
 /** 获取用户详情 */
 export function getUserInfoApi() {
   return request<ApiResponseData<userDataModel>>({
-    url: "/user/getUserInfo",
+    url: "/user/get-user-info",
     method: "get"
   })
 }
@@ -95,7 +95,7 @@ interface reqModifyPass {
 
 export function modifyPasswdApi(data: reqModifyPass & CId) {
   return request<ApiResponseData<null>>({
-    url: "/user/modifyPasswd",
+    url: "/user/modify-passwd",
     method: "post",
     data
   })

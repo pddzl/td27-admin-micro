@@ -66,7 +66,7 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/dept/getElTreeDepts",
+		Path:    "/dept/get-el-tree-depts",
 		Handler: jwtMiddleware.Handle(deptHandler.GetElTreeDepts),
 	})
 	server.AddRoute(rest.Route{
@@ -197,7 +197,7 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/api/elTree",
+		Path:    "/api/el-tree",
 		Handler: jwtMiddleware.Handle(apiHandler.GetAPITree),
 	})
 
@@ -246,7 +246,7 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 	// User routes
 	server.AddRoute(rest.Route{
 		Method:  http.MethodGet,
-		Path:    "/user/getUserInfo",
+		Path:    "/user/get-user-info",
 		Handler: jwtMiddleware.Handle(userHandler.GetUserInfo),
 	})
 	server.AddRoute(rest.Route{
@@ -345,7 +345,7 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/menu/elTree",
+		Path:    "/menu/el-tree",
 		Handler: jwtMiddleware.Handle(menuHandler.GetElTreeMenus),
 	})
 	server.AddRoute(rest.Route{
@@ -605,7 +605,7 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/opl/deleteByIds",
+		Path:    "/opl/delete-by-ids",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(operationLogHandler.DeleteOperationLogByIds)),
 	})
 	server.AddRoute(rest.Route{
