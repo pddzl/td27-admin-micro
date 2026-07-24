@@ -167,7 +167,15 @@ func (dl *DictLogic) DeleteDict(in *common_pb.IdReq) (*common_pb.SuccessResp, er
 		return nil, status.Errorf(codes.InvalidArgument, "invalid dictionary id")
 	}
 
-	err := dl.svcCtx.DictService.Delete(dl.ctx, uint(in.Id))
+	details, err := dl.svcCtx.DictDetRepo.FindByDictID(dl.ctx, uint(in.Id))
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "check dict details failed: %v", err)
+	}
+	if len(details) > 0 {
+		return nil, status.Errorf(codes.FailedPrecondition, "该字典下存在字典项，无法删除")
+	}
+
+	err = dl.svcCtx.DictService.Delete(dl.ctx, uint(in.Id))
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "delete dictionary failed: %v", err)
 	}
