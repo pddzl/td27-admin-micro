@@ -93,7 +93,7 @@ async function setTreeOptions() {
     dictId: props.dictId
   })
   if (res.code === 0) {
-    treeOptions.value = mapTreeOptions(res.data.list)
+    treeOptions.value = mapTreeOptions(res.data?.list || [])
   }
 }
 
@@ -106,8 +106,8 @@ async function getTableData() {
     dictId: props.dictId
   })
   if (res.code === 0) {
-    tableData.value = res.data.list
-    paginationData.total = res.data.total
+    tableData.value = res.data?.list || []
+    paginationData.total = res.data?.total || 0
   }
 }
 getTableData()
