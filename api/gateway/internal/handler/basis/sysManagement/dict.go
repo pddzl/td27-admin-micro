@@ -114,7 +114,7 @@ func (h *DictHandler) UpdateDict(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	api.OkWithData(w, resp)
+	api.OkWithDetailed(w, resp, "更新成功")
 }
 
 func (h *DictHandler) DeleteDict(w http.ResponseWriter, r *http.Request) {
@@ -126,13 +126,13 @@ func (h *DictHandler) DeleteDict(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := h.svcCtx.DictClient.DeleteDict(context.Background(), &common_pb.IdReq{Id: req.Id})
+	_, err := h.svcCtx.DictClient.DeleteDict(context.Background(), &common_pb.IdReq{Id: req.Id})
 	if err != nil {
 		api.FailWithMessage(w, err.Error())
 		return
 	}
 
-	api.OkWithData(w, resp)
+	api.OkWithMessage(w, "删除成功")
 }
 
 

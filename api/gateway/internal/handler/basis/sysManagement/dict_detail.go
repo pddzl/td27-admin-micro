@@ -75,7 +75,7 @@ func (h *DictDetailHandler) DeleteDictDetail(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	api.OkWithData(w, resp)
+	api.OkWithDetailed(w, resp, "删除成功")
 }
 
 func (h *DictDetailHandler) FlatDictDetails(w http.ResponseWriter, r *http.Request) {
