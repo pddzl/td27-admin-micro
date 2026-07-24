@@ -161,7 +161,8 @@ async function deleteHandle(id: number) {
     const res = await dictDeleteApi({ id });
     if (res.code === 0) {
       ElMessage({ type: "success", message: res.msg });
-      getTableData();
+      const index = tableData.value.list.indexOf(activeRow);
+      if (index !== -1) tableData.value.list.splice(index, 1);
     }
   });
 }
