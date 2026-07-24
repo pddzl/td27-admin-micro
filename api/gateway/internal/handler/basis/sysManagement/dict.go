@@ -85,13 +85,20 @@ func (h *DictHandler) CreateDict(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := h.svcCtx.DictClient.CreateDict(context.Background(), &req)
+	_, err := h.svcCtx.DictClient.CreateDict(context.Background(), &req)
 	if err != nil {
 		api.FailWithMessage(w, err.Error())
 		return
 	}
 
-	api.OkWithData(w, resp)
+	// Fetch the created dict to return full data
+	created, err := h.svcCtx.DictClient.GetDictByENName(context.Background(), &dict_pb.GetDictByENNameReq{EnName: req.EnName})
+	if err != nil {
+		// If fetch fails, still return success but without data
+		api.OkWithMessage(w, "创建成功")
+		return
+	}
+	api.OkWithDetailed(w, created, "创建成功")
 }
 
 func (h *DictHandler) UpdateDict(w http.ResponseWriter, r *http.Request) {
