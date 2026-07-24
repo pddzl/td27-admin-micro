@@ -92,6 +92,7 @@ async function setTreeOptions() {
     pageSize: 1000,
     dictId: props.dictId
   })
+
   if (res.code === 0) {
     treeOptions.value = mapTreeOptions(res.data?.list || [])
   }
@@ -284,6 +285,7 @@ watch(
             <el-cascader
               v-model="formData.parent_id" style="width: 100%" :options="treeOptions" placeholder="选择父级字典项" clearable
               :props="{ checkStrictly: true, emitPath: false }"
+              :disabled="true"
             />
           </el-form-item>
           <el-form-item label="展示值" prop="label">
