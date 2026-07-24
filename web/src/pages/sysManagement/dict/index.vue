@@ -135,7 +135,7 @@ function operateHandle(formEl: FormInstance | undefined) {
         const res = await dictCreateApi({ ...opFormData });
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg });
-          getTableData();
+          tableData.value.list.push(res.data);
         }
       } else if (oKind.value === operationEnum.UPDATE) {
         const res = await dictUpdateApi({ id: activeRow.id, ...opFormData });

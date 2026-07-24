@@ -86,9 +86,9 @@ func (r *dictRepository) List(ctx context.Context, page *common.PageInfo) ([]*sy
 }
 
 func (r *dictRepository) Create(ctx context.Context, dict *sysManagement.DictModel) error {
-	_, err := r.db.ExecContext(ctx,
+	err := r.db.GetContext(ctx, &dict.ID,
 		`INSERT INTO sys_management_dict (cn_name, en_name)
-		 VALUES ($1, $2)`, dict.CNName, dict.ENName)
+		 VALUES ($1, $2) RETURNING id`, dict.CNName, dict.ENName)
 	return err
 }
 
