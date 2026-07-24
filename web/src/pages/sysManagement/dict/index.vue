@@ -135,7 +135,7 @@ function operateHandle(formEl: FormInstance | undefined) {
         const res = await dictCreateApi({ ...opFormData });
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg });
-          tableData.value.list.push(res.data);
+          getTableData();
         }
       } else if (oKind.value === operationEnum.UPDATE) {
         const res = await dictUpdateApi({ id: activeRow.id, ...opFormData });
@@ -161,8 +161,7 @@ async function deleteHandle(id: number) {
     const res = await dictDeleteApi({ id });
     if (res.code === 0) {
       ElMessage({ type: "success", message: res.msg });
-      const index = tableData.value.list.indexOf(activeRow);
-      tableData.value.list.splice(index, 1);
+      getTableData();
     }
   });
 }
