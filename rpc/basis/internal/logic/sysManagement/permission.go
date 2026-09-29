@@ -40,6 +40,7 @@ func (pl *PermissionLogic) mapPermissionToResp(perm *sysManagement.PermissionMod
 		Domain:    permissionDomainToProto(perm.Domain),
 		Resource:  perm.Resource,
 		Action:    actionToProto(perm.Action),
+		Effect:    effectToProto(perm.Effect),
 		DomainId:  int64(perm.DomainID),
 		CreatedAt: util.Ts(perm.CreatedAt),
 		UpdatedAt: util.Ts(perm.UpdatedAt),
@@ -130,6 +131,7 @@ func (pl *PermissionLogic) CreatePermission(in *permission_pb.CreatePermissionRe
 		Domain:   permissionDomainFromProto(in.Domain),
 		Resource: in.Resource,
 		Action:   actionFromProto(in.Action),
+		Effect:   effectFromProto(in.Effect),
 		DomainID: uint(in.DomainId),
 	}
 
@@ -165,6 +167,9 @@ func (pl *PermissionLogic) UpdatePermission(in *permission_pb.UpdatePermissionRe
 	if in.DomainId != nil {
 		perm.DomainID = uint(*in.DomainId)
 	}
+	if in.Effect != nil {
+		perm.Effect = effectFromProto(*in.Effect)
+	}
 
 	err = pl.svcCtx.PermService.Update(pl.ctx, perm)
 	if err != nil {
@@ -193,9 +198,41 @@ func (pl *PermissionLogic) DeletePermission(in *common_pb.IdReq) (*common_pb.Suc
 }
 
 func (pl *PermissionLogic) CheckPermission(in *permission_pb.CheckPermissionReq) (*permission_pb.CheckPermissionResp, error) {
-	roleIDs := make([]uint, 0, len(in.RoleIds))
-	for _, rid := range in.RoleIds {
-		roleIDs = append(roleIDs, uint(rid))
+	var roleIDs []uint
+	if in.UserId > 0 {
+		// Live role evaluation: roles resolved from the database override the
+		// (possibly stale) role ids embedded in the caller's JWT.
+		liveRoleIDs, err := pl.svcCtx.PermService.GetRolesForUser(pl.ctx, uint(in.UserId))
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "check permission failed: %v", err)
+		}
+
+		// JIT elevations: approved, unexpired temporary role grants are merged
+		// in, so an approved elevation authorizes on the next request and an
+		// expired one stops authorizing immediately.
+		elevatedRoleIDs, err := pl.svcCtx.ElevService.ActiveRoleIDs(pl.ctx, uint(in.UserId))
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "check permission failed: %v", err)
+		}
+
+		if len(elevatedRoleIDs) > 0 {
+			seen := make(map[uint]struct{}, len(liveRoleIDs)+len(elevatedRoleIDs))
+			for _, id := range liveRoleIDs {
+				seen[id] = struct{}{}
+			}
+			for _, id := range elevatedRoleIDs {
+				if _, ok := seen[id]; !ok {
+					liveRoleIDs = append(liveRoleIDs, id)
+				}
+			}
+		}
+		roleIDs = liveRoleIDs
+	} else {
+		// Legacy path: caller supplied role ids directly.
+		roleIDs = make([]uint, 0, len(in.RoleIds))
+		for _, rid := range in.RoleIds {
+			roleIDs = append(roleIDs, uint(rid))
+		}
 	}
 
 	allowed, err := pl.svcCtx.PermService.CheckPermission(pl.ctx, roleIDs, in.Resource, actionFromProto(in.Action))
@@ -215,6 +252,28 @@ func (pl *PermissionLogic) ReloadPolicy(in *common_pb.Empty) (*common_pb.Success
 	}
 
 	return &common_pb.SuccessResp{Success: true}, nil
+}
+
+func (pl *PermissionLogic) LintPolicies(in *common_pb.Empty) (*permission_pb.LintPoliciesResp, error) {
+	issues, err := pl.svcCtx.PermService.LintPolicies(pl.ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "lint policies failed: %v", err)
+	}
+
+	resp := &permission_pb.LintPoliciesResp{
+		Issues: make([]*permission_pb.PolicyIssue, 0, len(issues)),
+	}
+	for _, issue := range issues {
+		resp.Issues = append(resp.Issues, &permission_pb.PolicyIssue{
+			Severity:     issue.Severity,
+			Message:      issue.Message,
+			RoleId:       int64(issue.RoleID),
+			PermissionId: int64(issue.PermissionID),
+		})
+	}
+	resp.Total = int64(len(issues))
+
+	return resp, nil
 }
 
 func permissionDomainToProto(domain sysManagement.PermissionDomain) permission_pb.PermissionDomain {
@@ -287,4 +346,18 @@ func actionFromProto(action permission_pb.Action) sysManagement.Action {
 	default:
 		return sysManagement.ActionAll
 	}
+}
+
+func effectToProto(effect sysManagement.Effect) permission_pb.PermissionEffect {
+	if effect == sysManagement.EffectDeny {
+		return permission_pb.PermissionEffect_EFFECT_DENY
+	}
+	return permission_pb.PermissionEffect_EFFECT_ALLOW
+}
+
+func effectFromProto(effect permission_pb.PermissionEffect) sysManagement.Effect {
+	if effect == permission_pb.PermissionEffect_EFFECT_DENY {
+		return sysManagement.EffectDeny
+	}
+	return sysManagement.EffectAllow
 }

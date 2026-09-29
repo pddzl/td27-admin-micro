@@ -24,7 +24,7 @@ Pgsql:
   port: 5432
   username: postgres
   password: td27admin
-  db-name: td27
+  db-name: td27_micro
   max-idle-conns: 10
   max-open-conns: 100
   log-level: info

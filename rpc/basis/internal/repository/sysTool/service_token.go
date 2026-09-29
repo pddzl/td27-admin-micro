@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -153,11 +155,17 @@ func (r *serviceTokenRepository) AssignPermissions(ctx context.Context, tokenID 
 		return err
 	}
 
-	for _, permID := range permissionIDs {
-		_, err = tx.ExecContext(ctx,
-			"INSERT INTO sys_tool_token_permission (token_id, permission_id) VALUES ($1, $2)",
-			tokenID, permID)
-		if err != nil {
+	if len(permissionIDs) > 0 {
+		values := make([]string, 0, len(permissionIDs))
+		args := make([]interface{}, 0, len(permissionIDs)+1)
+		args = append(args, tokenID)
+		for i, permID := range permissionIDs {
+			values = append(values, fmt.Sprintf("($1, $%d)", i+2))
+			args = append(args, permID)
+		}
+		query := fmt.Sprintf("INSERT INTO sys_tool_token_permission (token_id, permission_id) VALUES %s",
+			strings.Join(values, ", "))
+		if _, err = tx.ExecContext(ctx, query, args...); err != nil {
 			return err
 		}
 	}

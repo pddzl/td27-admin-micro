@@ -16,6 +16,9 @@ Log:
 Auth:
   AccessSecret: pddzl
   AccessExpire: 86400
+  # Per-request RBAC enforcement via rpc Casbin. Requires api-domain
+  # permissions in sys_management_permission; keep false until populated.
+  EnforceRbac: false
 
 # gRPC client config for discovering basis service
 BasisRpc:

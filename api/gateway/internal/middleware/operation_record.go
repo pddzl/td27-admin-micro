@@ -9,8 +9,21 @@ import (
 	"td27/api/gateway/internal/svc"
 	"time"
 
+	"github.com/zeromicro/go-zero/core/logx"
+
 	"td27/rpc/basis/types/sysMonitor/operation_log_pb"
 )
+
+// maxLoggedBodySize caps request/response payloads persisted to the operation log,
+// so large uploads/downloads don't bloat memory and the DB.
+const maxLoggedBodySize = 64 * 1024
+
+func truncateForLog(s string) string {
+	if len(s) > maxLoggedBodySize {
+		return s[:maxLoggedBodySize] + "...(truncated)"
+	}
+	return s
+}
 
 type OperationRecordMiddleware struct {
 	svcCtx *svc.ServiceContext
@@ -46,6 +59,9 @@ func (m *OperationRecordMiddleware) Handle(next http.HandlerFunc) http.HandlerFu
 		body, _ := io.ReadAll(r.Body)
 		reqParam := string(body)
 		r.Body = io.NopCloser(bytes.NewBuffer(body))
+		if strings.HasPrefix(r.Header.Get("Content-Type"), "multipart/form-data") {
+			reqParam = "<multipart form data omitted>"
+		}
 
 		rw := &responseWriter{
 			ResponseWriter: w,
@@ -65,13 +81,17 @@ func (m *OperationRecordMiddleware) Handle(next http.HandlerFunc) http.HandlerFu
 			Path:      r.URL.Path,
 			Status:    int32(rw.status),
 			UserAgent: r.UserAgent(),
-			ReqParam:  reqParam,
-			RespData:  rw.body.String(),
+			ReqParam:  truncateForLog(reqParam),
+			RespData:  truncateForLog(rw.body.String()),
 			RespTime:  time.Since(now).Milliseconds(),
 			UserId:    int64(userId),
 			UserName:  username,
 		}
 
-		go m.svcCtx.OperationLogClient.CreateOperationLog(context.Background(), req)
+		go func() {
+			if _, err := m.svcCtx.OperationLogClient.CreateOperationLog(context.Background(), req); err != nil {
+				logx.Errorf("create operation log failed for %s %s: %v", req.Method, req.Path, err)
+			}
+		}()
 	}
 }

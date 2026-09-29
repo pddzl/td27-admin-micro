@@ -13,6 +13,9 @@ import (
 )
 
 func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
+	// Persist revoked tokens via the rpc cache so blocklist survives restarts
+	middleware.InitBlocklistPersistence(svcCtx.CacheClient)
+
 	jwtMiddleware := middleware.NewJwtMiddleware(svcCtx)
 	opRecordMiddleware := middleware.NewOperationRecordMiddleware(svcCtx)
 
@@ -327,9 +330,39 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(roleHandler.AssignPermissions)),
 	})
 	server.AddRoute(rest.Route{
-		Method:  http.MethodGet,
+		Method:  http.MethodPost,
 		Path:    "/role/permissions",
 		Handler: jwtMiddleware.Handle(roleHandler.GetRolePermissions),
+	})
+
+	// JIT role elevation routes. /request and /my are self-service: every
+	// authenticated user may use them (exempt from RBAC action checks, see
+	// middleware self-service prefixes).
+	elevationHandler := sysManagement.NewElevationHandler(svcCtx)
+	server.AddRoute(rest.Route{
+		Method:  http.MethodPost,
+		Path:    "/role/elevation/request",
+		Handler: jwtMiddleware.Handle(elevationHandler.CreateRequest),
+	})
+	server.AddRoute(rest.Route{
+		Method:  http.MethodPost,
+		Path:    "/role/elevation/decide",
+		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(elevationHandler.Decide)),
+	})
+	server.AddRoute(rest.Route{
+		Method:  http.MethodPost,
+		Path:    "/role/elevation/revoke",
+		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(elevationHandler.Revoke)),
+	})
+	server.AddRoute(rest.Route{
+		Method:  http.MethodPost,
+		Path:    "/role/elevation/list",
+		Handler: jwtMiddleware.Handle(elevationHandler.List),
+	})
+	server.AddRoute(rest.Route{
+		Method:  http.MethodPost,
+		Path:    "/role/elevation/my",
+		Handler: jwtMiddleware.Handle(elevationHandler.My),
 	})
 
 	// Menu routes
@@ -414,6 +447,11 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 		Method:  http.MethodPost,
 		Path:    "/permission/reload-policy",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(permissionHandler.ReloadPolicy)),
+	})
+	server.AddRoute(rest.Route{
+		Method:  http.MethodPost,
+		Path:    "/permission/lint",
+		Handler: jwtMiddleware.Handle(permissionHandler.LintPolicies),
 	})
 
 	// File routes

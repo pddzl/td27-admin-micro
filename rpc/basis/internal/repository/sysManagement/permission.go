@@ -31,7 +31,7 @@ func NewPermissionRepository(db *sqlx.DB) PermissionRepository {
 	return &permissionRepository{db: db}
 }
 
-const permColumns = `id, created_at, updated_at, deleted_at, name, domain, resource, action, domain_id`
+const permColumns = `id, created_at, updated_at, deleted_at, name, domain, resource, action, effect, domain_id`
 
 func (r *permissionRepository) FindOne(ctx context.Context, id uint) (*sysManagement.PermissionModel, error) {
 	var perm sysManagement.PermissionModel
@@ -67,7 +67,7 @@ func (r *permissionRepository) FindByDomain(ctx context.Context, domain sysManag
 func (r *permissionRepository) FindByRoleID(ctx context.Context, roleID uint) ([]*sysManagement.PermissionModel, error) {
 	var perms []*sysManagement.PermissionModel
 	err := r.db.SelectContext(ctx, &perms,
-		`SELECT p.id, p.created_at as created_at, p.updated_at as updated_at, p.deleted_at, p.name, p.domain, p.resource, p.action, p.domain_id
+		`SELECT p.id, p.created_at as created_at, p.updated_at as updated_at, p.deleted_at, p.name, p.domain, p.resource, p.action, p.effect, p.domain_id
 		 FROM sys_management_permission p
 		 JOIN sys_management_role_permissions rp ON rp.permission_id = p.id
 		 WHERE rp.role_id = $1 AND p.deleted_at IS NULL`, roleID)
@@ -92,8 +92,11 @@ func (r *permissionRepository) FindByResourceAndAction(ctx context.Context, reso
 }
 
 func (r *permissionRepository) Create(ctx context.Context, permission *sysManagement.PermissionModel) error {
-	query := `INSERT INTO sys_management_permission (created_at, updated_at, name, domain, resource, action, domain_id)
-	           VALUES (NOW(), NOW(), :name, :domain, :resource, :action, :domain_id)
+	if permission.Effect == "" {
+		permission.Effect = sysManagement.EffectAllow
+	}
+	query := `INSERT INTO sys_management_permission (created_at, updated_at, name, domain, resource, action, effect, domain_id)
+	           VALUES (NOW(), NOW(), :name, :domain, :resource, :action, :effect, :domain_id)
 	           RETURNING id`
 	stmt, err := r.db.PrepareNamedContext(ctx, query)
 	if err != nil {
@@ -110,6 +113,7 @@ func (r *permissionRepository) Update(ctx context.Context, permission *sysManage
 	           domain = :domain,
 	           resource = :resource,
 	           action = :action,
+	           effect = :effect,
 	           domain_id = :domain_id
 	         WHERE id = :id AND deleted_at IS NULL`
 	_, err := r.db.NamedExecContext(ctx, query, permission)

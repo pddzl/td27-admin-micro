@@ -40,6 +40,7 @@ type ServiceContext struct {
 	DictDetRepo sysManagementRepo.DictDetailRepository
 	APIRepo     sysManagementRepo.APIRepository
 	ButtonRepo  sysManagementRepo.ButtonRepository
+	ElevRepo    sysManagementRepo.RoleElevationRepository
 
 	FileRepo  sysToolRepo.FileRepository
 	CronRepo  sysToolRepo.CronRepository
@@ -53,6 +54,7 @@ type ServiceContext struct {
 	UserService   *sysManagementService.UserService
 	RoleService   *sysManagementService.RoleService
 	PermService   *sysManagementService.PermissionService
+	ElevService   *sysManagementService.ElevationService
 	MenuService   *sysManagementService.MenuService
 	DeptService   *sysManagementService.DeptService
 	DictService   *sysManagementService.DictService
@@ -129,7 +131,8 @@ func (m *JWTManager) ParseToken(tokenStr string) (jwt.MapClaims, error) {
 	return nil, fmt.Errorf("invalid token")
 }
 
-// getCasbinModel returns the Casbin RBAC model
+// getCasbinModel returns the Casbin RBAC model. Policies carry an explicit
+// eft column; deny rules override allow rules (deny-override effect).
 func getCasbinModel(enableRoleHierarchy bool) (casbinModel.Model, error) {
 	var modelText string
 
@@ -139,17 +142,17 @@ func getCasbinModel(enableRoleHierarchy bool) (casbinModel.Model, error) {
 		r = sub, obj, act
 
 		[policy_definition]
-		p = sub, obj, act
+		p = sub, obj, act, eft
 
 		[role_definition]
 		g = _, _
 		g2 = _, _
 
 		[policy_effect]
-		e = some(where (p.eft == allow))
+		e = some(where (p.eft == allow)) && !some(where (p.eft == deny))
 
 		[matchers]
-		m = g(r.sub, p.sub) && keyMatch2(r.obj, p.obj) && (r.act == p.act || p.act == '*')
+		m = g(r.sub, p.sub) && keyMatch2(r.obj, p.obj) && (r.act == p.act || p.act == '*' || p.act == 'all')
 		`
 	} else {
 		modelText = `
@@ -157,17 +160,17 @@ func getCasbinModel(enableRoleHierarchy bool) (casbinModel.Model, error) {
 		r = sub, obj, act
 
 		[policy_definition]
-		p = sub, obj, act
+		p = sub, obj, act, eft
 
 		[role_definition]
 		g = _, _
 		g2 = _, _
 
 		[policy_effect]
-		e = some(where (p.eft == allow))
+		e = some(where (p.eft == allow)) && !some(where (p.eft == deny))
 
 		[matchers]
-		m = r.sub == p.sub && keyMatch2(r.obj, p.obj) && (r.act == p.act || p.act == '*')
+		m = r.sub == p.sub && keyMatch2(r.obj, p.obj) && (r.act == p.act || p.act == '*' || p.act == 'all')
 		`
 	}
 
@@ -187,7 +190,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	casbinModel, err := getCasbinModel(c.Casbin.EnableRoleHierarchy)
 	if err != nil {
 		logx.Errorf("init casbin model err: %v", err)
-		return nil
+		panic(err)
 	}
 
 	pgAdapter := casbinAdapter.NewPostgresAdapter(db)
@@ -230,6 +233,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	userRepo := sysManagementRepo.NewUserRepository(db)
 	roleRepo := sysManagementRepo.NewRoleRepository(db)
 	permRepo := sysManagementRepo.NewPermissionRepository(db)
+	elevRepo := sysManagementRepo.NewRoleElevationRepository(db)
 	menuRepo := sysManagementRepo.NewMenuRepository(db)
 	deptRepo := sysManagementRepo.NewDeptRepository(db)
 	dictRepo := sysManagementRepo.NewDictRepository(db)
@@ -249,6 +253,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	userService := sysManagementService.NewUserService(userRepo, roleRepo)
 	roleService := sysManagementService.NewRoleService(roleRepo, permRepo, userRepo, casbinEnforcer)
 	permService := sysManagementService.NewPermissionService(permRepo, roleRepo, casbinEnforcer)
+	elevService := sysManagementService.NewElevationService(elevRepo, roleRepo)
 	menuService := sysManagementService.NewMenuService(menuRepo)
 	deptService := sysManagementService.NewDeptService(deptRepo)
 	dictService := sysManagementService.NewDictService(dictRepo)
@@ -274,6 +279,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		UserRepo:    userRepo,
 		RoleRepo:    roleRepo,
 		PermRepo:    permRepo,
+		ElevRepo:    elevRepo,
 		MenuRepo:    menuRepo,
 		DeptRepo:    deptRepo,
 		DictRepo:    dictRepo,
@@ -293,6 +299,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		UserService:   userService,
 		RoleService:   roleService,
 		PermService:   permService,
+		ElevService:   elevService,
 		MenuService:   menuService,
 		DeptService:   deptService,
 		DictService:   dictService,

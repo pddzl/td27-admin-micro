@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+import "common/common.proto";
+
+package basis.sysManagement.api;
+
+option go_package = "td27/rpc/basis/types/sysManagement/api_pb;api_pb";
+
+message CreateAPIReq {
+  string path = 1;
+  string method = 2;
+  string group_en = 3;
+  string group_cn = 4;
+  string description = 5;
+}
+
+message UpdateAPIReq {
+  int64 id = 1;
+  optional string path = 2;
+  optional string method = 3;
+  optional string group_en = 4;
+  optional string group_cn = 5;
+  optional string description = 6;
+}
+
+message APIResp {
+  int64 id = 1;
+  string path = 2;
+  string method = 3;
+  string group_en = 4;
+  string group_cn = 5;
+  string description = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}
+
+message ListAPIResp {
+  repeated APIResp list = 1;
+  int64 total = 2;
+}
+
+message GetAPIsByGroupReq {
+  string group_en = 1;
+}
+
+message APITreeReq {
+  int64 role_id = 1;
+}
+
+message APITreeItem {
+  string group_en = 1;
+  string group_cn = 2;
+  repeated APIResp apis = 3;
+  bool checked = 4;
+}
+
+message APITreeResp {
+  repeated APITreeItem list = 1;
+  repeated int64 checked_ids = 2;
+}
+
+service API {
+  rpc GetAPI(basis.common.IdReq) returns (APIResp);
+  rpc ListAPI(basis.common.PageReq) returns (ListAPIResp);
+  rpc GetAPIsByGroup(GetAPIsByGroupReq) returns (ListAPIResp);
+  rpc CreateAPI(CreateAPIReq) returns (basis.common.SuccessResp);
+  rpc UpdateAPI(UpdateAPIReq) returns (APIResp);
+  rpc DeleteAPI(basis.common.IdReq) returns (basis.common.SuccessResp);
+  rpc DeleteByIds(basis.common.IdsReq) returns (common.SuccessResp);
+  rpc GetAPITree(APITreeReq) returns (APITreeResp);
+}

@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+import "common/common.proto";
+
+package basis.sysTool.file;
+
+option go_package = "td27/rpc/basis/types/sysTool/file_pb;file_pb";
+
+message UploadFileReq {
+  string file_name = 1;
+  bytes file_content = 2;
+}
+
+message UploadFileResp {
+  uint64 file_id = 1;
+  string file_name = 2;
+  string full_path = 3;
+  string mime = 4;
+  int64 size = 5;
+}
+
+message FileResp {
+  int64 id = 1;
+  string file_name = 2;
+  string full_path = 3;
+  string mime = 4;
+  string created_at = 5;
+  string updated_at = 6;
+}
+
+message DownloadFileResp {
+  bytes file_content = 1;
+  string file_name = 2;
+  string mime = 3;
+  int64 size = 4;
+}
+
+message ListFileResp {
+  repeated FileResp list = 1;
+  int64 total = 2;
+}
+
+service File {
+  rpc UploadFile(UploadFileReq) returns (UploadFileResp);
+  rpc GetFile(basis.common.IdReq) returns (FileResp);
+  rpc ListFile(basis.common.PageReq) returns (ListFileResp);
+  rpc DeleteFile(basis.common.IdReq) returns (basis.common.SuccessResp);
+  rpc DownloadFile(basis.common.IdReq) returns (DownloadFileResp);
+}

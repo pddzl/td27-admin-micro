@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
+	"strings"
 
 	"github.com/jmoiron/sqlx"
 
@@ -23,6 +25,7 @@ type RoleRepository interface {
 	AssignPermissions(ctx context.Context, roleID uint, permissionIDs []uint) error
 	GetPermissions(ctx context.Context, roleID uint) ([]uint, error)
 	GetUserRoles(ctx context.Context, userID uint) ([]*sysManagement.RoleModel, error)
+	GetRolesByUserIDs(ctx context.Context, userIDs []uint) (map[uint][]*sysManagement.RoleModel, error)
 	AssignUserRoles(ctx context.Context, userID uint, roleIDs []uint) error
 }
 
@@ -154,19 +157,28 @@ func (r *roleRepository) AssignPermissions(ctx context.Context, roleID uint, per
 	}
 
 	if len(permissionIDs) > 0 {
-		stmt, err := tx.PrepareContext(ctx, "INSERT INTO sys_management_role_permissions (role_id, permission_id) VALUES ($1, $2)")
-		if err != nil {
+		query, args := buildInsertPairs("sys_management_role_permissions", "role_id", "permission_id", roleID, permissionIDs)
+		if _, err := tx.ExecContext(ctx, query, args...); err != nil {
 			return err
-		}
-		defer stmt.Close()
-		for _, permID := range permissionIDs {
-			if _, err := stmt.ExecContext(ctx, roleID, permID); err != nil {
-				return err
-			}
 		}
 	}
 
 	return tx.Commit()
+}
+
+// buildInsertPairs constructs a single multi-row INSERT statement for
+// (parentID, childID) pairs, e.g.
+// INSERT INTO t (parent_col, child_col) VALUES ($1, $2), ($1, $3)...
+func buildInsertPairs(table, parentCol, childCol string, parentID uint, childIDs []uint) (string, []interface{}) {
+	values := make([]string, 0, len(childIDs))
+	args := make([]interface{}, 0, len(childIDs)+1)
+	args = append(args, parentID)
+	for i, id := range childIDs {
+		values = append(values, fmt.Sprintf("($1, $%d)", i+2))
+		args = append(args, id)
+	}
+	query := fmt.Sprintf("INSERT INTO %s (%s, %s) VALUES %s", table, parentCol, childCol, strings.Join(values, ", "))
+	return query, args
 }
 
 func (r *roleRepository) GetPermissions(ctx context.Context, roleID uint) ([]uint, error) {
@@ -192,6 +204,39 @@ func (r *roleRepository) GetUserRoles(ctx context.Context, userID uint) ([]*sysM
 	return roles, nil
 }
 
+func (r *roleRepository) GetRolesByUserIDs(ctx context.Context, userIDs []uint) (map[uint][]*sysManagement.RoleModel, error) {
+	result := make(map[uint][]*sysManagement.RoleModel, len(userIDs))
+	if len(userIDs) == 0 {
+		return result, nil
+	}
+
+	placeholders := make([]string, len(userIDs))
+	args := make([]interface{}, len(userIDs))
+	for i, id := range userIDs {
+		placeholders[i] = fmt.Sprintf("$%d", i+1)
+		args[i] = id
+	}
+
+	var rows []struct {
+		UserID uint `db:"user_id"`
+		sysManagement.RoleModel
+	}
+	err := r.db.SelectContext(ctx, &rows,
+		`SELECT ur.user_id, r.id, r.created_at as created_at, r.updated_at as updated_at, r.deleted_at, r.role_name, r.parent_id, COALESCE(r.permission_hash, '') as permission_hash
+		 FROM sys_management_role r
+		 JOIN sys_management_user_roles ur ON ur.role_id = r.id
+		 WHERE ur.user_id IN (`+strings.Join(placeholders, ", ")+`) AND r.deleted_at IS NULL`, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, row := range rows {
+		role := row.RoleModel
+		result[row.UserID] = append(result[row.UserID], &role)
+	}
+	return result, nil
+}
+
 func (r *roleRepository) AssignUserRoles(ctx context.Context, userID uint, roleIDs []uint) error {
 	tx, err := r.db.BeginTxx(ctx, nil)
 	if err != nil {
@@ -204,15 +249,9 @@ func (r *roleRepository) AssignUserRoles(ctx context.Context, userID uint, roleI
 	}
 
 	if len(roleIDs) > 0 {
-		stmt, err := tx.PrepareContext(ctx, "INSERT INTO sys_management_user_roles (user_id, role_id) VALUES ($1, $2)")
-		if err != nil {
+		query, args := buildInsertPairs("sys_management_user_roles", "user_id", "role_id", userID, roleIDs)
+		if _, err := tx.ExecContext(ctx, query, args...); err != nil {
 			return err
-		}
-		defer stmt.Close()
-		for _, roleID := range roleIDs {
-			if _, err := stmt.ExecContext(ctx, userID, roleID); err != nil {
-				return err
-			}
 		}
 	}
 

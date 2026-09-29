@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+import "common/common.proto";
+import "sysMonitor/operation_log.proto";
+
+package basis.sysMonitor.dashboard;
+
+option go_package = "td27/rpc/basis/types/sysMonitor/dashboard_pb;dashboard_pb";
+
+message DashboardStatsResp {
+  int64 user_count = 1;
+  int64 role_count = 2;
+  int64 api_count = 3;
+  int64 dept_count = 4;
+  int64 menu_count = 5;
+  int64 dict_count = 6;
+  int64 log_count = 7;
+  int64 file_count = 8;
+}
+
+message RecentOpsReq {
+  int32 limit = 1;
+}
+
+message SystemInfoResp {
+  string go_version = 1;
+  string os = 2;
+  string arch = 3;
+  int32 cpu_cores = 4;
+  int64 uptime_seconds = 5;
+  int64 goroutine_count = 6;
+  double memory_allocated_mb = 7;
+  double total_allocated_mb = 8;
+  int64 gc_count = 9;
+}
+
+service Dashboard {
+  rpc GetStatistics(basis.common.Empty) returns (DashboardStatsResp);
+  rpc GetRecentOperations(RecentOpsReq) returns (operation_log.ListOperationLogResp);
+  rpc GetSystemInfo(basis.common.Empty) returns (SystemInfoResp);
+}

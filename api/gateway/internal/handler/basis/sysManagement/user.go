@@ -91,11 +91,22 @@ func (h *UserHandler) ModifyPassword(w http.ResponseWriter, r *http.Request) {
 		api.FailWithRequest(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
+	// Data-domain enforcement: password change is strictly self-service. The
+	// target id always comes from the JWT, never from the request body.
+	userId, _ := r.Context().Value(middleware.UserIdKey).(float64)
+	if userId == 0 {
+		api.FailWithRequest(w, http.StatusUnauthorized, "missing user identity")
+		return
+	}
+	req.Id = int64(userId)
+
 	resp, err := h.svcCtx.UserClient.ModifyPassword(context.Background(), &req)
 	if err != nil {
 		api.FailWithMessage(w, err.Error())
 		return
 	}
+	// Force re-login: revoke the token used for the password change.
+	middleware.RevokeRequestToken(r)
 	api.OkWithData(w, resp)
 }
 

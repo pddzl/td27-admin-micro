@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+import "common/common.proto";
+
+package basis.sysMonitor.operation_log;
+
+option go_package = "td27/rpc/basis/types/sysMonitor/operation_log_pb;operation_log_pb";
+
+message OperationLogResp {
+  int64 id = 1;
+  string ip = 2;
+  string method = 3;
+  string path = 4;
+  int32 status = 5;
+  string user_agent = 6;
+  string req_param = 7;
+  string resp_data = 8;
+  int64 resp_time = 9;
+  int64 user_id = 10;
+  string user_name = 11;
+  string created_at = 12;
+}
+
+message ListOperationLogReq {
+  basis.common.PageReq page = 1;
+  optional int64 user_id = 2;
+  optional int32 status = 3;
+  optional string path = 4;
+  optional string method = 5;
+}
+
+message ListOperationLogResp {
+  repeated OperationLogResp list = 1;
+  int64 total = 2;
+}
+
+message CreateOperationLogReq {
+  string ip = 1;
+  string method = 2;
+  string path = 3;
+  int32 status = 4;
+  string user_agent = 5;
+  string req_param = 6;
+  string resp_data = 7;
+  int64 resp_time = 8;
+  int64 user_id = 9;
+  string user_name = 10;
+}
+
+message CleanupExpiredLogsReq {
+  int32 days = 1;
+}
+
+service OperationLog {
+  rpc ListOperationLog(ListOperationLogReq) returns (ListOperationLogResp);
+  rpc CreateOperationLog(CreateOperationLogReq) returns (basis.common.SuccessResp);
+  rpc CleanupExpiredLogs(CleanupExpiredLogsReq) returns (basis.common.SuccessResp);
+  rpc Delete(basis.common.IdReq) returns (basis.common.SuccessResp);
+  rpc DeleteByIds(basis.common.IdsReq) returns (basis.common.SuccessResp);
+}

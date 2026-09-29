@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+import "common/common.proto";
+import "sysManagement/dict.proto";
+
+package basis.sysManagement.dict_detail;
+
+option go_package = "td27/rpc/basis/types/sysManagement/dict_detail_pb;dict_detail_pb";
+
+message CreateDictDetailReq {
+  int64 dict_id = 1;
+  string label = 2;
+  string value = 3;
+  optional int32 sort = 4;
+  optional string description = 5;
+  optional int64 parent_id = 6;
+}
+
+message UpdateDictDetailReq {
+  int64 id = 1;
+  optional string label = 2;
+  optional string value = 3;
+  optional int32 sort = 4;
+  optional string description = 5;
+  optional int64 parent_id = 6;
+}
+
+message FlatDictDetailsReq {
+  int64 dict_id = 1;
+}
+
+message FlatDictDetailsResp {
+  repeated basis.sysManagement.dict.DictDetailResp list = 1;
+}
+
+message ListDictDetailReq {
+  uint32 page = 1;
+  uint32 page_size = 2;
+  optional int64 dict_id = 3;
+}
+
+message ListDictDetailResp {
+  repeated basis.sysManagement.dict.DictDetailResp list = 1;
+  int64 total = 2;
+}
+
+service DictDetail {
+  rpc CreateDictDetail(CreateDictDetailReq) returns (basis.sysManagement.dict.DictDetailResp);
+  rpc UpdateDictDetail(UpdateDictDetailReq) returns (basis.sysManagement.dict.DictDetailResp);
+  rpc DeleteDictDetail(basis.common.IdReq) returns (basis.common.SuccessResp);
+  rpc FlatDictDetails(FlatDictDetailsReq) returns (FlatDictDetailsResp);
+  rpc ListDictDetail(ListDictDetailReq) returns (ListDictDetailResp);
+}

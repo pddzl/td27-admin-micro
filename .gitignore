@@ -25,6 +25,7 @@ yarn-error.log*
 rpc/basis/logs
 
 *.iml
-basis
+/basis
+rpc/basis/basis
 logs
 .gocache

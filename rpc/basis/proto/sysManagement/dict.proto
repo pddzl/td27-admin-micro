@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+import "common/common.proto";
+
+package basis.sysManagement.dict;
+
+option go_package = "td27/rpc/basis/types/sysManagement/dict_pb;dict_pb";
+
+message CreateDictReq {
+  string cn_name = 1;
+  string en_name = 2;
+}
+
+message UpdateDictReq {
+  int64 id = 1;
+  optional string cn_name = 2;
+  optional string en_name = 3;
+}
+
+message DictDetailResp {
+  int64 id = 1;
+  string label = 2;
+  string value = 3;
+  int32 sort = 4;
+  string description = 5;
+  int64 parent_id = 6;
+  string created_at = 7;
+  string updated_at = 8;
+  repeated DictDetailResp children = 9;
+}
+
+message DictResp {
+  int64 id = 1;
+  string cn_name = 2;
+  string en_name = 3;
+  repeated DictDetailResp details = 4;
+  string created_at = 5;
+  string updated_at = 6;
+}
+
+message ListDictResp {
+  repeated DictResp list = 1;
+  int64 total = 2;
+}
+
+message GetDictByENNameReq {
+  string en_name = 1;
+}
+
+service Dict {
+  rpc GetDict(basis.common.IdReq) returns (DictResp);
+  rpc GetDictByENName(GetDictByENNameReq) returns (DictResp);
+  rpc ListDict(basis.common.PageReq) returns (ListDictResp);
+  rpc CreateDict(CreateDictReq) returns (basis.common.SuccessResp);
+  rpc UpdateDict(UpdateDictReq) returns (DictResp);
+  rpc DeleteDict(basis.common.IdReq) returns (basis.common.SuccessResp);
+}

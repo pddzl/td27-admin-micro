@@ -46,6 +46,14 @@ func HTTPMethodToAction(method string) Action {
 	}
 }
 
+// Effect determines whether a matched policy grants or blocks access.
+type Effect string
+
+const (
+	EffectAllow Effect = "allow"
+	EffectDeny  Effect = "deny"
+)
+
 // PermissionModel Unified permission table for RBAC authorization
 type PermissionModel struct {
 	common.Td27Model
@@ -53,6 +61,7 @@ type PermissionModel struct {
 	Domain   PermissionDomain `gorm:"type:varchar(20);not null;check:domain IN ('menu','api','button','data')" db:"domain"`
 	Resource string           `json:"resource" db:"resource"`
 	Action   Action           `json:"action" db:"action"`
+	Effect   Effect           `json:"effect" db:"effect"`
 	DomainID uint             `json:"domainId" db:"domain_id"`
 }
 

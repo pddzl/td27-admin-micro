@@ -11,6 +11,10 @@ type Config struct {
 	Auth struct {
 		AccessSecret string
 		AccessExpire int64
+		// EnforceRbac enables per-request authorization against the rpc Casbin
+		// enforcer. Requires api-domain permissions to be populated in
+		// sys_management_permission; disabled by default.
+		EnforceRbac bool
 	}
 
 	BasisRpc zrpc.RpcClientConf

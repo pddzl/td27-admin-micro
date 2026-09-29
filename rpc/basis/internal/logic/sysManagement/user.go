@@ -72,7 +72,7 @@ func (ul *UserLogic) Login(in *user_pb.LoginReq) (*user_pb.LoginResp, error) {
 		return nil, status.Errorf(codes.Internal, "username doesn't exist")
 	}
 
-	if !ul.svcCtx.UserService.VerifyPassword(user.Password, in.Password) {
+	if !ul.svcCtx.UserService.VerifyPassword(ul.ctx, user, in.Password) {
 		return nil, status.Errorf(codes.Internal, "invalid password")
 	}
 
@@ -133,9 +133,17 @@ func (ul *UserLogic) ListUser(in *common_pb.PageReq) (*user_pb.ListUserResp, err
 		Total: count,
 	}
 
+	userIDs := make([]uint, 0, len(users))
 	for _, user := range users {
-		roles, _ := ul.svcCtx.UserService.GetUserRoles(ul.ctx, user.ID)
-		user.Roles = roles
+		userIDs = append(userIDs, user.ID)
+	}
+	rolesByUser, err := ul.svcCtx.UserService.GetRolesByUserIDs(ul.ctx, userIDs)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "ListUser failed: %v", err)
+	}
+
+	for _, user := range users {
+		user.Roles = rolesByUser[user.ID]
 		resp.List = append(resp.List, ul.mapUserToResp(user))
 	}
 
