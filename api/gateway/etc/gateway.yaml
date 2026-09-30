@@ -33,6 +33,17 @@ Captcha:
   img-width: 240
   img-height: 80
 
+# Rate limiting: per-IP token buckets + global in-flight request throttle.
+# Sensitive* applies to auth endpoints (/login, /captcha, /logout) to blunt
+# credential brute-force. /health is always exempt.
+RateLimit:
+  Enabled: true
+  Rate: 50
+  Burst: 100
+  SensitiveRate: 0.5
+  SensitiveBurst: 10
+  MaxConcurrent: 200
+
 # CORS configuration
 Cors:
   AllowedOrigins:

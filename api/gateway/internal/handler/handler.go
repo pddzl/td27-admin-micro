@@ -16,6 +16,18 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 	// Persist revoked tokens via the rpc cache so blocklist survives restarts
 	middleware.InitBlocklistPersistence(svcCtx.CacheClient)
 
+	// Global middleware: per-IP rate limiting + in-flight throttling.
+	// Must be registered before the routes so every route is covered.
+	if svcCtx.Config.RateLimit.Enabled {
+		server.Use(middleware.NewRateLimitMiddleware(middleware.RateLimitMiddlewareOptions{
+			Rate:           svcCtx.Config.RateLimit.Rate,
+			Burst:          svcCtx.Config.RateLimit.Burst,
+			SensitiveRate:  svcCtx.Config.RateLimit.SensitiveRate,
+			SensitiveBurst: svcCtx.Config.RateLimit.SensitiveBurst,
+		}).Handle)
+		server.Use(middleware.NewMaxConcurrentMiddleware(svcCtx.Config.RateLimit.MaxConcurrent).Handle)
+	}
+
 	jwtMiddleware := middleware.NewJwtMiddleware(svcCtx)
 	opRecordMiddleware := middleware.NewOperationRecordMiddleware(svcCtx)
 

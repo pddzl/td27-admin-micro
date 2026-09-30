@@ -13,6 +13,7 @@ require (
 	github.com/zeromicro/go-zero v1.9.4
 	golang.org/x/crypto v0.49.0
 	golang.org/x/image v0.34.0
+	golang.org/x/time v0.10.0
 	google.golang.org/grpc v1.78.0
 	google.golang.org/protobuf v1.36.11
 )
@@ -92,7 +93,6 @@ require (
 	golang.org/x/sys v0.42.0 // indirect
 	golang.org/x/term v0.41.0 // indirect
 	golang.org/x/text v0.35.0 // indirect
-	golang.org/x/time v0.10.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20251029180050-ab9386a59fda // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20251029180050-ab9386a59fda // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
