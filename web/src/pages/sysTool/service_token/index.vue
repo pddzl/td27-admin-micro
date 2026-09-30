@@ -288,7 +288,7 @@ onMounted(() => {
     <el-card shadow="never">
       <template #header>
         <div class="flex justify-between items-center">
-          <el-button type="primary" icon="Plus" @click="handleAdd">
+          <el-button v-permission="['token:create']" type="primary" icon="Plus" @click="handleAdd">
             创建令牌
           </el-button>
           <el-tooltip content="刷新" effect="light">
@@ -322,10 +322,10 @@ onMounted(() => {
         </el-table-column>
         <el-table-column label="操作" width="150" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" link @click="handleEdit(row)">
+            <el-button v-permission="['token:update']" type="primary" link @click="handleEdit(row)">
               编辑
             </el-button>
-            <el-button type="danger" link @click="handleDelete(row)">
+            <el-button v-permission="['token:delete']" type="danger" link @click="handleDelete(row)">
               删除
             </el-button>
           </template>

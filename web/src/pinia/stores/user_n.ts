@@ -2,6 +2,7 @@ import type { LoginRequestData } from "@/api/sysManagement/login"
 import type { RoleInfo } from "@/api/sysManagement/user"
 import { loginApi, logoutApi } from "@/api/sysManagement/login"
 import { getUserInfoApi } from "@/api/sysManagement/user"
+import { resetPermissions } from "@/composables/usePermission"
 import { pinia } from "@/pinia"
 import { usePermissionStoreOutside } from "@/pinia/stores/permission_n"
 import { useSettingsStore } from "./settings"
@@ -83,6 +84,7 @@ export const useUserStore = defineStore("user", () => {
       console.error("Logout API failed:", error)
     }
     resetUserInfo()
+    resetPermissions()
     token.value = ""
     permissionStore.resetDynamicRouter()
     resetTagsView()

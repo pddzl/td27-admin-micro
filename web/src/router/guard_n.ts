@@ -2,6 +2,7 @@ import type { Router } from "vue-router"
 import { setRouteChange } from "@@/composables/useRouteListener"
 import { useTitle } from "@@/composables/useTitle"
 import NProgress from "nprogress"
+import { ensurePermissionsLoaded } from "@/composables/usePermission"
 import { usePermissionStore } from "@/pinia/stores/permission_n"
 import { useUserStore } from "@/pinia/stores/user_n"
 import { isWhiteList } from "@/router/whitelist"
@@ -27,6 +28,8 @@ export function registerNavigationGuard(router: Router) {
     }
     // 如果已经登录，并准备进入 Login 页面，则重定向到主页
     if (to.path === LOGIN_PATH) return "/"
+    // 预加载按钮权限码（幂等；v-permission 指令读取其缓存）
+    ensurePermissionsLoaded()
     // 如果用户已经获得其权限角色
     if (userStore.userInfo.username !== "") return true
     // 否则要重新获取权限角色

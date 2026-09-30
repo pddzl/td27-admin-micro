@@ -11,6 +11,7 @@ import {
   setRoleInheritanceApi
 } from "@/api/sysManagement/role"
 import Apis from "./components/apis.vue"
+import Buttons from "./components/buttons.vue"
 import Menus from "./components/menus.vue"
 
 defineOptions({
@@ -186,7 +187,7 @@ function getParentName(parentId?: number) {
     <el-card v-loading="loading" shadow="never">
       <div class="toolbar-wrapper">
         <div>
-          <el-button type="primary" icon="CirclePlus" @click="addDialog">
+          <el-button v-permission="['role:create']" type="primary" icon="CirclePlus" @click="addDialog">
             新增
           </el-button>
         </div>
@@ -210,16 +211,17 @@ function getParentName(parentId?: number) {
           </el-table-column>
           <el-table-column fixed="right" label="操作" align="center" width="350">
             <template #default="scope">
-              <el-button type="primary" text icon="Setting" size="small" @click="openDrawer(scope.row)">
+              <el-button v-permission="['role:assign-permissions']" type="primary" text icon="Setting" size="small" @click="openDrawer(scope.row)">
                 设置权限
               </el-button>
-              <el-button type="primary" text icon="Link" size="small" @click="openInheritDialog(scope.row)">
+              <el-button v-permission="['role:update']" type="primary" text icon="Link" size="small" @click="openInheritDialog(scope.row)">
                 继承设置
               </el-button>
-              <el-button type="primary" text icon="Edit" size="small" @click="editDialog(scope.row)">
+              <el-button v-permission="['role:update']" type="primary" text icon="Edit" size="small" @click="editDialog(scope.row)">
                 编辑
               </el-button>
               <el-button
+                v-permission="['role:delete']"
                 type="danger"
                 text
                 icon="Delete"
@@ -290,6 +292,9 @@ function getParentName(parentId?: number) {
         </el-tab-pane>
         <el-tab-pane label="角色接口">
           <Apis :id="activeId" />
+        </el-tab-pane>
+        <el-tab-pane label="角色按钮">
+          <Buttons :id="activeId" />
         </el-tab-pane>
       </el-tabs>
     </el-drawer>

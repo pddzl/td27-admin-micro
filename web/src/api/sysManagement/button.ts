@@ -70,7 +70,8 @@ export function batchCheckButtonApi(buttonCodes: string[]) {
 
 export function getUserButtonsApi() {
   return request<ApiResponseData<string[]>>({
-    url: "/button/user",
-    method: "get"
+    url: "/button/user-buttons",
+    method: "post",
+    data: {}
   })
 }

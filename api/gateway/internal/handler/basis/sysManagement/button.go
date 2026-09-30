@@ -7,6 +7,7 @@ import (
 
 	"github.com/zeromicro/go-zero/rest/pathvar"
 
+	"td27/api/gateway/internal/middleware"
 	"td27/api/gateway/internal/svc"
 	"td27/pkg/api"
 	"td27/rpc/basis/types/common_pb"
@@ -81,22 +82,29 @@ func (h *ButtonHandler) GetButtonsByPagePath(w http.ResponseWriter, r *http.Requ
 	api.OkWithData(w, resp)
 }
 
+// GetUserButtons returns the button codes granted to the current user's roles.
+// Role ids always come from the JWT claims, never from the request body.
 func (h *ButtonHandler) GetUserButtons(w http.ResponseWriter, r *http.Request) {
-	var req struct {
-		RoleIds []int64 `json:"role_ids" validate:"required"`
-	}
-	if err := api.DecodeAndValidate(r.Body, &req); err != nil {
-		api.FailWithRequest(w, http.StatusBadRequest, err.Error())
-		return
+	roleIds, _ := r.Context().Value(middleware.RoleIdsKey).([]interface{})
+	ids := make([]int64, 0, len(roleIds))
+	for _, id := range roleIds {
+		if f, ok := id.(float64); ok {
+			ids = append(ids, int64(f))
+		}
 	}
 
-	resp, err := h.svcCtx.ButtonClient.GetUserButtons(context.Background(), &button_pb.GetUserButtonsReq{RoleIds: req.RoleIds})
+	resp, err := h.svcCtx.ButtonClient.GetUserButtons(context.Background(), &button_pb.GetUserButtonsReq{RoleIds: ids})
 	if err != nil {
 		api.FailWithMessage(w, err.Error())
 		return
 	}
 
-	api.OkWithData(w, resp)
+	codes := make([]string, 0, len(resp.List))
+	for _, b := range resp.List {
+		codes = append(codes, b.ButtonCode)
+	}
+
+	api.OkWithData(w, codes)
 }
 
 func (h *ButtonHandler) BatchCheckPermission(w http.ResponseWriter, r *http.Request) {

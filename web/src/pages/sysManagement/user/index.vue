@@ -313,7 +313,7 @@ function switchAction(id: number, active: boolean) {
     <el-card v-loading="loading" shadow="never">
       <div class="toolbar-wrapper">
         <div>
-          <el-button type="primary" icon="CirclePlus" @click="addDialog">
+          <el-button v-permission="['user:create']" type="primary" icon="CirclePlus" @click="addDialog">
             新增
           </el-button>
         </div>
@@ -360,13 +360,14 @@ function switchAction(id: number, active: boolean) {
           </el-table-column>
           <el-table-column fixed="right" label="操作" align="center" min-width="200px">
             <template #default="scope">
-              <el-button type="primary" text icon="Edit" size="small" @click="editDialog(scope.row)">
+              <el-button v-permission="['user:update']" type="primary" text icon="Edit" size="small" @click="editDialog(scope.row)">
                 编辑
               </el-button>
-              <el-button type="primary" text icon="Key" size="small" @click="modifyDialog(scope.row)">
+              <el-button v-permission="['user:reset-password']" type="primary" text icon="Key" size="small" @click="modifyDialog(scope.row)">
                 修改密码
               </el-button>
               <el-button
+                v-permission="['user:delete']"
                 type="danger"
                 text
                 icon="Delete"

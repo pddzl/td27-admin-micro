@@ -9,10 +9,10 @@ import (
 // CacheModel System cache entity
 type CacheModel struct {
 	common.Td27Model
-	Username  string    `json:"user" gorm:"column:username;comment:用户名"`
-	Key       string    `json:"key" gorm:"uniqueIndex;size:255;comment:缓存键"`
-	Value     string    `json:"value" gorm:"type:text;comment:缓存值"`
-	ExpiresAt time.Time `json:"expiresAt" gorm:"index;comment:过期时间"`
+	Username  string    `json:"user" db:"username"`
+	Key       string    `json:"key" db:"key"`
+	Value     string    `json:"value" db:"value"`
+	ExpiresAt time.Time `json:"expiresAt" db:"expires_at"`
 }
 
 func (CacheModel) TableName() string {

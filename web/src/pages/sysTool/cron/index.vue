@@ -389,10 +389,10 @@ onMounted(() => {
     <el-card shadow="never" class="mb-5px">
       <div class="flex justify-between items-center">
         <div class="flex gap-10px">
-          <el-button type="primary" icon="Plus" @click="handleCreate">
+          <el-button v-permission="['cron:create']" type="primary" icon="Plus" @click="handleCreate">
             新增任务
           </el-button>
-          <el-button icon="Delete" :disabled="!selectedIds.length" @click="handleBatchDelete">
+          <el-button v-permission="['cron:delete']" icon="Delete" :disabled="!selectedIds.length" @click="handleBatchDelete">
             批量删除
           </el-button>
         </div>
@@ -451,6 +451,7 @@ onMounted(() => {
         <el-table-column prop="open" label="状态" width="100" align="center">
           <template #default="{ row }">
             <el-switch
+              v-permission.disable="['cron:toggle']"
               v-model="row.open"
               inline-prompt
               :active-value="true"
@@ -470,13 +471,13 @@ onMounted(() => {
         <el-table-column prop="comment" label="备注" min-width="150" show-overflow-tooltip />
         <el-table-column label="操作" width="200" align="center" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" link icon="Edit" @click="handleEdit(row)">
+            <el-button v-permission="['cron:update']" type="primary" link icon="Edit" @click="handleEdit(row)">
               编辑
             </el-button>
-            <el-button type="primary" link icon="VideoPlay" @click="handleRunOnce(row)">
+            <el-button v-permission="['cron:execute']" type="primary" link icon="VideoPlay" @click="handleRunOnce(row)">
               执行
             </el-button>
-            <el-button type="danger" link icon="Delete" @click="handleDelete(row)">
+            <el-button v-permission="['cron:delete']" type="danger" link icon="Delete" @click="handleDelete(row)">
               删除
             </el-button>
           </template>

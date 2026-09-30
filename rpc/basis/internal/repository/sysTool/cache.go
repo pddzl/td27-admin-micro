@@ -31,7 +31,12 @@ func NewCacheRepository(db *sqlx.DB) CacheRepository {
 	return &cacheRepository{db: db}
 }
 
-const cacheColumns = `id, created_at, updated_at, deleted_at, username, key, value, expires_at`
+// COALESCE keeps legacy NULL rows scannable: the model fields are non-pointer
+// strings / time.Time, and expires_at falls back to the epoch (already filtered
+// out by the `expires_at > now` predicate in FindOne).
+const cacheColumns = `id, created_at, updated_at, deleted_at,
+	COALESCE(username, '') AS username, key, COALESCE(value, '') AS value,
+	COALESCE(expires_at, '1970-01-01'::timestamp) AS expires_at`
 
 func (r *cacheRepository) FindOne(ctx context.Context, key string) (*sysTool.CacheModel, error) {
 	var cache sysTool.CacheModel
