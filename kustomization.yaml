@@ -1,0 +1,33 @@
+# Root kustomization: THE deployment entry point for the whole stack.
+# It exists only to add the migrations ConfigMap generated from scripts/
+# (kustomize forbids file references above the kustomization root, so this
+# cannot live in deploy/k8s).
+#
+# Usage (from the repository root):
+#   kubectl apply -k .
+#
+# Images: build and push first (see deploy/docker/):
+#   docker build -f deploy/docker/Dockerfile.basis   -t ghcr.io/pddzl/td27-admin-micro/basis:latest   .
+#   docker build -f deploy/docker/Dockerfile.gateway -t ghcr.io/pddzl/td27-admin-micro/gateway:latest .
+#   docker build -t ghcr.io/pddzl/td27-admin-micro/web:latest web/
+# For a different registry, edit deploy/k8s/kustomization.yaml `images:` or
+# add an images: override here.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - deploy/k8s
+
+# Generated from the real SQL files so migrations stay single-sourced.
+# Name is suffix-free so deploy/k8s/migrate-job.yaml can reference it.
+configMapGenerator:
+  - name: td27-migrations
+    files:
+      - scripts/001_add_permission_effect.sql
+      - scripts/002_role_elevations.sql
+      - scripts/003_buttons.sql
+    options:
+      disableNameSuffixHash: true
+      labels:
+        app.kubernetes.io/name: td27-migrations
+        app.kubernetes.io/part-of: td27

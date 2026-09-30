@@ -1,0 +1,33 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Apply this directory through the root kustomization (which adds the
+# migrations ConfigMap from scripts/):
+#   kubectl apply -k .
+# This file alone omits td27-migrations; the migrate Job depends on it.
+
+namespace: td27
+
+resources:
+  - namespace.yaml
+  - datastores.yaml
+  - app-configs.yaml
+  - migrate-job.yaml
+  - basis.yaml
+  - gateway.yaml
+  - web.yaml
+  - ingress.yaml
+
+labels:
+  - pairs:
+      app.kubernetes.io/managed-by: kustomize
+    includeSelectors: false
+    includeTemplates: true
+
+images:
+  - name: ghcr.io/pddzl/td27-admin-micro/basis
+    newTag: latest
+  - name: ghcr.io/pddzl/td27-admin-micro/gateway
+    newTag: latest
+  - name: ghcr.io/pddzl/td27-admin-micro/web
+    newTag: latest

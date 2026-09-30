@@ -1,0 +1,69 @@
+# web: Vue 3 SPA served by nginx (listens on 8500). nginx proxies /api/* to
+# the gateway ClusterIP service, so the gateway is never exposed directly.
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: td27
+  labels:
+    app.kubernetes.io/name: web
+    app.kubernetes.io/part-of: td27
+spec:
+  selector:
+    app.kubernetes.io/name: web
+  ports:
+    - name: http
+      port: 8500
+      targetPort: 8500
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: td27
+  labels:
+    app.kubernetes.io/name: web
+    app.kubernetes.io/part-of: td27
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: web
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: web
+        app.kubernetes.io/part-of: td27
+    spec:
+      containers:
+        - name: web
+          image: ghcr.io/pddzl/td27-admin-micro/web:latest
+          imagePullPolicy: IfNotPresent
+          # Consumed by web/Dockerfile CMD via envsubst: proxies /api/* to
+          # http://<BACKEND>:8888 with the /api prefix stripped.
+          env:
+            - name: BACKEND
+              value: gateway
+          ports:
+            - containerPort: 8500
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8500
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8500
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi

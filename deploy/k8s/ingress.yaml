@@ -1,0 +1,35 @@
+# Single host Ingress: all traffic goes to the web nginx, which serves the
+# SPA and proxies /api/* to the gateway ClusterIP service. The gateway is
+# intentionally not exposed directly.
+#
+# Requires ingress-nginx. Annotations:
+#  - ssl-redirect off until TLS is provisioned (add cert-manager + tls: here
+#    for production).
+#  - body-size unlimited to keep large uploads working; basis still enforces
+#    its own 10MB cap via the File.max-size config.
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: td27
+  namespace: td27
+  labels:
+    app.kubernetes.io/part-of: td27
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: td27.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 8500

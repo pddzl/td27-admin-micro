@@ -1,0 +1,156 @@
+# Service configs as whole-file Secrets: go-zero v1.9.4 conf does not support
+# env interpolation, and both files embed a credential (DB password / JWT
+# signing key). For production, create these out-of-band instead of committing
+# real values, e.g.:
+#   kubectl -n td27 create secret generic basis-config --from-file=basis.yaml=...
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: basis-config
+  namespace: td27
+  labels:
+    app.kubernetes.io/name: basis
+    app.kubernetes.io/part-of: td27
+type: Opaque
+stringData:
+  basis.yaml: |
+    Name: basis.rpc
+    ListenOn: 0.0.0.0:8080
+    Etcd:
+      Hosts:
+      - etcd-client:2379
+      Key: basis.rpc
+
+    Mode: prod
+
+    Log:
+      ServiceName: basis
+      Mode: console
+      Encoding: plain
+      Level: info
+      KeepDays: 7
+      Rotation: daily
+      Compress: true
+
+    # PostgreSQL database configuration
+    Pgsql:
+      host: postgres
+      port: 5432
+      username: postgres
+      password: td27admin
+      db-name: td27_micro
+      max-idle-conns: 10
+      max-open-conns: 100
+      log-level: info
+      log-mode: false
+
+    # JWT authentication configuration
+    JWT:
+      signing-key: pddzl
+      expires-time: 86400
+      buffer-time: 43200
+      issuer: pddzl
+      multi-login: true
+      multi-login-limit: 5
+
+    # Casbin RBAC configuration
+    Casbin:
+      cache-ttl: 3600
+      auto-load-interval: 0
+      enable-role-hierarchy: true
+      enable-data-permission: true
+
+    # File upload configuration (must match the emptyDir mount in basis.yaml)
+    File:
+      upload-path: /app/resource/upload
+      max-size: 10
+      allowed-ext:
+        - .jpg
+        - .jpeg
+        - .png
+        - .gif
+        - .pdf
+        - .doc
+        - .docx
+        - .xls
+        - .xlsx
+
+    # System configuration
+    System:
+      env: prod
+      addr: 8080
+      app-name: basis-rpc
+      operation-log: true
+      max-upload-size: 10
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: gateway-config
+  namespace: td27
+  labels:
+    app.kubernetes.io/name: gateway
+    app.kubernetes.io/part-of: td27
+type: Opaque
+stringData:
+  gateway.yaml: |
+    Name: gateway
+    Host: 0.0.0.0
+    Port: 8888
+    Mode: prod
+
+    Log:
+      ServiceName: gateway
+      Mode: console
+      Level: info
+      KeepDays: 7
+      Rotation: daily
+      MaxSize: 5
+      Compress: true
+
+    Auth:
+      AccessSecret: pddzl
+      AccessExpire: 86400
+      # Per-request RBAC enforcement via rpc Casbin. Requires api-domain
+      # permissions in sys_management_permission; keep false until populated.
+      EnforceRbac: false
+
+    # gRPC client config for discovering basis service
+    BasisRpc:
+      Etcd:
+        Hosts:
+          - etcd-client:2379
+        Key: basis.rpc
+
+    # CAPTCHA configuration
+    Captcha:
+      key-long: 6
+      img-width: 240
+      img-height: 80
+
+    # Rate limiting: per-IP token buckets + global in-flight request throttle.
+    # Buckets are per pod; scaling the gateway multiplies the per-IP budget.
+    # Behind the ingress nginx sets X-Forwarded-For correctly, so ClientIP
+    # attribution is safe there.
+    RateLimit:
+      Enabled: true
+      Rate: 50
+      Burst: 100
+      SensitiveRate: 0.5
+      SensitiveBurst: 10
+      MaxConcurrent: 200
+
+    # CORS configuration
+    Cors:
+      AllowedOrigins:
+        - "*"
+      AllowedMethods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+      AllowedHeaders:
+        - Content-Type
+        - x-token

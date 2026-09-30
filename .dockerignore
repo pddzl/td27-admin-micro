@@ -1,0 +1,14 @@
+# Keeps backend image build contexts small (go build only needs Go sources,
+# go.mod, go.sum and protos). The web image is built with its own context
+# (web/Dockerfile) and is unaffected by this file.
+.git
+.pnpm-store
+web
+deploy
+scripts
+docs
+logs
+resource
+*.md
+Dockerfile*
+docker-compose*

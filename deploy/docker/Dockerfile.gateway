@@ -1,0 +1,35 @@
+# syntax=docker/dockerfile:1
+# Build from the repository root:
+#   docker build -f deploy/docker/Dockerfile.gateway -t ghcr.io/pddzl/td27-admin-micro/gateway:latest .
+FROM golang:1.26-alpine AS builder
+
+WORKDIR /src
+
+# GONOSUMCHECK/GOFLAGS mirror the repo convention (AGENTS.md); CGO off since
+# pgx is pure Go.
+ENV CGO_ENABLED=0 \
+    GOFLAGS=-mod=mod \
+    GONOSUMCHECK='*' \
+    GONOSUMDB='*'
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+RUN go build -trimpath -ldflags="-s -w" -o /out/gateway ./api/gateway/gateway.go
+
+FROM alpine:3.21
+
+RUN apk add --no-cache ca-certificates tzdata && \
+    addgroup -g 1000 -S td27 && adduser -u 1000 -S td27 -G td27
+
+WORKDIR /app
+COPY --from=builder /out/gateway /app/gateway
+RUN chown -R td27:td27 /app
+
+USER td27
+
+EXPOSE 8888
+
+ENTRYPOINT ["/app/gateway"]
+CMD ["-f", "/etc/td27/gateway.yaml"]
