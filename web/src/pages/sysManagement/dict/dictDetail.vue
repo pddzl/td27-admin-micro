@@ -9,6 +9,7 @@ import {
 } from "@/api/sysManagement/dictDetail"
 import { usePagination } from "@/common/composables/usePagination_n"
 import { formatDateTime } from "@/common/utils/datetime"
+import { useDictionaryStore } from "@/pinia/stores/dictionary"
 
 defineOptions({
   name: "DictDetail"
@@ -149,6 +150,7 @@ async function delDictDetailApiFunc(id: number) {
     const res = await dictDetailDeleteApi({ id })
     if (res.code === 0) {
       ElMessage({ type: "success", message: res.msg })
+      useDictionaryStore().invalidate(props.dictId)
       removeFromTree(tableData.value, id)
     }
   })
@@ -166,6 +168,7 @@ async function operateAction(formEl: FormInstance | undefined) {
         res = await dictDetailCreateApi(formData)
         if (res.code === 0) {
           ElMessage.success(res.msg)
+          useDictionaryStore().invalidate(props.dictId)
           if (!tableData.value) {
             tableData.value = []
           }
@@ -176,6 +179,7 @@ async function operateAction(formEl: FormInstance | undefined) {
         res = await dictDetailUpdateApi({ id: activeRow.id, ...formData })
         if (res.code === 0) {
           ElMessage.success(res.msg)
+          useDictionaryStore().invalidate(props.dictId)
           // todo
           // it just make effect in no parent dictDetail
           const index = tableData.value.indexOf(activeRow)

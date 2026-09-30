@@ -1,11 +1,12 @@
 <script lang="ts" setup>
-import { ref, onMounted } from "vue"
+import type { ButtonData } from "@/api/sysManagement/button"
+import { onMounted, ref } from "vue"
 import {
+
   createButtonApi,
-  updateButtonApi,
   deleteButtonApi,
   listButtonApi,
-  type ButtonData
+  updateButtonApi
 } from "@/api/sysManagement/button"
 
 const tableData = ref<ButtonData[]>([])
@@ -144,8 +145,12 @@ onMounted(() => {
           <el-input v-model="searchForm.pagePath" placeholder="请输入" clearable />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleSearch">搜索</el-button>
-          <el-button @click="handleReset">重置</el-button>
+          <el-button type="primary" @click="handleSearch">
+            搜索
+          </el-button>
+          <el-button @click="handleReset">
+            重置
+          </el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -154,7 +159,9 @@ onMounted(() => {
       <template #header>
         <div class="card-header">
           <span>按钮权限列表</span>
-          <el-button type="primary" @click="handleAdd">+ 创建按钮</el-button>
+          <el-button type="primary" @click="handleAdd">
+            + 创建按钮
+          </el-button>
         </div>
       </template>
 
@@ -166,8 +173,12 @@ onMounted(() => {
         <el-table-column prop="description" label="描述" min-width="150" />
         <el-table-column label="操作" width="120" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" link @click="handleEdit(row)">编辑</el-button>
-            <el-button type="danger" link @click="handleDelete(row)">删除</el-button>
+            <el-button type="primary" link @click="handleEdit(row)">
+              编辑
+            </el-button>
+            <el-button type="danger" link @click="handleDelete(row)">
+              删除
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -202,8 +213,12 @@ onMounted(() => {
       </el-form>
 
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="saving" @click="handleSubmit">保存</el-button>
+        <el-button @click="dialogVisible = false">
+          取消
+        </el-button>
+        <el-button type="primary" :loading="saving" @click="handleSubmit">
+          保存
+        </el-button>
       </template>
     </el-dialog>
   </div>

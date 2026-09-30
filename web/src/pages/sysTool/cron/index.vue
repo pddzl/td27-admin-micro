@@ -139,9 +139,8 @@ async function handleStatusChange(row: cronDataModel, val: boolean) {
       ElMessage.success(val ? "任务已启动" : "任务已停止")
       getTableData()
     }
-  } catch (error) {
+  } catch {
     row.open = !val // Revert on error
-    console.log(error)
   }
 }
 
@@ -286,7 +285,7 @@ function parseCron(expression: string) {
   const parts = expression.split(" ")
   if (parts.length !== 5) return expression
 
-  const [minute, hour, day, month, week] = parts
+  const [minute, hour, _day, _month, _week] = parts
 
   if (minute === "*" && hour === "*") return "每分钟执行"
   if (minute === "0" && hour === "*") return "每小时执行"

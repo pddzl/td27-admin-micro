@@ -92,9 +92,8 @@ const nextTimes = computed(() => {
       const next = new Date(now.getTime() + i * 60 * 60 * 1000)
       times.push(next.toLocaleString())
     }
-  } catch (e) {
+  } catch {
     // Invalid cron
-    console.log(e)
   }
   return times
 })

@@ -18,9 +18,9 @@ export function useValidatePassword(rule: any, value: any, callback: any) {
     callback()
   } else if (value.length < 8) {
     callback(new Error("密码长度不能少于8位"))
-  } else if (!/[a-zA-Z]/.test(value)) {
+  } else if (!/[a-z]/i.test(value)) {
     callback(new Error("密码必须包含字母"))
-  } else if (!/[0-9]/.test(value)) {
+  } else if (!/\d/.test(value)) {
     callback(new Error("密码必须包含数字"))
   } else {
     callback()

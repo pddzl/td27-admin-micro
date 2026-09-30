@@ -9,7 +9,7 @@ export interface CasbinInfo {
 // 新的统一权限格式
 interface UpdateRoleAPIReq {
   roleId: number
-  apiPermissionIds: number[]  // API权限ID列表
+  apiPermissionIds: number[] // API权限ID列表
 }
 
 // 更新角色API权限（新格式）

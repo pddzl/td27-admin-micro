@@ -93,7 +93,6 @@ async function loadApiTree(id: number) {
     if (res.code === 0) {
       apiTreeData.value = res.data.list || []
       apiIds.value = res.data.checkedIds || []
-      // console.log("API Tree loaded:", apiTreeData.value)
     } else {
       ElMessage.error(res.msg || "加载API列表失败")
     }

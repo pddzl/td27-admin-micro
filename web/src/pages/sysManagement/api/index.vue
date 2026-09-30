@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import type { FormInstance, FormRules } from "element-plus"
 import type { ApiDataModel } from "@/api/sysManagement/api"
-import WarningBar from "@@/components/WarningBar/warningBar.vue"
 import { reactive, ref } from "vue"
 import {
   apiCreateApi,
@@ -71,8 +70,8 @@ async function getTableData() {
       tableData.value = res.data.list
       paginationData.total = res.data.total
     }
-  } catch (error) {
-    console.log(error)
+  } catch {
+    // 网络错误由拦截器统一提示
   }
   loading.value = false
 }

@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type { orDataModel } from "@/api/sysMonitor/operationLog"
+import { useLatestRequest } from "@@/composables/useLatestRequest"
 import { usePagination } from "@@/composables/usePagination_n"
 import { formatDateTime } from "@@/utils/datetime"
 import { reactive, ref } from "vue"
@@ -41,22 +42,29 @@ function resetSearch() {
 
 const tableData = ref<orDataModel[]>([])
 
+const { run: runListRequest } = useLatestRequest()
+
 async function getTableData() {
   loading.value = true
   try {
-    const res = await oplListApi({
-      path: searchFormData.path || undefined,
-      method: searchFormData.method || undefined,
-      status: searchFormData.status || undefined,
-      page: paginationData.currentPage,
-      pageSize: paginationData.pageSize
-    })
+    const res = await runListRequest(signal =>
+      oplListApi(
+        {
+          path: searchFormData.path || undefined,
+          method: searchFormData.method || undefined,
+          status: searchFormData.status || undefined,
+          page: paginationData.currentPage,
+          pageSize: paginationData.pageSize
+        },
+        signal
+      )
+    )
     if (res.code === 0) {
       tableData.value = res.data.list
       paginationData.total = res.data.total
     }
-  } catch (error) {
-    console.log(error)
+  } catch {
+    // 已取消或网络错误由拦截器统一提示
   }
   loading.value = false
 }

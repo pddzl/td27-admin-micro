@@ -1,12 +1,13 @@
 <script lang="ts" setup>
+import type { ThemeName } from "@@/composables/useTheme"
 import type { FormInstance, FormRules } from "element-plus"
 import type { LoginRequestData } from "@/api/sysManagement/login"
-import { reactive, ref, onMounted } from "vue"
+import { useTheme } from "@@/composables/useTheme"
+import { Moon, Sunny } from "@element-plus/icons-vue"
+import { onMounted, reactive, ref } from "vue"
 import { useRouter } from "vue-router"
 import { captchaApi } from "@/api/sysManagement/login"
 import { useUserStore } from "@/pinia/stores/user_n"
-import { useTheme, type ThemeName } from "@@/composables/useTheme"
-import { Sunny, Moon } from "@element-plus/icons-vue"
 
 const router = useRouter()
 const loginFormRef = ref<FormInstance | null>(null)
@@ -64,7 +65,13 @@ function handleLogin() {
           captcha_id: loginFormData.captcha_id
         })
         .then(() => {
-          router.push({ path: "/" })
+          // 支持 ?redirect= 登录后回跳，仅接受站内路径，防止开放重定向
+          const redirect = router.currentRoute.value.query.redirect
+          if (typeof redirect === "string" && redirect.startsWith("/") && !redirect.startsWith("//")) {
+            router.push(redirect)
+          } else {
+            router.push({ path: "/" })
+          }
         })
         .catch(() => {
           createCode()

@@ -40,11 +40,12 @@ export function getUserInfoApi() {
 }
 
 /** 获取所有用户 */
-export function userListApi(data: PageInfo) {
+export function userListApi(data: PageInfo, signal?: AbortSignal) {
   return request<ApiResponseData<userListData>>({
     url: "/user/list",
     method: "post",
-    data
+    data,
+    signal
   })
 }
 

@@ -19,7 +19,7 @@ function toDefault() {
 const userInfoFormRef = ref<FormInstance>()
 const userInfoForm = reactive({
   id: 0,
-  created_at: "",
+  createdAt: "",
   username: "",
   phone: "",
   email: "",

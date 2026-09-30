@@ -6,15 +6,15 @@ const cache: Record<string, boolean> = {}
 async function updateEl(el: HTMLElement, binding: DirectiveBinding<string | string[]>) {
   const codes = Array.isArray(binding.value) ? binding.value : [binding.value]
   const modifier = binding.modifiers
-  
+
   const unchecked = codes.filter(code => cache[code] === undefined)
   if (unchecked.length) {
     const result = await checkPermissionsBatch(unchecked)
     Object.assign(cache, result)
   }
-  
+
   const hasPermission = codes.some(code => cache[code] === true)
-  
+
   if (!hasPermission) {
     if (modifier.disable) {
       el.setAttribute("disabled", "true")

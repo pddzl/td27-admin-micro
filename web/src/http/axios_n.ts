@@ -3,10 +3,11 @@ import axios from "axios"
 import { get, merge } from "lodash-es"
 import { useUserStore } from "@/pinia/stores/user_n"
 
-/** 退出登录并强制刷新页面（会重定向到登录页） */
+/** Token 失效时重置凭证并跳转到登录页（携带 redirect 以便登录后回跳） */
 function logout() {
-  useUserStore().logout()
-  location.reload()
+  useUserStore().resetToken()
+  const currentPath = encodeURIComponent(window.location.pathname + window.location.search)
+  window.location.href = `/login?redirect=${currentPath}`
 }
 
 /** 创建请求实例 */
@@ -51,6 +52,10 @@ function createInstance() {
       }
     },
     (error) => {
+      // 已被取消的请求（AbortController）静默处理，不弹错误提示
+      if (axios.isCancel(error)) {
+        return Promise.reject(error)
+      }
       // status 是 HTTP 状态码
       const status = get(error, "response.status")
       const message = get(error, "response.data.message")
@@ -111,10 +116,8 @@ function createRequest(instance: AxiosInstance) {
         "x-token": useUserStore().token,
         "Content-Type": "application/json"
       },
-      // 请求体
-      data: {},
       // 请求超时
-      timeout: 5000,
+      timeout: 15000,
       // 跨域请求时是否携带 Cookies
       withCredentials: false
     }

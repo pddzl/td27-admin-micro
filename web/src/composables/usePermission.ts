@@ -1,4 +1,4 @@
-import { ref, onMounted } from "vue"
+import { onMounted, ref } from "vue"
 import { batchCheckButtonApi, getUserButtonsApi } from "@/api/sysManagement/button"
 
 const permissionCache = ref<Record<string, boolean>>({})
@@ -6,7 +6,7 @@ let loadingPromise: Promise<void> | null = null
 
 async function loadPermissions() {
   if (loadingPromise) return loadingPromise
-  
+
   loadingPromise = (async () => {
     try {
       const res = await getUserButtonsApi()
@@ -23,7 +23,7 @@ async function loadPermissions() {
       loadingPromise = null
     }
   })()
-  
+
   return loadingPromise
 }
 
@@ -44,7 +44,7 @@ export function usePermission() {
     return buttonCodes.every(code => permissionCache.value[code] === true)
   }
 
-  async function checkPageButtons(pagePath: string) {
+  async function checkPageButtons(_pagePath: string) {
     // This is handled by getPageButtonsApi per page
     return loadPermissions()
   }

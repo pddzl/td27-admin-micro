@@ -24,11 +24,12 @@ interface reqOrList extends PageInfo {
 }
 
 // 分页获取操作记录
-export function oplListApi(data: reqOrList) {
+export function oplListApi(data: reqOrList, signal?: AbortSignal) {
   return request<ApiResponseData<orListData>>({
     url: "/opl/list",
     method: "post",
-    data
+    data,
+    signal
   })
 }
 

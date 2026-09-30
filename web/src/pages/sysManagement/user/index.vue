@@ -2,6 +2,7 @@
 import type { FormInstance, FormRules } from "element-plus"
 import type { Dept } from "@/api/sysManagement/dept"
 import type { RoleInfo, userDataModel } from "@/api/sysManagement/user"
+import { useLatestRequest } from "@@/composables/useLatestRequest"
 import { usePagination } from "@@/composables/usePagination_n"
 import { useValidateEmail, useValidatePassword, useValidatePhone } from "@@/utils/useValidate"
 import { computed, reactive, ref } from "vue"
@@ -26,16 +27,20 @@ const { paginationData, changeCurrentPage, changePageSize } = usePagination()
 const tableData = ref<userDataModel[]>([])
 let activeRow: userDataModel
 
+const { run: runListRequest } = useLatestRequest()
+
 async function getTableData() {
   loading.value = true
   try {
-    const res = await userListApi({ page: paginationData.currentPage, pageSize: paginationData.pageSize })
+    const res = await runListRequest(signal =>
+      userListApi({ page: paginationData.currentPage, pageSize: paginationData.pageSize }, signal)
+    )
     if (res.code === 0) {
       tableData.value = res.data.list
       paginationData.total = res.data.total
     }
-  } catch (error) {
-    console.log(error)
+  } catch {
+    // 已取消或网络错误由拦截器统一提示
   }
   loading.value = false
 }
@@ -104,13 +109,9 @@ function mpOperateAction(formEl: FormInstance | undefined) {
         newPassword: mpFormData.newPassword
       })
         .then((res) => {
-        if (res.code === 0) {
-          ElMessage({ type: "success", message: res.msg })
-          const index = tableData.value.indexOf(activeRow)
-          if (index !== -1) {
-            tableData.value.splice(index, 1, res.data)
+          if (res.code === 0) {
+            ElMessage({ type: "success", message: res.msg })
           }
-        }
         })
         .catch(() => {})
     }

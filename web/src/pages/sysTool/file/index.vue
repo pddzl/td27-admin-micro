@@ -80,8 +80,8 @@ async function getTableData() {
       tableData.value = res.data.list
       paginationData.total = res.data.total
     }
-  } catch (error) {
-    console.log(error)
+  } catch {
+    // 网络错误由拦截器统一提示
   }
   loading.value = false
 }

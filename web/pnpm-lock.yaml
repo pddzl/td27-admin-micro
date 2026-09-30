@@ -53,13 +53,10 @@ importers:
       vue-router:
         specifier: 4.5.1
         version: 4.5.1(vue@3.5.17(typescript@5.8.3))
-      vxe-table:
-        specifier: 4.6.25
-        version: 4.6.25(vue@3.5.17(typescript@5.8.3))
     devDependencies:
       '@antfu/eslint-config':
         specifier: 4.17.0
-        version: 4.17.0(@vue/compiler-sfc@3.5.17)(eslint-plugin-format@1.0.1(eslint@9.31.0(jiti@2.5.1)))(eslint@9.31.0(jiti@2.5.1))(typescript@5.8.3)(vitest@3.2.4(@types/node@24.0.14)(happy-dom@18.0.1)(jiti@2.5.1)(sass-embedded@1.78.0)(yaml@2.8.0))
+        version: 4.17.0(@vue/compiler-sfc@3.5.17)(eslint-plugin-format@1.0.1(eslint@9.31.0(jiti@2.5.1)))(eslint@9.31.0(jiti@2.5.1))(typescript@5.8.3)(vitest@3.2.4(@types/debug@4.1.12)(@types/node@24.0.14)(happy-dom@18.0.1)(jiti@2.5.1)(sass-embedded@1.78.0)(yaml@2.8.0))
       '@types/lodash-es':
         specifier: 4.17.12
         version: 4.17.12
@@ -114,6 +111,9 @@ importers:
       vite-svg-loader:
         specifier: 5.1.0
         version: 5.1.0(vue@3.5.17(typescript@5.8.3))
+      vitest:
+        specifier: 3.2.4
+        version: 3.2.4(@types/debug@4.1.12)(@types/node@24.0.14)(happy-dom@18.0.1)(jiti@2.5.1)(sass-embedded@1.78.0)(yaml@2.8.0)
       vue-tsc:
         specifier: 3.0.1
         version: 3.0.1(typescript@5.8.3)
@@ -1414,9 +1414,6 @@ packages:
 
   dom-serializer@2.0.0:
     resolution: {integrity: sha512-wIkAryiqt/nV5EQKqQpo3SToSOV9J0DnbJqwK7Wv/Trc92zIAYZ4FlMu+JPFW1DfGFt81ZTCGgDEabffXeLyJg==}
-
-  dom-zindex@1.0.6:
-    resolution: {integrity: sha512-FKWIhiU96bi3xpP9ewRMgANsoVmMUBnMnmpCT6dPMZOunVYJQmJhSRruoI0XSPoHeIif3kyEuiHbFrOJwEJaEA==}
 
   domelementtype@2.3.0:
     resolution: {integrity: sha512-OLETBj6w0OsagBwdXnPdN0cnMfF9opN69co+7ZrbfPGrdpPVNBUj02spi6B1N7wChLQiPn4CSH/zJvXw56gmHw==}
@@ -3164,11 +3161,6 @@ packages:
       typescript:
         optional: true
 
-  vxe-table@4.6.25:
-    resolution: {integrity: sha512-rFhGh8w+420cdnIasQKisiKagz9F/iNieB/z6v0j4GcsMfGHEmSJ72YrHcXogQh4wNlCzKVfb7rl7nREL5eIOg==}
-    peerDependencies:
-      vue: ^3.2.28
-
   webpack-virtual-modules@0.6.2:
     resolution: {integrity: sha512-66/V2i5hQanC51vBQKPH4aI8NMAcBW59FVBs+rC7eGHupMyfn34q7rZIE+ETlJ+XTevqfUhVVBgSUNSW2flEUQ==}
 
@@ -3208,9 +3200,6 @@ packages:
 
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
-
-  xe-utils@3.7.7:
-    resolution: {integrity: sha512-5suEb7N5fVsO9V14KIpFvIIrTgtnjUf3XizzQHWynYn2zO8ytQ/+I5CX8zQNZD8zpEyuvcBuDmDw0v0L7pZZpA==}
 
   xml-name-validator@4.0.0:
     resolution: {integrity: sha512-ICP2e+jsHvAj2E2lIHxa5tjXRlKDJo4IdvPvCXbXQGdzSfmSpNVyIKMvoZHjDY9DP0zV17iI85o90vRFXNccRw==}
@@ -3255,7 +3244,7 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.31
 
-  '@antfu/eslint-config@4.17.0(@vue/compiler-sfc@3.5.17)(eslint-plugin-format@1.0.1(eslint@9.31.0(jiti@2.5.1)))(eslint@9.31.0(jiti@2.5.1))(typescript@5.8.3)(vitest@3.2.4(@types/node@24.0.14)(happy-dom@18.0.1)(jiti@2.5.1)(sass-embedded@1.78.0)(yaml@2.8.0))':
+  '@antfu/eslint-config@4.17.0(@vue/compiler-sfc@3.5.17)(eslint-plugin-format@1.0.1(eslint@9.31.0(jiti@2.5.1)))(eslint@9.31.0(jiti@2.5.1))(typescript@5.8.3)(vitest@3.2.4(@types/debug@4.1.12)(@types/node@24.0.14)(happy-dom@18.0.1)(jiti@2.5.1)(sass-embedded@1.78.0)(yaml@2.8.0))':
     dependencies:
       '@antfu/install-pkg': 1.1.0
       '@clack/prompts': 0.11.0
@@ -3264,7 +3253,7 @@ snapshots:
       '@stylistic/eslint-plugin': 5.2.0(eslint@9.31.0(jiti@2.5.1))
       '@typescript-eslint/eslint-plugin': 8.37.0(@typescript-eslint/parser@8.37.0(eslint@9.31.0(jiti@2.5.1))(typescript@5.8.3))(eslint@9.31.0(jiti@2.5.1))(typescript@5.8.3)
       '@typescript-eslint/parser': 8.37.0(eslint@9.31.0(jiti@2.5.1))(typescript@5.8.3)
-      '@vitest/eslint-plugin': 1.3.4(eslint@9.31.0(jiti@2.5.1))(typescript@5.8.3)(vitest@3.2.4(@types/node@24.0.14)(happy-dom@18.0.1)(jiti@2.5.1)(sass-embedded@1.78.0)(yaml@2.8.0))
+      '@vitest/eslint-plugin': 1.3.4(eslint@9.31.0(jiti@2.5.1))(typescript@5.8.3)(vitest@3.2.4(@types/debug@4.1.12)(@types/node@24.0.14)(happy-dom@18.0.1)(jiti@2.5.1)(sass-embedded@1.78.0)(yaml@2.8.0))
       ansis: 4.1.0
       cac: 6.7.14
       eslint: 9.31.0(jiti@2.5.1)
@@ -3741,14 +3730,12 @@ snapshots:
   '@types/chai@5.2.2':
     dependencies:
       '@types/deep-eql': 4.0.2
-    optional: true
 
   '@types/debug@4.1.12':
     dependencies:
       '@types/ms': 2.1.0
 
-  '@types/deep-eql@4.0.2':
-    optional: true
+  '@types/deep-eql@4.0.2': {}
 
   '@types/estree@1.0.8': {}
 
@@ -4037,13 +4024,13 @@ snapshots:
       vite: 7.0.4(@types/node@24.0.14)(jiti@2.5.1)(sass-embedded@1.78.0)(yaml@2.8.0)
       vue: 3.5.17(typescript@5.8.3)
 
-  '@vitest/eslint-plugin@1.3.4(eslint@9.31.0(jiti@2.5.1))(typescript@5.8.3)(vitest@3.2.4(@types/node@24.0.14)(happy-dom@18.0.1)(jiti@2.5.1)(sass-embedded@1.78.0)(yaml@2.8.0))':
+  '@vitest/eslint-plugin@1.3.4(eslint@9.31.0(jiti@2.5.1))(typescript@5.8.3)(vitest@3.2.4(@types/debug@4.1.12)(@types/node@24.0.14)(happy-dom@18.0.1)(jiti@2.5.1)(sass-embedded@1.78.0)(yaml@2.8.0))':
     dependencies:
       '@typescript-eslint/utils': 8.37.0(eslint@9.31.0(jiti@2.5.1))(typescript@5.8.3)
       eslint: 9.31.0(jiti@2.5.1)
     optionalDependencies:
       typescript: 5.8.3
-      vitest: 3.2.4(@types/node@24.0.14)(happy-dom@18.0.1)(jiti@2.5.1)(sass-embedded@1.78.0)(yaml@2.8.0)
+      vitest: 3.2.4(@types/debug@4.1.12)(@types/node@24.0.14)(happy-dom@18.0.1)(jiti@2.5.1)(sass-embedded@1.78.0)(yaml@2.8.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -4054,7 +4041,6 @@ snapshots:
       '@vitest/utils': 3.2.4
       chai: 5.2.1
       tinyrainbow: 2.0.0
-    optional: true
 
   '@vitest/mocker@3.2.4(vite@7.0.4(@types/node@24.0.14)(jiti@2.5.1)(sass-embedded@1.78.0)(yaml@2.8.0))':
     dependencies:
@@ -4063,38 +4049,32 @@ snapshots:
       magic-string: 0.30.17
     optionalDependencies:
       vite: 7.0.4(@types/node@24.0.14)(jiti@2.5.1)(sass-embedded@1.78.0)(yaml@2.8.0)
-    optional: true
 
   '@vitest/pretty-format@3.2.4':
     dependencies:
       tinyrainbow: 2.0.0
-    optional: true
 
   '@vitest/runner@3.2.4':
     dependencies:
       '@vitest/utils': 3.2.4
       pathe: 2.0.3
       strip-literal: 3.0.0
-    optional: true
 
   '@vitest/snapshot@3.2.4':
     dependencies:
       '@vitest/pretty-format': 3.2.4
       magic-string: 0.30.17
       pathe: 2.0.3
-    optional: true
 
   '@vitest/spy@3.2.4':
     dependencies:
       tinyspy: 4.0.3
-    optional: true
 
   '@vitest/utils@3.2.4':
     dependencies:
       '@vitest/pretty-format': 3.2.4
       loupe: 3.1.4
       tinyrainbow: 2.0.0
-    optional: true
 
   '@volar/language-core@2.4.17':
     dependencies:
@@ -4261,8 +4241,7 @@ snapshots:
 
   argparse@2.0.1: {}
 
-  assertion-error@2.0.1:
-    optional: true
+  assertion-error@2.0.1: {}
 
   async-validator@4.2.5: {}
 
@@ -4330,7 +4309,6 @@ snapshots:
       deep-eql: 5.0.2
       loupe: 3.1.4
       pathval: 2.0.1
-    optional: true
 
   chalk@4.1.2:
     dependencies:
@@ -4341,8 +4319,7 @@ snapshots:
 
   character-entities@2.0.2: {}
 
-  check-error@2.1.1:
-    optional: true
+  check-error@2.1.1: {}
 
   chokidar@3.6.0:
     dependencies:
@@ -4523,8 +4500,7 @@ snapshots:
     dependencies:
       character-entities: 2.0.2
 
-  deep-eql@5.0.2:
-    optional: true
+  deep-eql@5.0.2: {}
 
   deep-is@0.1.4: {}
 
@@ -4551,8 +4527,6 @@ snapshots:
       domelementtype: 2.3.0
       domhandler: 5.0.3
       entities: 4.5.0
-
-  dom-zindex@1.0.6: {}
 
   domelementtype@2.3.0: {}
 
@@ -4628,8 +4602,7 @@ snapshots:
 
   es-errors@1.3.0: {}
 
-  es-module-lexer@1.7.0:
-    optional: true
+  es-module-lexer@1.7.0: {}
 
   es-object-atoms@1.1.1:
     dependencies:
@@ -4981,8 +4954,7 @@ snapshots:
 
   eventemitter3@5.0.1: {}
 
-  expect-type@1.2.2:
-    optional: true
+  expect-type@1.2.2: {}
 
   exsolve@1.0.7: {}
 
@@ -5314,8 +5286,7 @@ snapshots:
 
   longest-streak@3.1.0: {}
 
-  loupe@3.1.4:
-    optional: true
+  loupe@3.1.4: {}
 
   magic-string@0.30.17:
     dependencies:
@@ -5779,8 +5750,7 @@ snapshots:
 
   pathe@2.0.3: {}
 
-  pathval@2.0.1:
-    optional: true
+  pathval@2.0.1: {}
 
   perfect-debounce@1.0.0: {}
 
@@ -6052,8 +6022,7 @@ snapshots:
 
   shebang-regex@3.0.0: {}
 
-  siginfo@2.0.0:
-    optional: true
+  siginfo@2.0.0: {}
 
   signal-exit@4.1.0: {}
 
@@ -6098,11 +6067,9 @@ snapshots:
 
   stack-trace@0.0.10: {}
 
-  stackback@0.0.2:
-    optional: true
+  stackback@0.0.2: {}
 
-  std-env@3.9.0:
-    optional: true
+  std-env@3.9.0: {}
 
   string-argv@0.3.2: {}
 
@@ -6209,11 +6176,9 @@ snapshots:
 
   text-hex@1.0.0: {}
 
-  tinybench@2.9.0:
-    optional: true
+  tinybench@2.9.0: {}
 
-  tinyexec@0.3.2:
-    optional: true
+  tinyexec@0.3.2: {}
 
   tinyexec@1.0.1: {}
 
@@ -6222,14 +6187,11 @@ snapshots:
       fdir: 6.4.6(picomatch@4.0.3)
       picomatch: 4.0.3
 
-  tinypool@1.1.1:
-    optional: true
+  tinypool@1.1.1: {}
 
-  tinyrainbow@2.0.0:
-    optional: true
+  tinyrainbow@2.0.0: {}
 
-  tinyspy@4.0.3:
-    optional: true
+  tinyspy@4.0.3: {}
 
   to-regex-range@5.0.1:
     dependencies:
@@ -6436,7 +6398,6 @@ snapshots:
       - terser
       - tsx
       - yaml
-    optional: true
 
   vite-svg-loader@5.1.0(vue@3.5.17(typescript@5.8.3)):
     dependencies:
@@ -6458,7 +6419,7 @@ snapshots:
       sass-embedded: 1.78.0
       yaml: 2.8.0
 
-  vitest@3.2.4(@types/node@24.0.14)(happy-dom@18.0.1)(jiti@2.5.1)(sass-embedded@1.78.0)(yaml@2.8.0):
+  vitest@3.2.4(@types/debug@4.1.12)(@types/node@24.0.14)(happy-dom@18.0.1)(jiti@2.5.1)(sass-embedded@1.78.0)(yaml@2.8.0):
     dependencies:
       '@types/chai': 5.2.2
       '@vitest/expect': 3.2.4
@@ -6484,6 +6445,7 @@ snapshots:
       vite-node: 3.2.4(@types/node@24.0.14)(jiti@2.5.1)(sass-embedded@1.78.0)(yaml@2.8.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
+      '@types/debug': 4.1.12
       '@types/node': 24.0.14
       happy-dom: 18.0.1
     transitivePeerDependencies:
@@ -6499,7 +6461,6 @@ snapshots:
       - terser
       - tsx
       - yaml
-    optional: true
 
   vscode-uri@3.1.0: {}
 
@@ -6548,12 +6509,6 @@ snapshots:
     optionalDependencies:
       typescript: 5.8.3
 
-  vxe-table@4.6.25(vue@3.5.17(typescript@5.8.3)):
-    dependencies:
-      dom-zindex: 1.0.6
-      vue: 3.5.17(typescript@5.8.3)
-      xe-utils: 3.7.7
-
   webpack-virtual-modules@0.6.2: {}
 
   whatwg-mimetype@3.0.0: {}
@@ -6566,7 +6521,6 @@ snapshots:
     dependencies:
       siginfo: 2.0.0
       stackback: 0.0.2
-    optional: true
 
   winston-transport@4.9.0:
     dependencies:
@@ -6603,8 +6557,6 @@ snapshots:
       strip-ansi: 7.1.0
 
   wrappy@1.0.2: {}
-
-  xe-utils@3.7.7: {}
 
   xml-name-validator@4.0.0: {}
 

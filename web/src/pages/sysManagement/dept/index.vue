@@ -5,7 +5,6 @@ import { onMounted, reactive, ref } from "vue"
 import {
   createDeptApi,
   deleteDeptApi,
-  deptListApi,
   getElTreeDeptsApi,
   updateDeptApi
 } from "@/api/sysManagement/dept"
@@ -219,11 +218,15 @@ onMounted(() => {
     <el-card v-loading="loading" shadow="never" class="search-wrapper">
       <el-form :model="searchForm" :inline="true">
         <el-form-item prop="dept_name">
-          <template #label>部门名称</template>
+          <template #label>
+            部门名称
+          </template>
           <el-input v-model="searchForm.dept_name" placeholder="请输入部门名称" clearable />
         </el-form-item>
         <el-form-item prop="status">
-          <template #label>状态</template>
+          <template #label>
+            状态
+          </template>
           <el-select v-model="searchForm.status" placeholder="部门状态" clearable style="width: 120px">
             <el-option label="正常" :value="true" />
             <el-option label="禁用" :value="false" />
@@ -314,7 +317,9 @@ onMounted(() => {
     >
       <el-form ref="formRef" :model="formData" :rules="formRules" label-width="80px">
         <el-form-item prop="parentId">
-          <template #label>上级部门</template>
+          <template #label>
+            上级部门
+          </template>
           <el-tree-select
             v-model="formData.parent_id"
             :data="deptOptions"
@@ -330,11 +335,15 @@ onMounted(() => {
           <el-input v-model="formData.dept_name" placeholder="请输入部门名称" />
         </el-form-item>
         <el-form-item prop="sort">
-          <template #label>排序</template>
+          <template #label>
+            排序
+          </template>
           <el-input-number v-model="formData.sort" :min="0" :max="999" style="width: 100%" />
         </el-form-item>
         <el-form-item prop="status">
-          <template #label>状态</template>
+          <template #label>
+            状态
+          </template>
           <el-radio-group v-model="formData.status">
             <el-radio :value="true">
               正常

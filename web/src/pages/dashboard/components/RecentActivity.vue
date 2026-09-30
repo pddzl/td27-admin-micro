@@ -94,7 +94,7 @@ function formatTime(timeStr: string): string {
             <el-tag :type="getStatusType(item.status)" size="small">
               {{ item.status }}
             </el-tag>
-            <span class="time">{{ formatTime(item.createdAt) }}</span>
+            <span class="time">{{ formatTime(item.created_at) }}</span>
             <span v-if="item.respTime > 0" class="resp-time" :class="getRespTimeClass(item.respTime)">
               {{ item.respTime }}ms
             </span>

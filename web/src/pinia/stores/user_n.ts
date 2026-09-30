@@ -1,6 +1,7 @@
 import type { LoginRequestData } from "@/api/sysManagement/login"
+import type { RoleInfo } from "@/api/sysManagement/user"
 import { loginApi, logoutApi } from "@/api/sysManagement/login"
-import { getUserInfoApi, type RoleInfo } from "@/api/sysManagement/user"
+import { getUserInfoApi } from "@/api/sysManagement/user"
 import { pinia } from "@/pinia"
 import { usePermissionStoreOutside } from "@/pinia/stores/permission_n"
 import { useSettingsStore } from "./settings"
@@ -19,13 +20,13 @@ export const useUserStore = defineStore("user", () => {
   // 多角色支持
   const userInfo = reactive({
     id: 0,
-    created_at: "",
+    createdAt: "",
     username: "",
     phone: "",
     email: "",
-    role: "",        // 主角色名称（兼容旧版）
-    roleId: 0,       // 主角色ID（兼容旧版）
-    roles: [] as RoleInfo[]  // 多角色列表
+    role: "", // 主角色名称（兼容旧版）
+    roleId: 0, // 主角色ID（兼容旧版）
+    roles: [] as RoleInfo[] // 多角色列表
   })
 
   const permissionStore = usePermissionStoreOutside()
@@ -49,7 +50,7 @@ export const useUserStore = defineStore("user", () => {
     if (res.code === 0) {
       username.value = res.data.username
       userInfo.id = res.data.id
-      userInfo.createdAt = res.data.createdAt
+      userInfo.createdAt = res.data.created_at ?? ""
       userInfo.username = res.data.username
       userInfo.phone = res.data.phone
       userInfo.email = res.data.email
