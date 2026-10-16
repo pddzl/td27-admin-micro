@@ -1,20 +1,30 @@
 schema: spec-driven
 
-# Project context (optional)
-# This is shown to AI when creating artifacts.
-# Add your tech stack, conventions, style guides, domain knowledge, etc.
-# Example:
-#   context: |
-#     Tech stack: TypeScript, React, Node.js
-#     We use conventional commits
-#     Domain: e-commerce platform
+# Project context shown to AI when creating artifacts.
+context: |
+  td27-admin-micro: Go 1.26 monorepo (go-zero v1.9.4) with two processes:
+  rpc/basis (gRPC :8080) and api/gateway (HTTP REST :8888). PostgreSQL via
+  sqlx/pgx (NOT GORM; no auto-migration — plain SQL in scripts/, applied in
+  filename order), etcd service discovery, JWT auth with DB-persisted token
+  blocklist, Casbin RBAC (read-only adapter over sys_management_permission,
+  deny wins), bcrypt cost 12. Frontend in web/: Vue 3 + Vite + Element Plus
+  + Pinia, served by nginx on 8500, proxies /api/* to the gateway.
+  Deployment: Kustomize (root kustomization.yaml, namespace td27), images
+  built from deploy/docker/ and web/Dockerfile.
+  Conventions: all generated content in English; user-facing product
+  strings in Chinese; conventional commits; build with
+  GONOSUMCHECK='*' GONOSUMDB='*' GOFLAGS='-mod=mod'; verify with
+  go vet ./... and go test ./... .
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+# Per-artifact rules.
+rules:
+  proposal:
+    - Write in English
+    - Include a "Why" section and a "Non-goals" section
+    - Keep under 500 words
+  tasks:
+    - Write in English
+    - Make each task verifiable (state the build/vet/test command where possible)
+  design:
+    - Write in English
+    - Document rejected alternatives with the reason they were rejected

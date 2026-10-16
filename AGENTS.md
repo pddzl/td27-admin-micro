@@ -11,6 +11,15 @@ Compact guidance for AI agents. Only repo-specific, non-obvious facts.
 - Auth: JWT (HMAC-SHA256, DB-persisted token blocklist), Casbin RBAC backed by the unified `sys_management_permission` table (read-only adapter, allow/deny `effect` column, deny wins), bcrypt cost 12 (transparent legacy-MD5 rehash on login), JIT role elevations, button permissions (`<page>:<action>` codes).
 - Business modules: `sysManagement` (users, roles, permissions, menus, depts, dicts, APIs, buttons), `sysMonitor` (operation logs, dashboard), `sysTool` (files, cron, cache, service tokens).
 
+## Change Workflow (OpenSpec)
+
+Plan code changes in OpenSpec before implementing. `openspec/` is initialized (schema `spec-driven`, CLI `openspec` v1.10.x); history lives in `openspec/changes/archive/`.
+
+- **Non-trivial changes** (new features, behavior changes, multi-file refactors, schema changes, API additions) MUST have a user-approved change proposal first: create `openspec/changes/<change-id>/` with `proposal.md`, `tasks.md`, and `specs/<capability>/spec.md` deltas (add `design.md` when there are architectural choices). Use `openspec instructions <artifact>` for templates, `openspec validate <change-id>` to check, `openspec status <change-id>` to track, and `openspec archive <change-id>` when done (this updates `openspec/specs/`).
+- Do not start implementation before the user approves the proposal.
+- **Trivial fixes** (typo, one-line tweak, config value) may skip a proposal — state that explicitly before editing.
+- Active changes: `openspec list`. Keep `tasks.md` checkboxes current while implementing.
+
 ## Architecture
 
 ```
