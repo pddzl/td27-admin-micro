@@ -9,8 +9,8 @@ context: |
   blocklist, Casbin RBAC (read-only adapter over sys_management_permission,
   deny wins), bcrypt cost 12. Frontend in web/: Vue 3 + Vite + Element Plus
   + Pinia, served by nginx on 8500, proxies /api/* to the gateway.
-  Deployment: Kustomize (root kustomization.yaml, namespace td27), images
-  built from deploy/docker/ and web/Dockerfile.
+  Deployment: Kustomize (root kustomization.yaml, namespace td27); images
+  are built out-of-repo as node-local localhost/td27-* tags.
   Conventions: all generated content in English; user-facing product
   strings in Chinese; conventional commits; build with
   GONOSUMCHECK='*' GONOSUMDB='*' GOFLAGS='-mod=mod'; verify with

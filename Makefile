@@ -1,12 +1,15 @@
 # td27-admin-micro — release workflow (mirrors ~/TrinaSolar/vmware-alarm-aggregation)
 #
-#   make release TAG=v0.1.0   # full release: build + import images, bump tags,
-#                             # commit + push -> ArgoCD syncs
+#   make release TAG=v0.1.0   # full release: import pre-built images, bump
+#                             # tags, commit + push -> ArgoCD syncs
 #   make secret               # one-time: create the out-of-band Secrets
 #   make app                  # one-time: register the ArgoCD Application
 #
 # Run on the k8s node (or wherever BUILDER/CTR below reach it). Images are
 # node-local (localhost/*, imagePullPolicy: Never) — there is no registry.
+# No Dockerfiles live in this repo (deploy/docker/ removed): build the three
+# images yourself, tagged $(IMG_BASIS)/$(IMG_GATEWAY)/$(IMG_WEB):$(TAG),
+# BEFORE running make image-import (it fails with "no such image" otherwise).
 
 GO      ?= go
 GOCACHE ?= /tmp/td27-gocache
@@ -30,19 +33,9 @@ ARGOCD_NS ?= argocd
 BRANCH    ?= main
 WORKLOAD_NS ?= td27
 
-# CN network defaults: docker.io is blocked, so base images go through a
-# mirror prefix, apk through a CN repo, Go modules through goproxy.cn, npm
-# through npmmirror. Direct build on unrestricted networks:
-#   make image-import MIRROR= APK_MIRROR=
-MIRROR       ?= docker.m.daocloud.io/library/
-APK_MIRROR   ?= mirrors.aliyun.com
-GOPROXY_URL  ?= https://goproxy.cn,direct
-NPM_REGISTRY ?= https://registry.npmmirror.com
-
 IMAGES = $(IMG_BASIS) $(IMG_GATEWAY) $(IMG_WEB)
 
-.PHONY: build run clean image-basis image-gateway image-web image-local \
-        image-import release tag-guard secret reconfig restart app
+.PHONY: build run clean image-import release tag-guard secret reconfig restart app
 
 # --- Local development ------------------------------------------------------
 
@@ -56,37 +49,15 @@ run:
 clean:
 	rm -f basis gateway
 
-# --- Images: build + import into the node's containerd -----------------------
-
-image-basis:
-	$(BUILDER) build \
-		--build-arg GO_IMAGE=$(MIRROR)golang:1.26-alpine \
-		--build-arg RUN_IMAGE=$(MIRROR)alpine:3.21 \
-		--build-arg APK_MIRROR=$(APK_MIRROR) \
-		--build-arg GOPROXY=$(GOPROXY_URL) \
-		-t $(IMG_BASIS):$(TAG) -f deploy/docker/Dockerfile.basis .
-
-image-gateway:
-	$(BUILDER) build \
-		--build-arg GO_IMAGE=$(MIRROR)golang:1.26-alpine \
-		--build-arg RUN_IMAGE=$(MIRROR)alpine:3.21 \
-		--build-arg APK_MIRROR=$(APK_MIRROR) \
-		--build-arg GOPROXY=$(GOPROXY_URL) \
-		-t $(IMG_GATEWAY):$(TAG) -f deploy/docker/Dockerfile.gateway .
-
-image-web:
-	$(BUILDER) build \
-		--build-arg NODE_IMAGE=$(MIRROR)node:22-alpine \
-		--build-arg RUN_IMAGE=$(MIRROR)nginx:1.27-alpine \
-		--build-arg APK_MIRROR=$(APK_MIRROR) \
-		--build-arg NPM_REGISTRY=$(NPM_REGISTRY) \
-		-t $(IMG_WEB):$(TAG) -f deploy/docker/Dockerfile.web web/
-
-image-local: image-basis image-gateway image-web
+# --- Images: import pre-built images into the node's containerd --------------
+#
+# No in-repo Dockerfiles: build the three node-local images yourself first
+# (any builder, any context), tagged:
+#   localhost/td27-basis:$(TAG)  localhost/td27-gateway:$(TAG)  localhost/td27-web:$(TAG)
 
 # Load the images into the k8s node's container runtime so pods can use them
 # with imagePullPolicy: Never.
-image-import: image-local
+image-import:
 	@for img in $(IMAGES); do \
 		tar="/tmp/$$(echo $$img | tr '/' '-').$(TAG).tar"; \
 		echo "==> exporting $$img:$(TAG) -> $$tar"; \

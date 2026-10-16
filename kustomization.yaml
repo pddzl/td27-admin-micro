@@ -6,12 +6,9 @@
 # Usage (from the repository root):
 #   kubectl apply -k .
 #
-# Images: build and push first (see deploy/docker/):
-#   docker build -f deploy/docker/Dockerfile.basis   -t ghcr.io/pddzl/td27-admin-micro/basis:latest   .
-#   docker build -f deploy/docker/Dockerfile.gateway -t ghcr.io/pddzl/td27-admin-micro/gateway:latest .
-#   docker build -t ghcr.io/pddzl/td27-admin-micro/web:latest web/
-# For a different registry, edit deploy/k8s/kustomization.yaml `images:` or
-# add an images: override here.
+# Images are built OUT of the repo (no Dockerfiles committed): build node-local
+# localhost/td27-{basis,gateway,web}:<tag> yourself, then `make release` bumps
+# the newTag values in deploy/k8s/kustomization.yaml.
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
