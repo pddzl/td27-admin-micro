@@ -38,10 +38,11 @@ spec:
     spec:
       containers:
         - name: web
-          image: ghcr.io/pddzl/td27-admin-micro/web:latest
-          imagePullPolicy: IfNotPresent
-          # Consumed by web/Dockerfile CMD via envsubst: proxies /api/* to
+          # Node-local image (no registry) — imported via `make image-import`.
+          # Consumed by the Dockerfile CMD via envsubst: proxies /api/* to
           # http://<BACKEND>:8888 with the /api prefix stripped.
+          image: localhost/td27-web:latest
+          imagePullPolicy: Never
           env:
             - name: BACKEND
               value: gateway

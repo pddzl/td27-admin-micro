@@ -49,8 +49,9 @@ spec:
             - until etcdctl --endpoints=http://etcd-client:2379 endpoint health; do echo waiting for etcd; sleep 2; done
       containers:
         - name: basis
-          image: ghcr.io/pddzl/td27-admin-micro/basis:latest
-          imagePullPolicy: IfNotPresent
+          # Node-local image (no registry) — imported via `make image-import`.
+          image: localhost/td27-basis:latest
+          imagePullPolicy: Never
           args: ["-f", "/etc/td27/basis.yaml"]
           ports:
             - containerPort: 8080

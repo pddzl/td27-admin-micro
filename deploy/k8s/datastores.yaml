@@ -1,19 +1,10 @@
 # Datastores: PostgreSQL + etcd as single-instance StatefulSets with PVCs.
 # Dev-grade: one replica each, no replication. For HA, use operators
 # (CloudNativePG, etcd-operator) or managed services instead.
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: td27-db-credentials
-  namespace: td27
-  labels:
-    app.kubernetes.io/part-of: td27
-type: Opaque
-stringData:
-  username: postgres
-  password: td27admin
-  dbname: td27_micro
+#
+# The td27-db-credentials Secret is NOT here: it holds the postgres password
+# and is created out-of-band by `make secret` from deploy/k8s-configs/ so it
+# is never committed and ArgoCD never manages it.
 ---
 apiVersion: v1
 kind: Service

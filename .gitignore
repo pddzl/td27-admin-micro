@@ -24,6 +24,9 @@ yarn-error.log*
 /api/demo
 rpc/basis/logs
 
+# Out-of-band k8s Secrets source files (make secret) — never commit credentials
+deploy/k8s-configs/
+
 *.iml
 /basis
 rpc/basis/basis

@@ -11,7 +11,6 @@ namespace: td27
 resources:
   - namespace.yaml
   - datastores.yaml
-  - app-configs.yaml
   - migrate-job.yaml
   - basis.yaml
   - gateway.yaml
@@ -24,10 +23,13 @@ labels:
     includeSelectors: false
     includeTemplates: true
 
+# Node-local images built on the k8s node (root Makefile, make image-import);
+# imagePullPolicy: Never in the Deployments. `make release TAG=vX` bumps all
+# three newTag values below.
 images:
-  - name: ghcr.io/pddzl/td27-admin-micro/basis
-    newTag: latest
-  - name: ghcr.io/pddzl/td27-admin-micro/gateway
-    newTag: latest
-  - name: ghcr.io/pddzl/td27-admin-micro/web
-    newTag: latest
+  - name: localhost/td27-basis
+    newTag: v0.1.0
+  - name: localhost/td27-gateway
+    newTag: v0.1.0
+  - name: localhost/td27-web
+    newTag: v0.1.0

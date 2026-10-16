@@ -1,26 +1,44 @@
 # syntax=docker/dockerfile:1
-# Build from the repository root:
-#   docker build -f deploy/docker/Dockerfile.basis -t ghcr.io/pddzl/td27-admin-micro/basis:latest .
-FROM golang:1.26-alpine AS builder
+# Node-local image build (no registry): built on the k8s node with podman/
+# docker, imported into containerd via the root Makefile (make image-import).
+#
+# Base images and mirrors are overridable for CN vs unrestricted networks —
+# defaults are passed by the Makefile:
+#   --build-arg GO_IMAGE=golang:1.26-alpine      (no mirror prefix)
+#   --build-arg APK_MIRROR=                      (upstream apk)
+#   --build-arg GOPROXY=https://proxy.golang.org,direct
+ARG GO_IMAGE=docker.m.daocloud.io/library/golang:1.26-alpine
+ARG RUN_IMAGE=docker.m.daocloud.io/library/alpine:3.21
 
-WORKDIR /src
+# --- Stage 1: compile -------------------------------------------------------
+FROM ${GO_IMAGE} AS builder
 
-# GONOSUMCHECK/GOFLAGS mirror the repo convention (AGENTS.md); CGO off since
-# pgx is pure Go.
-ENV CGO_ENABLED=0 \
+# Go module proxy must be set INSIDE the container; host `go env -w` does not
+# apply here. GONOSUMCHECK/GOFLAGS mirror the repo convention (AGENTS.md);
+# CGO off since pgx is pure Go.
+ARG GOPROXY=https://goproxy.cn,direct
+ENV GOPROXY=${GOPROXY} \
+    CGO_ENABLED=0 \
     GOFLAGS=-mod=mod \
     GONOSUMCHECK='*' \
     GONOSUMDB='*'
 
+WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
 RUN go build -trimpath -ldflags="-s -w" -o /out/basis ./rpc/basis/basis.go
 
-FROM alpine:3.21
+# --- Stage 2: runtime -------------------------------------------------------
+FROM ${RUN_IMAGE}
 
-RUN apk add --no-cache ca-certificates tzdata && \
+# Config is NOT baked in — mounted from the basis-config Secret at /etc/td27.
+ARG APK_MIRROR=mirrors.aliyun.com
+RUN if [ -n "$APK_MIRROR" ]; then \
+            sed -i "s|dl-cdn.alpinelinux.org|$APK_MIRROR|g" /etc/apk/repositories; \
+    fi && \
+    apk add --no-cache ca-certificates tzdata && \
     addgroup -g 1000 -S td27 && adduser -u 1000 -S td27 -G td27
 
 WORKDIR /app

@@ -11,7 +11,7 @@ metadata:
 spec:
   description: td27-admin-micro GitOps deployment
   sourceRepos:
-    - https://github.com/pddzl/td27-admin-micro.git
+    - git@github.com:pddzl/td27-admin-micro.git
   destinations:
     - server: https://kubernetes.default.svc
       namespace: td27

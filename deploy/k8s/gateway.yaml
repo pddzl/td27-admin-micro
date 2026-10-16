@@ -39,8 +39,9 @@ spec:
     spec:
       containers:
         - name: gateway
-          image: ghcr.io/pddzl/td27-admin-micro/gateway:latest
-          imagePullPolicy: IfNotPresent
+          # Node-local image (no registry) — imported via `make image-import`.
+          image: localhost/td27-gateway:latest
+          imagePullPolicy: Never
           args: ["-f", "/etc/td27/gateway.yaml"]
           ports:
             - containerPort: 8888
