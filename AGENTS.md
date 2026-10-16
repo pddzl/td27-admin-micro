@@ -82,6 +82,7 @@ Go unit tests exist for gateway middleware (authz, rate limiting), password hash
 - Topology: ingress(nginx) → web:8500 → nginx proxies `/api/*` to gateway:8888 → gRPC basis:8080 → postgres/etcd StatefulSets. The gateway is intentionally not exposed; all public traffic enters through the web nginx.
 - go-zero conf has no env interpolation: service configs ship as whole-file Secrets (`basis-config`, `gateway-config`) rewritten for k8s hostnames (`postgres`, `etcd-client`) with `Mode: prod`. For production, create these out-of-band instead of committing real values.
 - The `td27-migrations` Job applies `scripts/0*.sql` in filename order via `psql -v ON_ERROR_STOP=1`. Jobs are immutable — after changing a script: `kubectl -n td27 delete job td27-migrations --ignore-not-found && kubectl apply -k .`, and scripts must be safe to re-apply.
+- GitOps: `deploy/argocd/` holds AppProject + Application `td27` syncing the ROOT kustomization from this repo into namespace `td27` (automated, prune + selfHeal, rollback = git revert). Bootstrap: install ArgoCD, register repo credentials as an `argocd`-namespace repository secret (matched by repoURL, not stored in the Application), then `kubectl apply -f deploy/argocd/`. The migrate Job is an ArgoCD Sync hook (`BeforeHookCreation`): ArgoCD deletes and recreates it each sync, so migrations re-run; the annotations are inert under plain `kubectl apply`.
 
 ## Repository Layer (sqlx)
 

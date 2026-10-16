@@ -1,0 +1,56 @@
+# Application td27: ArgoCD watches this repository and syncs the rendered
+# ROOT kustomization (path ".") into the td27 namespace. Rollback = git revert.
+#
+# Bootstrap (once per cluster):
+#
+#   1. Install ArgoCD:
+#        kubectl create namespace argocd
+#        kubectl apply -n argocd -f \
+#          https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+#
+#   2. Register private-repo credentials (ArgoCD matches them to this
+#      Application by repoURL, so no credential lives in this spec):
+#        kubectl -n argocd create secret generic td27-repo-creds \
+#          --from-literal=type='git' \
+#          --from-literal=url='https://github.com/pddzl/td27-admin-micro.git' \
+#          --from-literal=username='git' \
+#          --from-literal=password='<fine-grained-PAT-with-read-access>'
+#        kubectl -n argocd label secret td27-repo-creds \
+#          argocd.argoproj.io/secret-type=repository
+#      (Alternatively use a deploy key: --from-file=sshPrivateKey.)
+#
+#   3. Apply the GitOps resources:
+#        kubectl apply -f deploy/argocd/
+#
+#   4. Initial sync happens automatically; watch with:
+#        kubectl -n argocd get app td27 -w
+#
+# Note: syncPolicy prune+selfHeal makes the tracked branch authoritative —
+# anything deleted from git is deleted from the cluster.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: td27
+  namespace: argocd
+  finalizers:
+    # Cascade-delete child resources when the Application itself is removed.
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: td27
+  source:
+    repoURL: https://github.com/pddzl/td27-admin-micro.git
+    targetRevision: main
+    path: .
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: td27
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    retry:
+      limit: 5
+      backoff:
+        duration: 15s
+        factor: 2
+        maxDuration: 5m

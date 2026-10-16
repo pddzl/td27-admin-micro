@@ -1,0 +1,22 @@
+# AppProject td27: guardrails for the td27-admin-micro GitOps application.
+# Sources are restricted to this repository and destinations to the td27
+# namespace on the in-cluster server. Cluster-scoped resources are denied
+# except Namespace (part of the rendered stack). Namespace-scoped resources
+# are allowed by default.
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: td27
+  namespace: argocd
+spec:
+  description: td27-admin-micro GitOps deployment
+  sourceRepos:
+    - https://github.com/pddzl/td27-admin-micro.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: td27
+  # Namespace-scoped resources only; Namespace is the one cluster-scoped
+  # kind in the rendered stack (deploy/k8s/namespace.yaml).
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace

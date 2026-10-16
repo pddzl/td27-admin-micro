@@ -1,7 +1,14 @@
 # Applies scripts/0*.sql in filename order. The SQL files are NOT inlined
 # here: the ROOT kustomization.yaml (repo root) generates the td27-migrations
 # ConfigMap from the real files in scripts/, so migrations stay single-sourced.
-# Deploy with: kubectl apply -k . (from the repository root)
+# Deploy with: kubectl apply -k . (from the repository root), or let the
+# ArgoCD Application (deploy/argocd/) sync it.
+#
+# ArgoCD: the hook annotations below make this Job a Sync hook that ArgoCD
+# deletes and recreates on every sync (Jobs are immutable; a plain re-apply
+# of a changed Job fails with "field is immutable"). Migrations therefore
+# re-run on each ArgoCD sync — scripts must stay safe to re-apply. The
+# annotations are inert under plain kubectl.
 #
 # Jobs are immutable: after changing a script, re-run with
 #   kubectl -n td27 delete job td27-migrations --ignore-not-found
@@ -13,6 +20,9 @@ kind: Job
 metadata:
   name: td27-migrations
   namespace: td27
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
   labels:
     app.kubernetes.io/name: td27-migrations
     app.kubernetes.io/part-of: td27
