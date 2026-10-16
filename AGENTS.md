@@ -77,6 +77,8 @@ Go unit tests exist for gateway middleware (authz, rate limiting), password hash
 
 ### Kubernetes deployment
 
+Full step-by-step deployment procedure: [DEPLOY.md](DEPLOY.md).
+
 - Entry point is the ROOT `kustomization.yaml`: run `kubectl apply -k .` from the repo root. `deploy/k8s/kustomization.yaml` alone omits the `td27-migrations` ConfigMap the migrate Job needs — kustomize forbids file references above its root, so the generator must live at the root.
 - Images are built OUT of the repo (`deploy/docker/` Dockerfiles removed): build `localhost/td27-{basis,gateway,web}:<TAG>` yourself on the node, then `make release TAG=vX.Y.Z` imports them into containerd (`CTR` overridable for kubeadm/k3s/RKE2), bumps the `newTag` values in `deploy/k8s/kustomization.yaml`, commits, and pushes; ArgoCD syncs and pods roll with `imagePullPolicy: Never`. Real tags only — `latest` is a no-op release.
 - Topology: ingress(nginx) → web:8500 → nginx proxies `/api/*` to gateway:8888 → gRPC basis:8080 → host-local postgres/etcd (OUTSIDE k8s). `datastores.yaml` holds no workloads — only selector-less Services + manual Endpoints (`postgres:5432`, `etcd-client:2379`); set the placeholder IP `203.0.113.10` to the node IP in git before first apply. After first sync of the externalization, delete the legacy in-cluster StatefulSets (`kubectl -n td27 delete sts postgres etcd` — `prune: false` keeps them). The gateway is intentionally not exposed; all public traffic enters through the web nginx.
