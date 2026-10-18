@@ -95,10 +95,11 @@ func (r *serviceTokenRepository) List(ctx context.Context, page *common.PageInfo
 }
 
 func (r *serviceTokenRepository) Create(ctx context.Context, token *sysTool.ServiceToken) error {
-	_, err := r.db.ExecContext(ctx,
-		"INSERT INTO sys_tool_service_token (created_at, updated_at, name, token_hash, status, expires_at) VALUES (NOW(), NOW(), $1, $2, $3, $4)",
+	// RETURNING id so the create response can carry token_id (needed for
+	// follow-up permission assignment right after creation).
+	return r.db.GetContext(ctx, &token.ID,
+		"INSERT INTO sys_tool_service_token (created_at, updated_at, name, token_hash, status, expires_at) VALUES (NOW(), NOW(), $1, $2, $3, $4) RETURNING id",
 		token.Name, token.TokenHash, token.Status, token.ExpiresAt)
-	return err
 }
 
 func (r *serviceTokenRepository) Update(ctx context.Context, token *sysTool.ServiceToken) error {

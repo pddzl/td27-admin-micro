@@ -27,7 +27,14 @@ export function apiListApi(data: reqApis) {
   return request<ApiResponseData<ApiListData>>({
     url: "/api/list",
     method: "post",
-    data
+    data: {
+      path: data.path,
+      group_en: data.group_en,
+      method: data.method,
+      description: data.description,
+      page: data.page,
+      page_size: data.pageSize
+    }
   })
 }
 

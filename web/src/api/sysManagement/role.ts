@@ -20,7 +20,7 @@ export function roleListApi(data: PageInfo) {
   return request<ApiResponseData<roleListData>>({
     url: "/role/list",
     method: "post",
-    data
+    data: { page: data.page, page_size: data.pageSize }
   })
 }
 

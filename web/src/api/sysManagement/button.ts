@@ -39,8 +39,8 @@ export function deleteButtonApi(id: number) {
 export function listButtonApi(data: { page: number, pageSize: number, pagePath?: string }) {
   return request<ApiResponseData<ApiListData<ButtonData[]>>>({
     url: "/button/list",
-    method: "post",
-    data
+    method: "get",
+    params: { page: data.page, page_size: data.pageSize }
   })
 }
 

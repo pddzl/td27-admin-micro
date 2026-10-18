@@ -16,7 +16,12 @@ export function dictListApi(data: listReq = {}) {
   return request<ApiResponseData<ListData<DictModel[]>>>({
     url: "/dict/list",
     method: "post",
-    data
+    data: {
+      cn_name: data.cn_name,
+      en_name: data.en_name,
+      page: data.page,
+      page_size: data.pageSize
+    }
   })
 }
 

@@ -93,8 +93,8 @@ function handleModifyPass(formEl: FormInstance | undefined) {
     if (valid) {
       modifyPasswdApi({
         id: passForm.id,
-        oldPassword: passForm.oldPassword,
-        newPassword: passForm.newPassword
+        old_password: passForm.oldPassword,
+        new_password: passForm.newPassword
       })
         .then((res) => {
           if (res.code === 0) {

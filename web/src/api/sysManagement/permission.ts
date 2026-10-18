@@ -14,7 +14,7 @@ export interface PermissionData {
 export function getRolePermissionsApi(roleId: number) {
   return request<ApiResponseData<PermissionData[]>>({
     url: "/permission/by-role",
-    method: "post",
-    data: { id: roleId }
+    method: "get",
+    params: { id: roleId }
   })
 }

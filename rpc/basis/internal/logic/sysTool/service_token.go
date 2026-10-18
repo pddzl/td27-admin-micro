@@ -60,6 +60,18 @@ func (l *ServiceTokenLogic) CreateServiceToken(in *service_token_pb.CreateServic
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "create token failed: %v", err)
 	}
+
+	// Assign the requested API permissions to the freshly created token.
+	if len(in.PermissionIds) > 0 {
+		permIDs := make([]uint, 0, len(in.PermissionIds))
+		for _, id := range in.PermissionIds {
+			permIDs = append(permIDs, uint(id))
+		}
+		if err := l.svcCtx.TokenService.AssignPermissions(l.ctx, token.ID, permIDs); err != nil {
+			return nil, status.Errorf(codes.Internal, "assign permissions failed: %v", err)
+		}
+	}
+
 	return &service_token_pb.CreateServiceTokenResp{TokenId: int64(token.ID), RawToken: rawToken}, nil
 }
 

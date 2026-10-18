@@ -12,10 +12,10 @@ function makeMenu(overrides: Partial<MenuData> = {}): MenuDataModel {
     parent_id: 0,
     sort: 0,
     hidden: false,
-    keepAlive: false,
+    keep_alive: false,
     title: "Home",
     affix: false,
-    alwaysShow: false,
+    always_show: false,
     ...overrides
   } as MenuDataModel
 }
@@ -63,7 +63,7 @@ describe("formatRouter", () => {
 
   it("preserves hidden/keepAlive meta flags", () => {
     const output: RouteRecordRaw[] = []
-    formatRouter([makeMenu({ hidden: true, keepAlive: true })], output)
+    formatRouter([makeMenu({ hidden: true, keep_alive: true })], output)
 
     expect(output[0].meta?.hidden).toBe(true)
     expect(output[0].meta?.keepAlive).toBe(true)

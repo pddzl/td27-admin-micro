@@ -99,8 +99,8 @@ function editMenuDialog(row: MenuDataModel) {
   }
   formData.hidden = !!row.hidden
   formData.affix = Boolean(row.affix)
-  formData.keepAlive = Boolean(row.keepAlive)
-  formData.alwaysShow = Boolean(row.alwaysShow)
+  formData.keepAlive = Boolean(row.keep_alive)
+  formData.alwaysShow = Boolean(row.always_show)
   dialogVisible.value = true
 }
 
@@ -198,8 +198,8 @@ function operateAction(formEl: FormInstance | undefined) {
         icon: formData.icon,
         hidden: formData.hidden,
         affix: formData.affix,
-        keepAlive: formData.keepAlive,
-        alwaysShow: formData.alwaysShow
+        keep_alive: formData.keepAlive,
+        always_show: formData.alwaysShow
       }
       if (oKind.value === "Add") {
         const res = await menuCreateApi(tempMenu)
@@ -238,7 +238,7 @@ function operateAction(formEl: FormInstance | undefined) {
       <div class="table-wrapper">
         <el-table :data="tableData" row-key="id">
           <el-table-column prop="id" label="ID" />
-          <el-table-column prop="parentId" label="父节点" />
+          <el-table-column prop="parent_id" label="父节点" />
           <el-table-column prop="title" label="展示名称">
             <template #default="scope">
               <el-tag :effect="scope.row.parent_id === 0 ? 'light' : 'plain'">
@@ -246,7 +246,7 @@ function operateAction(formEl: FormInstance | undefined) {
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="name" label="路由名称" />
+          <el-table-column prop="menu_name" label="路由名称" />
           <el-table-column prop="path" label="路由路径" />
           <el-table-column prop="hidden" label="是否隐藏">
             <template #default="scope">

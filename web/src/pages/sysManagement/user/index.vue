@@ -105,8 +105,8 @@ function mpOperateAction(formEl: FormInstance | undefined) {
     if (valid) {
       await modifyPasswdApi({
         id: activeRow.id,
-        oldPassword: mpFormData.oldPassword,
-        newPassword: mpFormData.newPassword
+        old_password: mpFormData.oldPassword,
+        new_password: mpFormData.newPassword
       })
         .then((res) => {
           if (res.code === 0) {

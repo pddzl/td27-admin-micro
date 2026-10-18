@@ -31,9 +31,9 @@ export function formatRouter(menuList: MenuData[], formatMenu: RouteRecordRaw[])
       meta: {
         svgIcon: menu.icon || undefined,
         affix: menu.affix,
-        alwaysShow: menu.alwaysShow,
+        alwaysShow: menu.always_show,
         hidden: menu.hidden,
-        keepAlive: menu.keepAlive,
+        keepAlive: menu.keep_alive,
         title: menu.title
       },
       children: []

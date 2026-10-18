@@ -28,7 +28,13 @@ export function oplListApi(data: reqOrList, signal?: AbortSignal) {
   return request<ApiResponseData<orListData>>({
     url: "/opl/list",
     method: "post",
-    data,
+    data: {
+      path: data.path,
+      method: data.method,
+      status: data.status,
+      page: data.page,
+      page_size: data.pageSize
+    },
     signal
   })
 }

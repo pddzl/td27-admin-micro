@@ -6,10 +6,12 @@ import { usePagination } from "@@/composables/usePagination_n"
 import { formatDateTime } from "@@/utils/datetime"
 import { apiGetElTreeApi } from "@/api/sysManagement/api"
 import {
+  assignTokenPermissionsApi,
   createServiceTokenApi,
   deleteServiceTokenApi,
   getServiceTokenDetailApi,
   listServiceTokenApi,
+  toggleTokenStatusApi,
   updateServiceTokenApi
 } from "@/api/sysTool/service_token"
 
@@ -30,21 +32,17 @@ const dialogTitle = ref("")
 const isEdit = ref(false)
 const saving = ref(false)
 
-const apiIds = ref<number[]>([])
-
 // Form
 const form = ref<{
   id?: number
   name: string
   status?: boolean
   expiresAt?: number
-  apiIds: number[] // API IDs (domain_id)
-  apiKeys: string[] // Tree keys for checked APIs
+  apiIds: number[] // 已分配的 API 权限 ID（domain_id）
 }>({
   name: "",
   expiresAt: undefined,
   apiIds: [],
-  apiKeys: [],
   status: true
 })
 const formRef = ref()
@@ -77,22 +75,21 @@ async function loadData() {
       status: searchForm.value.status
     })
     if (res.code === 0) {
-      tableData.value = res.data.list
-      total.value = res.data.total
+      tableData.value = res.data.list || []
+      total.value = res.data.total || 0
     }
   } finally {
     loading.value = false
   }
 }
 
-// Load API tree
-async function loadApiTree(id: number) {
+// Load API tree（id=0 表示不按角色预勾选，令牌的已选权限由 /service-token/permissions/:id 提供）
+async function loadApiTree() {
   apiTreeLoading.value = true
   try {
-    const res = await apiGetElTreeApi({ id, from_source: "token" })
+    const res = await apiGetElTreeApi({ id: 0, from_source: "token" })
     if (res.code === 0) {
       apiTreeData.value = res.data.list || []
-      apiIds.value = res.data.checkedIds || []
     } else {
       ElMessage.error(res.msg || "加载API列表失败")
     }
@@ -136,11 +133,10 @@ function handleAdd() {
     name: "",
     expiresAt: undefined,
     apiIds: [],
-    apiKeys: [],
     status: true
   }
   dialogVisible.value = true
-  // loadApiTree()
+  loadApiTree()
 }
 
 // Edit
@@ -148,19 +144,32 @@ async function handleEdit(row: ServiceToken) {
   isEdit.value = true
   dialogTitle.value = "编辑服务令牌"
   dialogVisible.value = true
-  loadApiTree(row.id)
+  loadApiTree()
 
-  const res = await getServiceTokenDetailApi({ id: row.id })
+  const res = await getServiceTokenDetailApi(row.id)
   if (res.code === 0) {
     form.value.id = res.data.id
     form.value.name = res.data.name
     form.value.status = res.data.status
-    form.value.expiresAt = res.data.expiresAt || undefined
-    form.value.apiIds = res.data.apiIds || []
-    // Tree uses string keys (API IDs), backend returns API IDs as numbers
-    form.value.apiKeys = res.data.apiIds?.map(id => id.toString()) || []
+    form.value.expiresAt = res.data.expires_at || undefined
+    form.value.apiIds = res.data.permission_ids || []
   }
 }
+
+// 已分配权限 ID -> API 树节点 key（path:method）映射，用于 default-checked-keys
+const checkedTreeKeys = computed<string[]>(() => {
+  const keyById = new Map<number, string>()
+  for (const group of apiTreeData.value) {
+    for (const api of group.children || []) {
+      if (api.id) {
+        keyById.set(api.id, api.key)
+      }
+    }
+  }
+  return (form.value.apiIds || [])
+    .map(id => keyById.get(id))
+    .filter((key): key is string => Boolean(key))
+})
 
 // Delete
 function handleDelete(row: ServiceToken) {
@@ -185,24 +194,44 @@ function getCheckedApiIds(): number[] {
     .map(node => node.id)
 }
 
+// 后端语义不一致：创建时 expires_at 为「自now起的秒数(TTL)」，更新时为绝对时间戳
+function relativeTtl(expiresAt?: number): number | undefined {
+  if (!expiresAt) return undefined
+  const delta = Math.floor(expiresAt - Date.now() / 1000)
+  return delta > 0 ? delta : undefined
+}
+
 // Submit
 async function handleSubmit() {
   const valid = await formRef.value?.validate().catch(() => false)
   if (!valid) return
 
+  if (form.value.expiresAt && form.value.expiresAt <= Date.now() / 1000) {
+    ElMessage.warning("过期时间必须晚于当前时间")
+    return
+  }
+
   saving.value = true
   try {
-    const apiIds = getCheckedApiIds()
+    const permissionIds = getCheckedApiIds()
 
     if (isEdit.value && form.value.id) {
       const res = await updateServiceTokenApi({
         id: form.value.id,
         name: form.value.name,
         status: form.value.status!,
-        expiresAt: form.value.expiresAt ? Number(form.value.expiresAt) : undefined,
-        apiIds
+        expires_at: form.value.expiresAt ? Number(form.value.expiresAt) : undefined
       })
       if (res.code === 0) {
+        // 权限单独分配
+        const pRes = await assignTokenPermissionsApi({
+          token_id: form.value.id,
+          permission_ids: permissionIds
+        })
+        if (pRes.code !== 0) {
+          ElMessage.error(pRes.msg || "权限分配失败")
+          return
+        }
         ElMessage.success("更新成功")
         dialogVisible.value = false
         loadData()
@@ -210,11 +239,11 @@ async function handleSubmit() {
     } else {
       const res = await createServiceTokenApi({
         name: form.value.name,
-        expiresAt: form.value.expiresAt ? Number(form.value.expiresAt) : undefined,
-        apiIds
+        expires_at: relativeTtl(form.value.expiresAt),
+        permission_ids: permissionIds
       })
       if (res.code === 0) {
-        generatedToken.value = res.data.token
+        generatedToken.value = res.data.raw_token
         showTokenDialog.value = true
         dialogVisible.value = false
         loadData()
@@ -233,16 +262,7 @@ function copyToken() {
 
 // Status change
 async function handleStatusChange(row: ServiceToken) {
-  const detailRes = await getServiceTokenDetailApi({ id: row.id })
-  if (detailRes.code !== 0) return
-
-  const res = await updateServiceTokenApi({
-    id: row.id,
-    name: row.name,
-    status: row.status,
-    expiresAt: row.expiresAt || undefined,
-    apiIds: detailRes.data.apiIds
-  })
+  const res = await toggleTokenStatusApi({ id: row.id, status: row.status })
   if (res.code === 0) {
     ElMessage.success("状态更新成功")
   } else {
@@ -251,7 +271,7 @@ async function handleStatusChange(row: ServiceToken) {
 }
 
 // Format expiration
-function formatExpires(expiresAt: number | null) {
+function formatExpires(expiresAt?: number | null) {
   if (!expiresAt) return "永不过期"
   return formatDateTime(expiresAt)
 }
@@ -305,19 +325,14 @@ onMounted(() => {
             <el-switch v-model="row.status" @change="handleStatusChange(row)" />
           </template>
         </el-table-column>
-        <el-table-column label="权限数量" width="100px">
-          <template #default="{ row }">
-            <el-tag>{{ row.apiCount }}</el-tag>
-          </template>
-        </el-table-column>
         <el-table-column label="过期时间" width="180">
           <template #default="{ row }">
-            {{ formatExpires(row.expiresAt) }}
+            {{ formatExpires(row.expires_at) }}
           </template>
         </el-table-column>
         <el-table-column label="创建时间" width="180">
           <template #default="{ row }">
-            {{ formatDateTime(row.createdAt) }}
+            {{ formatDateTime(row.created_at) }}
           </template>
         </el-table-column>
         <el-table-column label="操作" width="150" fixed="right">
@@ -370,7 +385,7 @@ onMounted(() => {
               ref="apiTreeRef"
               :data="apiTreeData"
               node-key="key"
-              :default-checked-keys="apiIds"
+              :default-checked-keys="checkedTreeKeys"
               default-expand-all
               show-checkbox
               :props="{

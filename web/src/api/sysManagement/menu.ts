@@ -13,10 +13,10 @@ export interface MenuData {
   parent_id: number
   sort: number
   hidden: boolean
-  keepAlive: boolean
-  title: string
+  keep_alive: boolean
+  always_show: boolean
   affix: boolean
-  alwaysShow: boolean
+  title: string
   children?: MenuDataModel[]
 }
 

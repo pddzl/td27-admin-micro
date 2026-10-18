@@ -44,7 +44,7 @@ export function userListApi(data: PageInfo, signal?: AbortSignal) {
   return request<ApiResponseData<userListData>>({
     url: "/user/list",
     method: "post",
-    data,
+    data: { page: data.page, page_size: data.pageSize },
     signal
   })
 }
@@ -90,13 +90,13 @@ export function userUpdateApi(data: userData & CId) {
 
 // 修改用户密码
 interface reqModifyPass {
-  oldPassword: string
-  newPassword: string
+  old_password: string
+  new_password: string
 }
 
 export function modifyPasswdApi(data: reqModifyPass & CId) {
   return request<ApiResponseData<null>>({
-    url: "/user/modify-passwd",
+    url: "/user/modify-password",
     method: "post",
     data
   })

@@ -48,7 +48,7 @@ export function cronListApi(data?: PageInfo) {
   return request<ApiResponseData<cronListData>>({
     url: "/cron/list",
     method: "post",
-    data
+    data: data ? { page: data.page, page_size: data.pageSize } : data
   })
 }
 
