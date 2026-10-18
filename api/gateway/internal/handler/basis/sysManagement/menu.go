@@ -173,13 +173,9 @@ func menuTreeToResp(tree []*menu_pb.MenuTreeResp) []map[string]interface{} {
 			"parent_id":   node.Menu.ParentId,
 			"sort":        node.Menu.Sort,
 			"hidden":      node.Menu.Hidden,
-			// camelCase keys: the frontend contract (MenuData interface in
-			// web/src/api/sysManagement/menu.ts) reads keepAlive/alwaysShow.
-			// snake_case here made meta.alwaysShow undefined and broke the
-			// sidebar (single-child hoisting) plus the menu edit form.
-			"keepAlive":   node.Menu.KeepAlive,
+			"keep_alive":  node.Menu.KeepAlive,
 			"affix":       node.Menu.Affix,
-			"alwaysShow":  node.Menu.AlwaysShow,
+			"always_show": node.Menu.AlwaysShow,
 			"title":       node.Menu.Title,
 			"created_at":  node.Menu.CreatedAt,
 			"updated_at":  node.Menu.UpdatedAt,
