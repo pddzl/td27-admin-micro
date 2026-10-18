@@ -18,7 +18,7 @@ Auth:
   AccessExpire: 86400
   # Per-request RBAC enforcement via rpc Casbin. Requires api-domain
   # permissions in sys_management_permission; keep false until populated.
-  EnforceRbac: false
+  EnforceRbac: true
 
 # gRPC client config for discovering basis service
 BasisRpc:

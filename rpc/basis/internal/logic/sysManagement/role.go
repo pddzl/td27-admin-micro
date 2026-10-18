@@ -2,6 +2,7 @@ package sysManagement
 
 import (
 	"context"
+	"errors"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/grpc/codes"
@@ -9,10 +10,11 @@ import (
 
 	"td27/rpc/basis/internal/model/common"
 	"td27/rpc/basis/internal/model/sysManagement"
+	sysManagementService "td27/rpc/basis/internal/service/sysManagement"
 	"td27/rpc/basis/internal/svc"
+	"td27/rpc/basis/internal/util"
 	"td27/rpc/basis/types/common_pb"
 	"td27/rpc/basis/types/sysManagement/role_pb"
-"td27/rpc/basis/internal/util"
 )
 
 type RoleLogic struct {
@@ -140,14 +142,22 @@ func (rl *RoleLogic) GetAllRoles(in *common_pb.Empty) (*role_pb.ListRoleResp, er
 }
 
 func (rl *RoleLogic) CreateRole(in *role_pb.CreateRoleReq) (*common_pb.SuccessResp, error) {
-	parentID := uint(*in.ParentId)
+	// ParentId is optional; a nil pointer here must not crash the service.
+	var parentID *uint
+	if in.ParentId != nil {
+		id := uint(*in.ParentId)
+		parentID = &id
+	}
 	role := &sysManagement.RoleModel{
 		RoleName: in.RoleName,
-		ParentID: &parentID,
+		ParentID: parentID,
 	}
 
 	err := rl.svcCtx.RoleService.Create(rl.ctx, role)
 	if err != nil {
+		if errors.Is(err, sysManagementService.ErrRoleNameTaken) {
+			return nil, status.Errorf(codes.AlreadyExists, "role name %q already exists", in.RoleName)
+		}
 		return nil, status.Errorf(codes.Internal, "create role failed: %v", err)
 	}
 

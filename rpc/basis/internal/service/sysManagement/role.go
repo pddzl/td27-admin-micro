@@ -6,11 +6,16 @@ import (
 	"fmt"
 
 	"github.com/casbin/casbin/v2"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"td27/rpc/basis/internal/model/common"
 	"td27/rpc/basis/internal/model/sysManagement"
 	sysManagementRepo "td27/rpc/basis/internal/repository/sysManagement"
 )
+
+// ErrRoleNameTaken is returned when creating/renaming a role to a name that
+// already exists (unique index uni_sys_management_role_role_name).
+var ErrRoleNameTaken = errors.New("role name already exists")
 
 type RoleService struct {
 	roleRepo       sysManagementRepo.RoleRepository
@@ -50,7 +55,16 @@ func (s *RoleService) List(ctx context.Context, page *common.PageInfo) ([]*sysMa
 }
 
 func (s *RoleService) Create(ctx context.Context, role *sysManagement.RoleModel) error {
-	return s.roleRepo.Create(ctx, role)
+	err := s.roleRepo.Create(ctx, role)
+	if err != nil {
+		// Map the unique index on role_name to a clean, recognizable error
+		// instead of leaking the raw SQL failure.
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			return fmt.Errorf("%w: %s", ErrRoleNameTaken, role.RoleName)
+		}
+	}
+	return err
 }
 
 func (s *RoleService) Update(ctx context.Context, role *sysManagement.RoleModel) error {

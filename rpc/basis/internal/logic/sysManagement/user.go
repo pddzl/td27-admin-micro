@@ -164,12 +164,23 @@ func (ul *UserLogic) DeleteUser(in *common_pb.IdReq) (*common_pb.SuccessResp, er
 }
 
 func (ul *UserLogic) CreateUser(in *user_pb.CreateUserReq) (*common_pb.SuccessResp, error) {
+	// All fields except username/password are optional; a nil pointer must not
+	// crash the service. Omitted `active` defaults to true (new users enabled).
 	user := &sysManagement.UserModel{
 		Username: in.Username,
-		Phone:    *in.Phone,
-		Email:    *in.Email,
-		Active:   *in.Active,
-		DeptID:   uint(*in.DeptId),
+		Active:   true,
+	}
+	if in.Phone != nil {
+		user.Phone = *in.Phone
+	}
+	if in.Email != nil {
+		user.Email = *in.Email
+	}
+	if in.Active != nil {
+		user.Active = *in.Active
+	}
+	if in.DeptId != nil {
+		user.DeptID = uint(*in.DeptId)
 	}
 
 	err := ul.svcCtx.UserService.Create(ul.ctx, user, in.Password)
