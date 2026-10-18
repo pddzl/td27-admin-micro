@@ -1,7 +1,7 @@
 # gitops-deployment Specification
 
 ## Purpose
-TBD - created by archiving change add-argocd-gitops-deployment. Update Purpose after archive.
+Define how ArgoCD deploys the stack from this repository: the Application/AppProject guardrails, automated sync behavior, and the `td27-migrations` Job as a Sync hook.
 
 ## Requirements
 
@@ -15,11 +15,15 @@ The system SHALL be deployable through ArgoCD from this git repository, such tha
 #### Scenario: Automated sync
 - **WHEN** a commit lands on the tracked branch
 - **THEN** ArgoCD SHALL sync automatically without manual `kubectl apply`
-- **AND** resources removed from git SHALL be pruned from the cluster (prune: true)
+- **AND** resources deleted from git SHALL NOT be pruned from the cluster (prune: false — manual cleanup is deliberate)
 - **AND** out-of-band cluster changes SHALL be reverted to the git state (selfHeal: true)
 
+#### Scenario: Rollout restart does not create drift
+- **WHEN** `make restart` stamps the `kubectl.kubernetes.io/restartedAt` annotation into a Deployment pod template
+- **THEN** ArgoCD SHALL ignore that annotation and stay InSync
+
 #### Scenario: Sync retry on transient failure
-- **WHEN** a sync fails (e.g., image not yet present in the registry)
+- **WHEN** a sync fails (e.g., image not yet present on the node)
 - **THEN** ArgoCD SHALL retry with a bounded backoff instead of leaving the sync permanently failed
 
 ### Requirement: Migration runs as a sync hook
