@@ -115,13 +115,38 @@ func (ml *MenuLogic) GetUserMenus(in *menu_pb.GetUserMenusReq) (*menu_pb.GetMenu
 
 	tree := make([]*menu_pb.MenuTreeResp, 0)
 	menuMap := make(map[uint]*sysManagement.MenuModel)
-	for _, menu := range menus {
+	for _, menu := range allMenus {
 		menuMap[menu.ID] = menu
 	}
 
+	// Least privilege: the visible set is the assigned menus PLUS their
+	// ancestor chain (so the sidebar can render the tree path to each
+	// assigned leaf). mapMenuToTree recurses over the set it is given, so
+	// passing the unfiltered list here would leak every sibling subtree of
+	// an assigned group (BUG-010).
+	visible := make(map[uint]bool, len(menus))
 	for _, menu := range menus {
-		if menu.ParentID == 0 || menuMap[menu.ParentID] == nil {
-			tree = append(tree, ml.mapMenuToTree(menu, allMenus))
+		visible[menu.ID] = true
+		for p := menu.ParentID; p != 0 && !visible[p]; {
+			visible[p] = true
+			parent, ok := menuMap[p]
+			if !ok {
+				break
+			}
+			p = parent.ParentID
+		}
+	}
+
+	visibleMenus := make([]*sysManagement.MenuModel, 0, len(menus))
+	for _, menu := range allMenus {
+		if visible[menu.ID] {
+			visibleMenus = append(visibleMenus, menu)
+		}
+	}
+
+	for _, menu := range visibleMenus {
+		if menu.ParentID == 0 || !visible[menu.ParentID] {
+			tree = append(tree, ml.mapMenuToTree(menu, visibleMenus))
 		}
 	}
 

@@ -1,5 +1,10 @@
 Name: basis.rpc
-ListenOn: 0.0.0.0:8080
+# Listen on loopback AND register 127.0.0.1:8080 in etcd. go-zero registers the
+# ListenOn address verbatim; with 0.0.0.0 it resolves and registers the current
+# LAN IP at startup, which goes permanently stale when the network changes
+# (gateway then dials a dead IP and fail-closed denies everything).
+# Local gateway runs on the same host; prod (k8s) uses its own Secret config.
+ListenOn: 127.0.0.1:8080
 Etcd:
   Hosts:
   - 127.0.0.1:2379
