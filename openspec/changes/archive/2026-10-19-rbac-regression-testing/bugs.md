@@ -68,3 +68,28 @@ Format: each bug gets ID, status, repro, root cause, fix, retest evidence. No bu
 - **Root cause**: `001_add_permission_effect.sql` added the `effect` column but left the seed-era `UNIQUE (resource)` constraint in place.
 - **Fix**: `scripts/005_perm_resource_effect_unique.sql` — drop `UNIQUE (resource)` constraint, add partial `UNIQUE (resource, effect) WHERE deleted_at IS NULL`. Idempotent; applied locally 2026-10-16.
 - **Retest**: PASS — deny row created via `POST /permission/create` (numeric enums; string enum names rejected by decoder — noted as OBS-002), granted to role 7 alongside the allow row → `POST /user/list` as tester → 403 (deny wins). Removed deny → 200 again.
+
+## BUG-008 — Dashboard "wrong statistics": stale LAN-IP etcd registration fails authz closed
+- **Status**: FIXED (2026-10-19)
+- **Found**: 2026-10-19, user report "statistics in dashboard were wrong" after overnight network change
+- **Repro**: Mac IP changed (192.168.2.103 → 10.31.206.29) while basis stayed up. go-zero registers the resolved LAN IP in etcd ONCE at startup and renews the same address forever ⇒ registry kept serving a dead IP ⇒ every CheckPermission RPC timed out ⇒ gateway denied ALL routes fail-closed (log: `rbac check failed ... dial tcp 192.168.2.103:8080: connect: operation timed out`) ⇒ dashboard rendered empty/zero cards. Third occurrence of this class (see OBS-004).
+- **Root cause**: dev `ListenOn: 0.0.0.0:8080` makes go-zero register the machine's current LAN IP, which goes permanently stale on any network change; the enforcer then fails closed by design. The statistics themselves are CORRECT — `GetLogCount` filters `deleted_at IS NULL` (repo soft-delete convention): 820 raw − 4 soft-deleted = 816, matching the API; the other six counts match SQL exactly (3/5/109/2/17/2).
+- **Fix**: `rpc/basis/etc/basis.yaml` dev config — `ListenOn: 127.0.0.1:8080` (registers loopback verbatim, immune to interface/VPN churn; gateway is same-host; k8s keeps its own Secret config with 0.0.0.0). Stale etcd key deleted; basis + gateway restarted.
+- **Retest**: PASS — etcd shows `basis.rpc → 127.0.0.1:8080`; `/menu/list`, `/dashboard/statistics`, `/dashboard/recent-operations`, `/dashboard/system-info` all 200; statistics verified against SQL ground truth (data-correctness spot check).
+
+## BUG-009 — "Every-user" boot endpoints not granted to ordinary roles (3 endpoints)
+- **Status**: FIXED (2026-10-19)
+- **Found**: 2026-10-19, R3.2 setup: browser session as tester was force-logged-out on boot
+- **Repro**: login as any non-root user → router guard calls getInfo + setRoutes + ensurePermissionsLoaded → `/user/get-user-info` (403), `/menu/user-menus` (403), `/button/user-buttons` (403) → guard catch resets token and bounces to login (`guard_n.ts` line 47-50). Same class as BUG-007.
+- **Root cause**: the permission registry seeds per-page api grants but never the three self-service endpoints every authenticated user needs; EnforceRbac then fails closed on them for every ordinary role.
+- **Fix**: `scripts/007_grant_self_menu_button_read.sql` (user-menus + user-buttons) and `scripts/008_grant_user_info_read.sql` (get-user-info) — grant the existing read allow rows to every non-deleted role. Both idempotent (re-apply INSERT 0 0), applied locally 2026-10-19, policies hot-reloaded. Same caveat as BUG-007: roles created later need these grants at assignment time.
+- **Retest**: PASS — tester: `get-user-info` 200, `user-buttons` 200 (`[]` codes, correct for a role with no button perms), `user-menus` 200; browser session survives boot and lands on the dashboard.
+- **Note (OBS-005)**: `/menu/user-menus` returns `data: {}` for EVERYONE — the gateway handler never passes RoleIds; the sidebar is actually served by `/menu/list` (gateway `ListMenu` handler → RPC GetUserMenus). The dead route should either be fixed or deleted; frontend does not call it.
+
+## BUG-010 — Assigned parent menu leaks ALL sibling subtrees in the user menu tree
+- **Status**: FIXED (2026-10-19)
+- **Found**: 2026-10-19, R3.2 setup: role 7 assigned menus [1, 2] saw six children under 系统管理
+- **Repro**: assign a role only menu 1 (系统管理) + menu 2 (用户管理) → `GET /menu/list` for that role returns menu 1 WITH ALL its children (角色管理, 部门管理, 菜单管理, 接口管理, 字典管理 included) — none of which were assigned.
+- **Root cause**: `GetUserMenus` in [menu.go](../../../rpc/basis/internal/logic/sysManagement/menu.go) passed the FULL menu list to `mapMenuToTree`, which recurses every child — so any assigned node exposed its complete descendant subtree. Least-privilege violated at the UI layer (data APIs still denied 403, but pages were visible).
+- **Fix**: visible-set algorithm in `GetUserMenus`: visible = assigned menus ∪ ancestor chain; the tree is built over the visible set only, so only assigned children render. `GetMenuTree` (admin management UI) intentionally still returns the full tree.
+- **Retest**: PASS — tester `/menu/list` returns exactly 系统管理 → 用户管理; admin unchanged (4 top-level groups, 17 nodes).

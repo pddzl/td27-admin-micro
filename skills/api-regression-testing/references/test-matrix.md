@@ -78,6 +78,21 @@ With the limited-scope principal:
 - [ ] Resource path spelling consistent across api table, permission rows, and
       registered routes (watch camelCase vs kebab/snake renames).
 
+## P6 — Data correctness (stats/aggregates vs SQL ground truth)
+
+For every dashboard/statistics/report endpoint, do NOT trust plausible-looking
+numbers — cross-check each field against the database:
+
+- [ ] Call the endpoint and list every numeric field.
+- [ ] For each field, write the equivalent SQL directly against the tables the
+      service queries (read the repository/SQL first to learn the exact
+      semantics: soft-delete filter? time window? status filter?).
+- [ ] Compare field by field; a mismatch is a bug unless the code's intent says
+      otherwise (e.g. a deliberate `deleted_at IS NULL` filter — then record
+      the semantic in the evidence line).
+- [ ] After inserting and deleting a test row, the stat must move accordingly
+      (proves the number is live, not cached at startup).
+
 ## Bug log template
 
 ```markdown

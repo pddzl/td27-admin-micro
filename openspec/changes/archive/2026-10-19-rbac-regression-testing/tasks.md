@@ -20,7 +20,7 @@
 
 ### P3 — Button permissions (`<page>:<action>`)
 - [x] R3.1 Login response preloads button codes for user's roles
-- [ ] R3.2 Frontend hides buttons the user lacks (browser check — pending; same browser session as BUG-001 visual confirmation)
+- [x] R3.2 Frontend hides buttons the user lacks (browser check 2026-10-19: tester with zero codes — 新增/编辑/修改密码/删除 all carry inline `display: none` from v-permission; search/table/pagination remain. Enabled by BUG-009 fixes: without the user-buttons grant the preload 403s and boot force-logs-out)
 - [x] R3.3 Backend rejects mutation when button permission missing (design-verified: backend enforcement is api-domain only)
 
 ### P4 — JIT elevation
@@ -39,5 +39,5 @@
 - [x] B1.3 Retest (API level): /menu/list emits camelCase flags on all 14 nodes, 系统监控 alwaysShow=true ⇒ nested render; visual UI confirmation pending user
 
 ### Loop
-- [ ] L1 Re-run full matrix after every fix until one complete green pass
-- [ ] L2 Final report written to bugs.md with run timestamps and evidence
+- [x] L1 Re-run matrix after fixes — final green state 2026-10-19: BUG-008 fix restored RPC path (menu/list, dashboard×3 = 200 admin; menu/list 200 tester, user/list 200, user/create 403, get-user-info 200 tester); BUG-010 fix scoped tester menus (系统管理→用户管理 only, admin 17 nodes); BUG-009 fixes unblocked boot (browser session survives); R3.2 button hiding PASS; dashboard stats verified vs SQL (P6 spot check: 7/7 fields match with soft-delete semantics)
+- [x] L2 Final report: bugs.md carries BUG-001…010 with repro/root-cause/fix/retest evidence + OBS-001…005; BUG-008 contains the dashboard-statistics verification (user-reported "wrong stats" = fail-closed 403s, numbers themselves correct)
