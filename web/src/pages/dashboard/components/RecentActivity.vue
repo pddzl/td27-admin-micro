@@ -11,6 +11,7 @@ defineEmits<{
 
 const avatarColors = ["#409eff", "#67c23a", "#e6a23c", "#f56c6c", "#909399", "#8e44ad"]
 
+// 最近操作记录无用户名字段，以 HTTP 方法作为头像与标题标识
 function getInitials(name: string): string {
   if (!name) return "?"
   return name.slice(0, 2).toUpperCase()
@@ -80,14 +81,13 @@ function formatTime(timeStr: string): string {
     <div class="activity-list">
       <div v-for="item in activities" :key="item.id" class="activity-item">
         <div class="activity-avatar">
-          <el-avatar :size="36" :style="{ backgroundColor: getAvatarColor(item.userName) }">
-            {{ getInitials(item.userName) }}
+          <el-avatar :size="36" :style="{ backgroundColor: getAvatarColor(item.method) }">
+            {{ getInitials(item.method) }}
           </el-avatar>
         </div>
         <div class="activity-content">
           <div class="activity-title">
-            <span class="username">{{ item.userName }}</span>
-            <span class="action">{{ getActionText(item.method) }}</span>
+            <span class="username">{{ getActionText(item.method) }}</span>
             <span class="path">{{ item.path }}</span>
           </div>
           <div class="activity-meta">
@@ -95,8 +95,8 @@ function formatTime(timeStr: string): string {
               {{ item.status }}
             </el-tag>
             <span class="time">{{ formatTime(item.created_at) }}</span>
-            <span v-if="item.respTime > 0" class="resp-time" :class="getRespTimeClass(item.respTime)">
-              {{ item.respTime }}ms
+            <span v-if="item.resp_time > 0" class="resp-time" :class="getRespTimeClass(item.resp_time)">
+              {{ item.resp_time }}ms
             </span>
           </div>
         </div>

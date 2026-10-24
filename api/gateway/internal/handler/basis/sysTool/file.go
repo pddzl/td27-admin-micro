@@ -3,6 +3,7 @@ package sysTool
 import (
 	"context"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
 
@@ -23,12 +24,20 @@ func NewFileHandler(svcCtx *svc.ServiceContext) *FileHandler {
 }
 
 func (h *FileHandler) UploadFile(w http.ResponseWriter, r *http.Request) {
-	var req file_pb.UploadFileReq
-	if err := api.DecodeAndValidate(r.Body, &req); err != nil {
+	// The web client (el-upload) posts multipart/form-data with a "file" part.
+	file, header, err := r.FormFile("file")
+	if err != nil {
 		api.FailWithRequest(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
-	resp, err := h.svcCtx.FileClient.UploadFile(context.Background(), &req)
+	defer file.Close()
+	content, err := io.ReadAll(file)
+	if err != nil {
+		api.FailWithMessage(w, err.Error())
+		return
+	}
+	req := &file_pb.UploadFileReq{FileName: header.Filename, FileContent: content}
+	resp, err := h.svcCtx.FileClient.UploadFile(context.Background(), req)
 	if err != nil {
 		api.FailWithMessage(w, err.Error())
 		return

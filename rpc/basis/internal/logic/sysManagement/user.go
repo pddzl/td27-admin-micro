@@ -76,6 +76,13 @@ func (ul *UserLogic) Login(in *user_pb.LoginReq) (*user_pb.LoginResp, error) {
 		return nil, status.Errorf(codes.Internal, "invalid password")
 	}
 
+	// Deactivated accounts must not acquire new sessions. Existing tokens
+	// persist until natural expiry (stateless JWT); deactivation is enforced
+	// at login time.
+	if !user.Active {
+		return nil, status.Errorf(codes.PermissionDenied, "account is disabled")
+	}
+
 	// Load user roles for JWT claims
 	userWithRoles, err := ul.svcCtx.UserService.GetByIDWithRoles(ul.ctx, user.ID)
 	if err != nil {

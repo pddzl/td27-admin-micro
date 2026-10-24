@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { DashboardStats, RecentOperation, SystemInfo } from "@/api/sysMonitor/dashboard"
 import {
-  Calendar,
-  CircleCheck,
+  Connection,
   DocumentChecked,
   Key,
+  Menu,
   OfficeBuilding,
   User
 } from "@element-plus/icons-vue"
@@ -32,44 +32,44 @@ const stats = ref<Partial<DashboardStats>>({})
 
 const statsList = [
   {
-    key: "userCount" as const,
+    key: "user_count" as const,
     label: "用户总数",
     icon: User,
     iconColor: "#409eff",
     iconBgColor: "#ecf5ff"
   },
   {
-    key: "roleCount" as const,
+    key: "role_count" as const,
     label: "角色总数",
     icon: Key,
     iconColor: "#67c23a",
     iconBgColor: "#f0f9eb"
   },
   {
-    key: "deptCount" as const,
+    key: "dept_count" as const,
     label: "部门总数",
     icon: OfficeBuilding,
     iconColor: "#e6a23c",
     iconBgColor: "#fdf6ec"
   },
   {
-    key: "operationCount" as const,
-    label: "今日操作",
-    icon: DocumentChecked,
+    key: "api_count" as const,
+    label: "接口总数",
+    icon: Connection,
     iconColor: "#909399",
     iconBgColor: "#f4f4f5"
   },
   {
-    key: "cronCount" as const,
-    label: "定时任务",
-    icon: Calendar,
+    key: "menu_count" as const,
+    label: "菜单总数",
+    icon: Menu,
     iconColor: "#f56c6c",
     iconBgColor: "#fef0f0"
   },
   {
-    key: "activeCronCount" as const,
-    label: "活跃任务",
-    icon: CircleCheck,
+    key: "log_count" as const,
+    label: "日志总数",
+    icon: DocumentChecked,
     iconColor: "#8e44ad",
     iconBgColor: "#f5eef8"
   }
@@ -80,14 +80,13 @@ const recentOperations = ref<RecentOperation[]>([])
 
 // System info
 const systemInfo = ref<SystemInfo>({
-  appName: "TD27 Admin",
-  version: "v3.0.0",
-  goVersion: "",
+  go_version: "",
   os: "",
   arch: "",
-  numCpu: 0,
-  numGoroutine: 0,
-  startTime: ""
+  cpu_cores: 0,
+  uptime_seconds: 0,
+  goroutine_count: 0,
+  memory_allocated_mb: 0
 })
 
 // Fetch dashboard data
@@ -104,7 +103,7 @@ async function fetchDashboardData() {
     }
 
     if (operationsRes.code === 0) {
-      recentOperations.value = operationsRes.data
+      recentOperations.value = operationsRes.data?.list || []
     }
 
     if (systemRes.code === 0) {

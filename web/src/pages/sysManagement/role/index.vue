@@ -99,7 +99,8 @@ function operateAction(formEl: FormInstance | undefined) {
         })
         if (res.code === 0) {
           ElMessage({ type: "success", message: res.msg })
-          tableData.value.push(res.data)
+          // CreateResp 只含 success 标志，push 会塞进无效行；重新拉取列表
+          getTableData()
         }
       } else if (kind.value === "Edit") {
         const res = await roleUpdateApi({

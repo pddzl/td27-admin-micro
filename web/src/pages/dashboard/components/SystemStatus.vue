@@ -7,11 +7,22 @@ const props = defineProps<{
   info: SystemInfo
 }>()
 
-// 模拟系统负载（实际应该从后端获取）
+// 系统负载：基于协程数估算（后端暂无负载指标）
 const systemLoad = computed(() => {
-  // 基于协程数估算负载
-  const baseLoad = Math.min(props.info.numGoroutine / 10, 100)
+  const baseLoad = Math.min(props.info.goroutine_count / 10, 100)
   return Math.min(Math.round(baseLoad), 100)
+})
+
+// 运行时长：由 uptime_seconds 格式化
+const uptimeText = computed(() => {
+  const s = props.info.uptime_seconds
+  if (!s || s <= 0) return "-"
+  const days = Math.floor(s / 86400)
+  const hours = Math.floor((s % 86400) / 3600)
+  const minutes = Math.floor((s % 3600) / 60)
+  if (days > 0) return `${days}天 ${hours}小时`
+  if (hours > 0) return `${hours}小时 ${minutes}分钟`
+  return `${minutes}分钟`
 })
 
 const loadColor = computed(() => {
@@ -37,7 +48,7 @@ const loadColor = computed(() => {
           <span>应用名称</span>
         </div>
         <div class="status-value">
-          {{ info.appName }}
+          TD27 Admin
         </div>
       </div>
 
@@ -47,7 +58,7 @@ const loadColor = computed(() => {
           <span>版本</span>
         </div>
         <div class="status-value">
-          {{ info.version }}
+          {{ info.go_version || "-" }}
         </div>
       </div>
 
@@ -67,7 +78,7 @@ const loadColor = computed(() => {
           <span>CPU 核心</span>
         </div>
         <div class="status-value">
-          {{ info.numCpu }} 核
+          {{ info.cpu_cores }} 核
         </div>
       </div>
 
@@ -77,17 +88,17 @@ const loadColor = computed(() => {
           <span>Go 协程</span>
         </div>
         <div class="status-value">
-          {{ info.numGoroutine }}
+          {{ info.goroutine_count }}
         </div>
       </div>
 
       <div class="status-item">
         <div class="status-label">
           <el-icon><Timer /></el-icon>
-          <span>启动时间</span>
+          <span>运行时长</span>
         </div>
         <div class="status-value">
-          {{ info.startTime }}
+          {{ uptimeText }}
         </div>
       </div>
     </div>

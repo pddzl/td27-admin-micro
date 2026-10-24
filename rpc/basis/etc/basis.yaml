@@ -65,6 +65,7 @@ File:
     - .docx
     - .xls
     - .xlsx
+    - .csv
 
 # System configuration
 System:

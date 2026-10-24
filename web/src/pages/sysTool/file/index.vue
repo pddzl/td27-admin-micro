@@ -17,7 +17,8 @@ const path = ref(import.meta.env.VITE_BASE_URL)
 
 function uploadSuccess(res: ApiResponseData<fileDataModel>) {
   if (res.code === 0) {
-    tableData.value.push(res.data)
+    // 上传响应只含摘要字段，重新拉取列表以拿到完整行
+    getTableData()
     ElMessage.success("上传成功")
   } else {
     ElMessage.error(res.msg)
@@ -74,7 +75,7 @@ async function getTableData() {
       orderKey: searchFormData.orderKey || undefined,
       desc: searchFormData.desc || undefined,
       page: paginationData.currentPage,
-      pageSize: paginationData.pageSize
+      page_size: paginationData.pageSize
     })
     if (res.code === 0) {
       tableData.value = res.data.list
@@ -99,10 +100,10 @@ function handleCurrentChange(value: number) {
 }
 
 // 下载文件
-function handleDownload(fileName: string) {
-  fileDownloadApi({ name: fileName }).then((res) => {
+function handleDownload(id: number, fileName: string) {
+  fileDownloadApi({ id, name: fileName }).then((res) => {
     const blobData = res as Blob
-    const url = window.URL.createObjectURL(new Blob([blobData], { type: "text/csv" }))
+    const url = window.URL.createObjectURL(new Blob([blobData], { type: "application/octet-stream" }))
     const a = document.createElement("a")
     a.style.display = "none"
     a.href = url
@@ -122,7 +123,7 @@ function handleDelete(row: fileDataModel) {
     type: "warning"
   })
     .then(async () => {
-      const res = await fileDeleteApi({ name: row.fileName })
+      const res = await fileDeleteApi({ id: row.id })
       if (res.code === 0) {
         ElMessage.success(res.msg)
         const index = tableData.value.indexOf(row)
@@ -173,17 +174,17 @@ function handleDelete(row: fileDataModel) {
       <div class="table-wrapper">
         <el-table :data="tableData" @sort-change="handleSortChange">
           <el-table-column prop="id" label="ID" sortable="custom" />
-          <el-table-column prop="fileName" label="名称" min-width="200" />
-          <!-- <el-table-column prop="fullPath" label="路径" /> -->
+          <el-table-column prop="file_name" label="名称" min-width="200" />
+          <!-- <el-table-column prop="full_path" label="路径" /> -->
           <el-table-column prop="mime" label="MIME" />
-          <el-table-column prop="createdAt" label="创建时间">
+          <el-table-column prop="created_at" label="创建时间">
             <template #default="scope">
-              {{ formatDateTime(scope.row.createdAt) }}
+              {{ formatDateTime(scope.row.created_at) }}
             </template>
           </el-table-column>
           <el-table-column label="操作" width="180px" fixed="right" align="center">
             <template #default="scope">
-              <el-button type="primary" text icon="Download" size="small" @click="handleDownload(scope.row.fileName)">
+              <el-button type="primary" text icon="Download" size="small" @click="handleDownload(scope.row.id, scope.row.file_name)">
                 下载
               </el-button>
               <el-button type="danger" text icon="Delete" size="small" @click="handleDelete(scope.row)">
