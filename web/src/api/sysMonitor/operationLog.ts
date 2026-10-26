@@ -5,11 +5,11 @@ interface orData {
   method: string
   path: string
   status: number
-  userAgent: string
-  reqParam: string
-  respData: string
-  respTime: number
-  userName: string
+  user_agent: string
+  req_param: string
+  resp_data: string
+  resp_time: number
+  user_name: string
 }
 
 export interface orDataModel extends orData, Td27Model {}
@@ -26,7 +26,7 @@ interface reqOrList extends PageInfo {
 // 分页获取操作记录
 export function oplListApi(data: reqOrList, signal?: AbortSignal) {
   return request<ApiResponseData<orListData>>({
-    url: "/opl/list",
+    url: "/operation-log/list",
     method: "post",
     data: {
       path: data.path,
@@ -42,7 +42,7 @@ export function oplListApi(data: reqOrList, signal?: AbortSignal) {
 // 删除操作记录
 export function oplDeleteApi(data: CId) {
   return request<ApiResponseData<null>>({
-    url: "/opl/delete",
+    url: "/operation-log/delete",
     method: "post",
     data
   })
@@ -51,7 +51,7 @@ export function oplDeleteApi(data: CId) {
 // 批量删除操作记录
 export function oplDeleteByIdsApi(data: CIds) {
   return request<ApiResponseData<null>>({
-    url: "/opl/delete-by-ids",
+    url: "/operation-log/delete-by-ids",
     method: "post",
     data
   })
