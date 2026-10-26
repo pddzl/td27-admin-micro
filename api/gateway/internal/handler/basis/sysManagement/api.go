@@ -41,7 +41,7 @@ func (h *APIHandler) GetAPI(w http.ResponseWriter, r *http.Request) {
 func (h *APIHandler) ListAPI(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		Page     int `json:"page"`
-		PageSize int `json:"pageSize"`
+		PageSize int `json:"page_size"`
 	}
 	if err := api.DecodeAndValidate(r.Body, &req); err != nil {
 		api.FailWithRequest(w, http.StatusBadRequest, "invalid request body")

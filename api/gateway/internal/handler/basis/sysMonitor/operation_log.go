@@ -22,7 +22,7 @@ func NewOperationLogHandler(svcCtx *svc.ServiceContext) *OperationLogHandler {
 func (h *OperationLogHandler) ListOperationLog(w http.ResponseWriter, r *http.Request) {
 	var flat struct {
 		Page     int     `json:"page"`
-		PageSize int     `json:"pageSize"`
+		PageSize int     `json:"page_size"`
 		Path     *string `json:"path"`
 		Method   *string `json:"method"`
 		Status   *int32  `json:"status"`
