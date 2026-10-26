@@ -34,6 +34,12 @@ limited-permission account, ANY = both.
 7. Run the list invariant (SKILL.md Phase 3) on the resource's list endpoint
    after the create and delete refreshes — payload keys exactly as the
    frontend sends them.
+8. If the page has a search/filter form, exercise EVERY filter with a value
+   that matches existing rows → every returned row matches the filter
+   (visible rows AND response `total` vs the filtered SQL count), and
+   clearing the filter restores the unfiltered total. A filter that changes
+   nothing means the backend is dropping the key — replay the exact frontend
+   payload to localize (UI → gateway → rpc → SQL).
 
 ## J4 — Permission-scoped experience (actors: ADMIN vs USER)
 
