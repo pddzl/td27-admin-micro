@@ -57,7 +57,7 @@ func (l *OperationLogLogic) CreateOperationLog(in *operation_log_pb.CreateOperat
 }
 
 func (l *OperationLogLogic) ListOperationLog(in *operation_log_pb.ListOperationLogReq) (*operation_log_pb.ListOperationLogResp, error) {
-	page := &common.PageInfo{Page: int(in.Page.Page), PageSize: int(in.Page.PageSize)}
+	page := common.NewPageInfo(int(in.Page.Page), int(in.Page.PageSize))
 	var userID *uint
 	if in.UserId != nil {
 		v := uint(*in.UserId)

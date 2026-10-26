@@ -86,17 +86,7 @@ func (dl *DictLogic) GetDictByENName(in *dict_pb.GetDictByENNameReq) (*dict_pb.D
 }
 
 func (dl *DictLogic) ListDict(in *common_pb.PageReq) (*dict_pb.ListDictResp, error) {
-	if in.Page <= 0 {
-		in.Page = 1
-	}
-	if in.PageSize <= 0 {
-		in.PageSize = 10
-	}
-
-	page := &common.PageInfo{
-		Page:     int(in.Page),
-		PageSize: int(in.PageSize),
-	}
+	page := common.NewPageInfo(int(in.Page), int(in.PageSize))
 
 	dicts, countt, err := dl.svcCtx.DictService.List(dl.ctx, page)
 	if err != nil {

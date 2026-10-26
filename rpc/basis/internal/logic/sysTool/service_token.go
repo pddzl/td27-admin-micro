@@ -90,14 +90,7 @@ func (l *ServiceTokenLogic) GetServiceToken(in *common_pb.IdReq) (*service_token
 }
 
 func (l *ServiceTokenLogic) ListServiceToken(in *common_pb.PageReq) (*service_token_pb.ListServiceTokenResp, error) {
-	if in.Page <= 0 {
-		in.Page = 1
-	}
-	if in.PageSize <= 0 {
-		in.PageSize = 10
-	}
-
-	page := &common.PageInfo{Page: int(in.Page), PageSize: int(in.PageSize)}
+	page := common.NewPageInfo(int(in.Page), int(in.PageSize))
 	tokens, count, err := l.svcCtx.TokenService.List(l.ctx, page)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "list tokens failed: %v", err)

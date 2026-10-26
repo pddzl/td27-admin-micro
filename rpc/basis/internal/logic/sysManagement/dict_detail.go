@@ -216,10 +216,7 @@ func mapDetailToResp(detail *sysManagement.DictDetailModel) *dict_pb.DictDetailR
 }
 
 func (dl *DictDetailLogic) ListDictDetail(in *dict_detail_pb.ListDictDetailReq) (*dict_detail_pb.ListDictDetailResp, error) {
-	page := &common.PageInfo{
-		Page:     int(in.Page),
-		PageSize: int(in.PageSize),
-	}
+	page := common.NewPageInfo(int(in.Page), int(in.PageSize))
 
 	var dictID *uint
 	if in.DictId != nil {

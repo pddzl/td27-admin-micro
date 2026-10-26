@@ -58,17 +58,7 @@ func (bl *ButtonLogic) GetButton(in *common_pb.IdReq) (*button_pb.ButtonResp, er
 }
 
 func (bl *ButtonLogic) ListButton(in *common_pb.PageReq) (*button_pb.ListButtonResp, error) {
-	if in.Page <= 0 {
-		in.Page = 1
-	}
-	if in.PageSize <= 0 {
-		in.PageSize = 10
-	}
-
-	page := &common.PageInfo{
-		Page:     int(in.Page),
-		PageSize: int(in.PageSize),
-	}
+	page := common.NewPageInfo(int(in.Page), int(in.PageSize))
 
 	buttons, countt, err := bl.svcCtx.ButtonService.List(bl.ctx, page, nil)
 	if err != nil {

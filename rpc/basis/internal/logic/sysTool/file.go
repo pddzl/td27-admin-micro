@@ -72,17 +72,7 @@ func (fl *FileLogic) GetFile(in *common_pb.IdReq) (*file_pb.FileResp, error) {
 }
 
 func (fl *FileLogic) ListFile(in *common_pb.PageReq) (*file_pb.ListFileResp, error) {
-	if in.Page <= 0 {
-		in.Page = 1
-	}
-	if in.PageSize <= 0 {
-		in.PageSize = 10
-	}
-
-	page := &common.PageInfo{
-		Page:     int(in.Page),
-		PageSize: int(in.PageSize),
-	}
+	page := common.NewPageInfo(int(in.Page), int(in.PageSize))
 
 	files, countt, err := fl.svcCtx.FileService.List(fl.ctx, page)
 	if err != nil {

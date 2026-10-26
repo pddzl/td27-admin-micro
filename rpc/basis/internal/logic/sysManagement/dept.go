@@ -180,10 +180,7 @@ func (dl *DeptLogic) DeleteDept(in *common_pb.IdReq) (*common_pb.SuccessResp, er
 }
 
 func (dl *DeptLogic) ListDept(in *dept_pb.ListDeptReq) (*dept_pb.ListDeptResp, error) {
-	page := &common.PageInfo{
-		Page:     int(in.Page),
-		PageSize: int(in.PageSize),
-	}
+	page := common.NewPageInfo(int(in.Page), int(in.PageSize))
 
 	depts, count, err := dl.svcCtx.DeptService.List(dl.ctx, page)
 	if err != nil {

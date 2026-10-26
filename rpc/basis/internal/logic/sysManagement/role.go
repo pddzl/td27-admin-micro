@@ -95,16 +95,7 @@ func (rl *RoleLogic) GetRoleWithChildren(in *common_pb.IdReq) (*role_pb.RoleTree
 }
 
 func (rl *RoleLogic) ListRole(in *common_pb.PageReq) (*role_pb.ListRoleResp, error) {
-	if in.Page <= 0 {
-		in.Page = 1
-	}
-	if in.PageSize <= 0 {
-		in.PageSize = 10
-	}
-	page := &common.PageInfo{
-		Page:     int(in.Page),
-		PageSize: int(in.PageSize),
-	}
+	page := common.NewPageInfo(int(in.Page), int(in.PageSize))
 
 	roles, count, err := rl.svcCtx.RoleService.List(rl.ctx, page)
 	if err != nil {

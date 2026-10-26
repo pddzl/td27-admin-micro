@@ -50,14 +50,7 @@ func (cl *CacheLogic) DeleteCache(in *cache_pb.DeleteCacheReq) (*common_pb.Succe
 }
 
 func (cl *CacheLogic) ListCache(in *common_pb.PageReq) (*cache_pb.ListCacheResp, error) {
-	if in.Page <= 0 {
-		in.Page = 1
-	}
-	if in.PageSize <= 0 {
-		in.PageSize = 10
-	}
-
-	page := &common.PageInfo{Page: int(in.Page), PageSize: int(in.PageSize)}
+	page := common.NewPageInfo(int(in.Page), int(in.PageSize))
 	caches, count, err := cl.svcCtx.CacheService.List(cl.ctx, page)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "list cache failed: %v", err)

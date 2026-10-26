@@ -60,17 +60,7 @@ func (al *APILogic) GetAPI(in *common_pb.IdReq) (*api_pb.APIResp, error) {
 }
 
 func (al *APILogic) ListAPI(in *common_pb.PageReq) (*api_pb.ListAPIResp, error) {
-	if in.Page <= 0 {
-		in.Page = 1
-	}
-	if in.PageSize <= 0 {
-		in.PageSize = 10
-	}
-
-	page := &common.PageInfo{
-		Page:     int(in.Page),
-		PageSize: int(in.PageSize),
-	}
+	page := common.NewPageInfo(int(in.Page), int(in.PageSize))
 
 	apis, countt, err := al.svcCtx.APIService.List(al.ctx, page, nil)
 	if err != nil {

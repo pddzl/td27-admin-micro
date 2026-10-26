@@ -60,17 +60,7 @@ func (pl *PermissionLogic) GetPermission(in *common_pb.IdReq) (*permission_pb.Pe
 }
 
 func (pl *PermissionLogic) ListPermission(in *common_pb.PageReq) (*permission_pb.ListPermissionResp, error) {
-	if in.Page <= 0 {
-		in.Page = 1
-	}
-	if in.PageSize <= 0 {
-		in.PageSize = 10
-	}
-
-	page := &common.PageInfo{
-		Page:     int(in.Page),
-		PageSize: int(in.PageSize),
-	}
+	page := common.NewPageInfo(int(in.Page), int(in.PageSize))
 
 	perms, countt, err := pl.svcCtx.PermService.List(pl.ctx, page, nil)
 	if err != nil {
