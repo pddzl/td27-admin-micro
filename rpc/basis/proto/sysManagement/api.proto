@@ -34,6 +34,15 @@ message APIResp {
   string updated_at = 8;
 }
 
+message ListAPIReq {
+  uint32 page = 1;
+  uint32 page_size = 2;
+  string path = 3;
+  string group_en = 4;
+  string method = 5;
+  string description = 6;
+}
+
 message ListAPIResp {
   repeated APIResp list = 1;
   int64 total = 2;
@@ -61,7 +70,7 @@ message APITreeResp {
 
 service API {
   rpc GetAPI(basis.common.IdReq) returns (APIResp);
-  rpc ListAPI(basis.common.PageReq) returns (ListAPIResp);
+  rpc ListAPI(ListAPIReq) returns (ListAPIResp);
   rpc GetAPIsByGroup(GetAPIsByGroupReq) returns (ListAPIResp);
   rpc CreateAPI(CreateAPIReq) returns (basis.common.SuccessResp);
   rpc UpdateAPI(UpdateAPIReq) returns (APIResp);

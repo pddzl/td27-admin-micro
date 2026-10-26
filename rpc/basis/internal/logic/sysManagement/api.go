@@ -59,10 +59,24 @@ func (al *APILogic) GetAPI(in *common_pb.IdReq) (*api_pb.APIResp, error) {
 	return al.mapAPIToResp(api), nil
 }
 
-func (al *APILogic) ListAPI(in *common_pb.PageReq) (*api_pb.ListAPIResp, error) {
+func (al *APILogic) ListAPI(in *api_pb.ListAPIReq) (*api_pb.ListAPIResp, error) {
 	page := common.NewPageInfo(int(in.Page), int(in.PageSize))
 
-	apis, countt, err := al.svcCtx.APIService.List(al.ctx, page, nil)
+	var path, groupEN, method, description *string
+	if in.Path != "" {
+		path = &in.Path
+	}
+	if in.GroupEn != "" {
+		groupEN = &in.GroupEn
+	}
+	if in.Method != "" {
+		method = &in.Method
+	}
+	if in.Description != "" {
+		description = &in.Description
+	}
+
+	apis, countt, err := al.svcCtx.APIService.List(al.ctx, page, path, groupEN, method, description)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "list apis failed: %v", err)
 	}

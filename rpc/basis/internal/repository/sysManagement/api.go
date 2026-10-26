@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/jmoiron/sqlx"
 
@@ -17,7 +18,7 @@ type APIRepository interface {
 	FindAll(ctx context.Context) ([]*sysManagement.ApiModel, error)
 	FindByPathAndMethod(ctx context.Context, path string, method string) (*sysManagement.ApiModel, error)
 	FindByGroup(ctx context.Context, groupEN string) ([]*sysManagement.ApiModel, error)
-	List(ctx context.Context, page *common.PageInfo, groupEN *string) ([]*sysManagement.ApiModel, int64, error)
+	List(ctx context.Context, page *common.PageInfo, path, groupEN, method, description *string) ([]*sysManagement.ApiModel, int64, error)
 	Create(ctx context.Context, api *sysManagement.ApiModel) error
 	Update(ctx context.Context, api *sysManagement.ApiModel) error
 	Delete(ctx context.Context, id uint) error
@@ -75,27 +76,39 @@ func (r *apiRepository) FindByGroup(ctx context.Context, groupEN string) ([]*sys
 	return apis, nil
 }
 
-func (r *apiRepository) List(ctx context.Context, page *common.PageInfo, groupEN *string) ([]*sysManagement.ApiModel, int64, error) {
+func (r *apiRepository) List(ctx context.Context, page *common.PageInfo, path, groupEN, method, description *string) ([]*sysManagement.ApiModel, int64, error) {
 	var total int64
 	var apis []*sysManagement.ApiModel
 
 	where := "WHERE deleted_at IS NULL"
 	var args []interface{}
 
-	if groupEN != nil {
-		where += " AND group_en = ?"
-		args = append(args, *groupEN)
+	if path != nil && *path != "" {
+		where += fmt.Sprintf(" AND path ILIKE $%d", len(args)+1)
+		args = append(args, "%"+*path+"%")
+	}
+	if groupEN != nil && *groupEN != "" {
+		where += fmt.Sprintf(" AND group_en ILIKE $%d", len(args)+1)
+		args = append(args, "%"+*groupEN+"%")
+	}
+	if method != nil && *method != "" {
+		where += fmt.Sprintf(" AND method=$%d", len(args)+1)
+		args = append(args, *method)
+	}
+	if description != nil && *description != "" {
+		where += fmt.Sprintf(" AND description ILIKE $%d", len(args)+1)
+		args = append(args, "%"+*description+"%")
 	}
 
 	countQuery := "SELECT COUNT(*) FROM " + apiTable + " " + where
-	countQuery = r.db.Rebind(countQuery)
 	if err := r.db.GetContext(ctx, &total, countQuery, args...); err != nil {
 		return nil, 0, err
 	}
 
 	offset := (page.Page - 1) * page.PageSize
-	dataQuery := "SELECT " + apiColumns + " FROM " + apiTable + " " + where + " ORDER BY id LIMIT ? OFFSET ?"
-	dataQuery = r.db.Rebind(dataQuery)
+	dataQuery := "SELECT " + apiColumns + " FROM " + apiTable + " " + where +
+		" ORDER BY id LIMIT $" + fmt.Sprintf("%d", len(args)+1) +
+		" OFFSET $" + fmt.Sprintf("%d", len(args)+2)
 	dataArgs := append(args, page.PageSize, offset)
 	if err := r.db.SelectContext(ctx, &apis, dataQuery, dataArgs...); err != nil {
 		return nil, 0, err

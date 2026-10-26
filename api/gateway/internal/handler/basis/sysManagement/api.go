@@ -40,8 +40,12 @@ func (h *APIHandler) GetAPI(w http.ResponseWriter, r *http.Request) {
 
 func (h *APIHandler) ListAPI(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		Page     int `json:"page"`
-		PageSize int `json:"page_size"`
+		Page        int    `json:"page"`
+		PageSize    int    `json:"page_size"`
+		Path        string `json:"path"`
+		GroupEn     string `json:"group_en"`
+		Method      string `json:"method"`
+		Description string `json:"description"`
 	}
 	if err := api.DecodeAndValidate(r.Body, &req); err != nil {
 		api.FailWithRequest(w, http.StatusBadRequest, "invalid request body")
@@ -54,9 +58,13 @@ func (h *APIHandler) ListAPI(w http.ResponseWriter, r *http.Request) {
 		req.PageSize = 10
 	}
 
-	resp, err := h.svcCtx.APIClient.ListAPI(context.Background(), &common_pb.PageReq{
-		Page:     uint32(req.Page),
-		PageSize: uint32(req.PageSize),
+	resp, err := h.svcCtx.APIClient.ListAPI(context.Background(), &api_pb.ListAPIReq{
+		Page:        uint32(req.Page),
+		PageSize:    uint32(req.PageSize),
+		Path:        req.Path,
+		GroupEn:     req.GroupEn,
+		Method:      req.Method,
+		Description: req.Description,
 	})
 	if err != nil {
 		api.FailWithMessage(w, err.Error())

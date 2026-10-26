@@ -35,8 +35,8 @@ func (s *APIService) GetByGroup(ctx context.Context, groupEN string) ([]*sysMana
 	return s.apiRepo.FindByGroup(ctx, groupEN)
 }
 
-func (s *APIService) List(ctx context.Context, page *common.PageInfo, groupEN *string) ([]*sysManagement.ApiModel, int64, error) {
-	return s.apiRepo.List(ctx, page, groupEN)
+func (s *APIService) List(ctx context.Context, page *common.PageInfo, path, groupEN, method, description *string) ([]*sysManagement.ApiModel, int64, error) {
+	return s.apiRepo.List(ctx, page, path, groupEN, method, description)
 }
 
 func (s *APIService) Create(ctx context.Context, api *sysManagement.ApiModel) error {

@@ -25,7 +25,7 @@ func (as *APIServer) GetAPI(ctx context.Context, in *common_pb.IdReq) (*api_pb.A
 	return al.GetAPI(in)
 }
 
-func (as *APIServer) ListAPI(ctx context.Context, in *common_pb.PageReq) (*api_pb.ListAPIResp, error) {
+func (as *APIServer) ListAPI(ctx context.Context, in *api_pb.ListAPIReq) (*api_pb.ListAPIResp, error) {
 	al := sysManagement.NewAPILogic(ctx, as.svcCtx)
 	return al.ListAPI(in)
 }
