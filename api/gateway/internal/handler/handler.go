@@ -395,11 +395,6 @@ func RegisterHandlers(server *rest.Server, svcCtx *svc.ServiceContext) {
 	})
 	server.AddRoute(rest.Route{
 		Method:  http.MethodPost,
-		Path:    "/menu/user-menus",
-		Handler: jwtMiddleware.Handle(menuHandler.GetUserMenus),
-	})
-	server.AddRoute(rest.Route{
-		Method:  http.MethodPost,
 		Path:    "/menu/create",
 		Handler: opRecordMiddleware.Handle(jwtMiddleware.Handle(menuHandler.CreateMenu)),
 	})

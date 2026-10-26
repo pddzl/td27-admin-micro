@@ -10,7 +10,7 @@ import (
 // to the "read" action so read-only roles can browse data.
 var readSuffixes = []string{
 	"/list", "/flat", "/el-tree", "/by-page", "/get", "/check", "/validate",
-	"/batch-check", "/user-buttons", "/user-menus", "/get-el-tree-depts",
+	"/batch-check", "/user-buttons", "/get-el-tree-depts",
 }
 
 // httpMethodToAction maps an HTTP request to a Casbin action. POST paths follow

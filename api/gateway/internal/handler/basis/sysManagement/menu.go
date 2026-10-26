@@ -115,20 +115,6 @@ func (h *MenuHandler) GetElTreeMenus(w http.ResponseWriter, r *http.Request) {
 	}, "获取成功")
 }
 
-func (h *MenuHandler) GetUserMenus(w http.ResponseWriter, r *http.Request) {
-	var req menu_pb.GetUserMenusReq
-	if err := api.DecodeAndValidate(r.Body, &req); err != nil {
-		api.FailWithRequest(w, http.StatusBadRequest, err.Error())
-		return
-	}
-	resp, err := h.svcCtx.MenuClient.GetUserMenus(context.Background(), &req)
-	if err != nil {
-		api.FailWithMessage(w, err.Error())
-		return
-	}
-	api.OkWithData(w, resp)
-}
-
 func (h *MenuHandler) CreateMenu(w http.ResponseWriter, r *http.Request) {
 	var req menu_pb.CreateMenuReq
 	if err := api.DecodeAndValidate(r.Body, &req); err != nil {

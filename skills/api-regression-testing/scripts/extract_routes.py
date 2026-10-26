@@ -5,8 +5,8 @@ Parses rest.Route blocks shaped like:
 
     server.AddRoute(rest.Route{
         Method:  http.MethodPost,        // or "POST"
-        Path:    "/menu/user-menus",
-        Handler: jwtMiddleware.Handle(menuHandler.GetUserMenus),
+        Path:    "/menu/el-tree",
+        Handler: jwtMiddleware.Handle(menuHandler.GetElTreeMenus),
     })
 
 and emits JSON: [{"method","path","auth","handler"}]. Auth is classified from

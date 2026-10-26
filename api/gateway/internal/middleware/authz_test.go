@@ -26,7 +26,6 @@ func TestHTTPMethodToAction(t *testing.T) {
 		{"post permission check maps to read", "POST", "/permission/check", permission_pb.Action_ACTION_READ},
 		{"post token validate maps to read", "POST", "/service-token/validate", permission_pb.Action_ACTION_READ},
 		{"post batch-check maps to read", "POST", "/button/batch-check", permission_pb.Action_ACTION_READ},
-		{"post user-menus maps to read", "POST", "/menu/user-menus", permission_pb.Action_ACTION_READ},
 		{"post user-buttons maps to read", "POST", "/button/user-buttons", permission_pb.Action_ACTION_READ},
 		{"post get-el-tree-depts maps to read", "POST", "/dept/get-el-tree-depts", permission_pb.Action_ACTION_READ},
 
