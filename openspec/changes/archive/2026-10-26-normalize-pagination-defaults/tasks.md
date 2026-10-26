@@ -23,9 +23,8 @@
 
 - [x] 3.1 `GONOSUMCHECK='*' GONOSUMDB='*' GOFLAGS='-mod=mod' go vet ./rpc/basis/...`
 - [x] 3.2 `GONOSUMCHECK='*' GONOSUMDB='*' GOFLAGS='-mod=mod' go test ./rpc/basis/...`
-- [ ] 3.3 Manual: restart basis, `POST /api/opl/list` with `{}` returns 10
-      rows and `"total"` intact; explicit `page_size` still honored.
-      (Pending — requires the local stack running; defaults are byte-for-byte
-      the previously verified inline logic.)
+- [x] 3.3 Manual (2026-10-26, live gateway): `POST /api/opl/list` with `{}`
+      returns 10 rows and `"total": 851`; explicit `page_size` honored
+      (3 rows for page_size=3). List invariant holds.
 - [x] 3.4 `grep -rn "PageInfo{" rpc/basis/` returns only model.go and no
       remaining inline default blocks in logic/.
