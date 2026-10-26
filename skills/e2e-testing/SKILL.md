@@ -19,6 +19,13 @@ API layer, then this skill to prove the product a user actually experiences.
 - Clean up rows created during a journey through the product's own delete UI
   or API, then verify removal in the database.
 - One journey at a time; a failed step stops that journey only.
+- Data-bearing pages must prove content: a list page passes only when visible
+  rows are asserted. An empty table while the database holds rows is a
+  defect, not a rendering quirk.
+- API assertions replay the frontend's exact wire contract: derive request
+  payloads from the frontend API modules (e.g. `web/src/api/*.ts`) or
+  captured network traffic — never hand-built JSON. A payload the frontend
+  would never send proves nothing about the frontend path.
 
 ## Phase 0 — Parameterize
 
@@ -66,6 +73,16 @@ assert at the layer where truth lives:
 - API assertion: the network request fired and returned the expected code.
 - DB assertion: the row exists/changed/vanished.
 
+**List invariant — apply to every paginated list encountered**:
+
+1. The response's `list` field is present (not silently omitted).
+2. Page 1 is non-empty whenever `total > 0`; an empty `list` with a non-zero
+   `total` is always a defect (typically a dropped request key limiting to 0
+   rows while the count query still works).
+3. `len(list) ≤ requested page_size`.
+4. `total` matches the SQL count with the service's exact semantics
+   (Phase 4 cross-check).
+
 ## Phase 4 — Cross-layer truth
 
 UI data must match the database. For any page displaying counts, sums, or
@@ -95,6 +112,10 @@ green when one complete run of all journeys finishes with zero open bugs.
 - A login redirect during an authenticated journey means a boot API call was
   rejected: check the router guard's boot calls (user info, menus, buttons)
   against the account's grants before suspecting the UI.
+- An empty table while the database holds rows is a defect: transport-layer
+  key drops (e.g. `page_size` silently ignored) return `code:0` with an empty
+  list, which renders cleanly. Cross-check the request payload keys against
+  the frontend API modules before believing the page is "just empty".
 
 ## Evidence format
 

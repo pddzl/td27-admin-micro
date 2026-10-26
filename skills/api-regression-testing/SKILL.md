@@ -62,6 +62,17 @@ project lacks (say so explicitly when skipping). Record one line of evidence
 stops that section only; continue independent sections and loop back after
 fixes.
 
+For every paginated list endpoint in the matrix:
+
+- Replay the payload the frontend actually sends — derive keys and types from
+  the frontend API modules (e.g. `web/src/api/*.ts`) or captured network
+  traffic. Hand-built JSON that diverges from the frontend contract proves
+  nothing (a gateway can silently drop a key the frontend sends).
+- Apply the list invariant: the `list` field is present; page 1 is non-empty
+  whenever `total > 0`; `len(list) ≤ requested page_size`; `total` matches
+  the SQL count. An empty list with a non-zero `total` is a defect, not an
+  empty dataset.
+
 ## Phase 4 — Bug loop
 
 For each defect: write the bug entry first, then fix, then retest the exact

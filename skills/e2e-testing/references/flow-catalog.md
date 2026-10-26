@@ -31,6 +31,9 @@ limited-permission account, ANY = both.
 5. Delete → confirm dialog → row gone from table AND from the database
    (mind soft-delete: filtered out vs actually deleted).
 6. Refresh the page → the deleted row stays gone (proves no stale cache).
+7. Run the list invariant (SKILL.md Phase 3) on the resource's list endpoint
+   after the create and delete refreshes — payload keys exactly as the
+   frontend sends them.
 
 ## J4 — Permission-scoped experience (actors: ADMIN vs USER)
 
@@ -62,7 +65,10 @@ limited-permission account, ANY = both.
 ## J7 — Navigation integrity (actor: USER)
 
 1. Every sidebar item the account can see opens a rendered page (no blank,
-   no 404, no console error).
+   no 404, no console error) **with its data present**: wherever the database
+   guarantees rows (the operation log always has entries after any earlier
+   journey), the page's table/list must show them — render-only is not a
+   pass.
 2. Collapsed groups expand (hover or click); their children are reachable —
    remember teleported popups render outside the sidebar container.
 3. Browser refresh on a deep link re-lands on the same page (router guards
@@ -105,6 +111,18 @@ journey: act as ADMIN, verify as USER.
 4. Dict / dict-detail edits → the dependent dropdowns/pages reflect new
    entries after reload.
 
+## J11 — Pagination journey (actor: ADMIN)
+
+1. Open any paginated list whose `total` exceeds the default page size →
+   first page shows the default row count (10) and the list invariant holds.
+2. Change the page-size selector to 20, then 50 → the list API response and
+   the rendered table show exactly that many rows (bounded by `total`).
+   A selector that changes nothing means the request key is being dropped —
+   verify the payload against the frontend API module.
+3. Navigate to page 2 → rows are disjoint from page 1; `total` unchanged.
+4. Repeat on at least one list per backend module (sysManagement, sysMonitor,
+   sysTool) — pagination bugs are per-endpoint, not per-page.
+
 ## Coverage map template
 
 ```markdown
@@ -113,6 +131,8 @@ journey: act as ADMIN, verify as USER.
 | POST /user/create + user page  | J3      | PASS   |
 | JIT elevation approve          | J8.3    | PASS   |
 | file download                  | J9.2    | FAIL (BUG-<id>) |
+| list invariant — /user/list    | J3.7    | PASS   |
+| page-size selector (user page) | J11.2   | PASS   |
 ```
 Every inventory row appears exactly once here; gaps are visible by absence.
 
