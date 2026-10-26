@@ -1,0 +1,15 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="gateway (api)" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="td27-admin-micro" />
+    <working_directory value="$PROJECT_DIR$" />
+    <parameters value="-f api/gateway/etc/gateway.yaml" />
+    <envs>
+      <env name="GONOSUMCHECK" value="*" />
+      <env name="GONOSUMDB" value="*" />
+      <env name="GOFLAGS" value="-mod=mod" />
+    </envs>
+    <kind value="PACKAGE" />
+    <package value="td27/api/gateway" />
+    <method v="2" />
+  </configuration>
+</component>

@@ -1,0 +1,15 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="basis (rpc)" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="td27-admin-micro" />
+    <working_directory value="$PROJECT_DIR$" />
+    <parameters value="-f rpc/basis/etc/basis.yaml" />
+    <envs>
+      <env name="GONOSUMCHECK" value="*" />
+      <env name="GONOSUMDB" value="*" />
+      <env name="GOFLAGS" value="-mod=mod" />
+    </envs>
+    <kind value="PACKAGE" />
+    <package value="td27/rpc/basis" />
+    <method v="2" />
+  </configuration>
+</component>
