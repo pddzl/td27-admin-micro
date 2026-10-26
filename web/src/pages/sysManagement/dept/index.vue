@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FormInstance, FormRules, TableInstance } from "element-plus"
+import type { FormInstance, FormRules } from "element-plus"
 import type { CreateDeptReq, Dept, UpdateDeptReq } from "@/api/sysManagement/dept"
 import { onMounted, reactive, ref } from "vue"
 import {
@@ -20,7 +20,7 @@ const loading = ref(false)
 const deptTree = ref<Dept[]>([])
 const allDepts = ref<Dept[]>([])
 const isExpandAll = ref(true)
-const tableRef = ref<TableInstance>()
+const tableKey = ref(0)
 
 // Dialog
 const dialogVisible = ref(false)
@@ -79,7 +79,7 @@ function flattenTree(tree: Dept[]): Dept[] {
 async function getDeptOptions() {
   try {
     const res = await getElTreeDeptsApi()
-    if (res.code === 200) {
+    if (res.code === 0) {
       deptOptions.value = res.data.tree
     }
   } catch (error) {
@@ -99,10 +99,12 @@ function handleReset() {
   getDeptList()
 }
 
-// Collect all row IDs from a tree
 // Expand/Collapse all
 function handleExpandAll() {
+  // `default-expand-all` is only read when rows are created, so remount the
+  // table with a new key to re-apply it to every row.
   isExpandAll.value = !isExpandAll.value
+  tableKey.value++
 }
 
 // Create
@@ -173,14 +175,14 @@ async function handleSubmit() {
       try {
         if (isEdit.value) {
           const res = await updateDeptApi(formData as UpdateDeptReq)
-          if (res.code === 200) {
+          if (res.code === 0) {
             ElMessage.success("更新成功")
             dialogVisible.value = false
             getDeptList()
           }
         } else {
           const res = await createDeptApi(formData as CreateDeptReq)
-          if (res.code === 200) {
+          if (res.code === 0) {
             ElMessage.success("创建成功")
             dialogVisible.value = false
             getDeptList()
@@ -262,7 +264,7 @@ onMounted(() => {
       </div>
       <div class="table-wrapper">
         <el-table
-          ref="tableRef"
+          :key="tableKey"
           v-loading="loading"
           :data="deptTree"
           row-key="id"
