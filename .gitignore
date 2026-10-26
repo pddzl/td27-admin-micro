@@ -33,3 +33,7 @@ rpc/basis/basis
 logs
 .gocache
 .pnpm-store/
+
+# AI tool artifacts (session notes, plans, run continuations) — local only
+.omo/
+web/.cursor/
