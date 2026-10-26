@@ -123,6 +123,25 @@ journey: act as ADMIN, verify as USER.
 4. Repeat on at least one list per backend module (sysManagement, sysMonitor,
    sysTool) — pagination bugs are per-endpoint, not per-page.
 
+## J12 — Tree expand/collapse journey (actor: ADMIN, any tree-shaped page)
+
+Applies to hierarchical views rendered from a tree API (dept tree, menu
+tree): the tree endpoint always returns children, so any expand state issue
+is client-side and invisible to API assertions.
+
+1. Open the page → the tree renders with parent rows AND their children
+   visible (matches the API tree; if default-expanded, prove it by row
+   count, not by assuming).
+2. Click "collapse all" → parent rows remain but child rows disappear from
+   the table/tree (assert row count drops, not just that the button exists).
+3. Click "expand all" → child rows reappear with the same count as step 1.
+4. Toggle collapse → expand a second time → the state flips both times. A
+   toggle that only works on the first click (or never) means a mount-time
+   prop (e.g. `default-expand-all`) is being re-applied incorrectly — a
+   render-only check cannot catch this; the click must flip visible state.
+5. If the tree supports per-row expand arrows, expand one parent → only its
+   children appear; collapse it → they hide again.
+
 ## Coverage map template
 
 ```markdown
@@ -133,6 +152,7 @@ journey: act as ADMIN, verify as USER.
 | file download                  | J9.2    | FAIL (BUG-<id>) |
 | list invariant — /user/list    | J3.7    | PASS   |
 | page-size selector (user page) | J11.2   | PASS   |
+| dept tree expand/collapse      | J12.4   | PASS   |
 ```
 Every inventory row appears exactly once here; gaps are visible by absence.
 

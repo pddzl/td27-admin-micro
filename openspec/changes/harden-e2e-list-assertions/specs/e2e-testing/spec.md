@@ -56,3 +56,21 @@ distinctness.
 - **THEN** the response and the rendered table show exactly that many rows
 - **AND** navigating to page 2 shows rows disjoint from page 1 while
   `total` remains unchanged
+
+### Requirement: Client-side interactions must flip visible state
+
+E2E journeys MUST exercise pure client-side interactions (expand/collapse,
+sort, tabs) by clicking the control and asserting the visible state change
+in both directions, repeated at least twice. A control that renders but
+changes nothing — e.g. a tree expand toggle backed by a prop only read at
+mount (`default-expand-all`) — MUST be recorded as a defect; render-only or
+API-level checks are not acceptable evidence for such controls.
+
+#### Scenario: Dept tree expand/collapse toggle works
+
+- **WHEN** the tester opens the department page whose tree API returns
+  parent and child rows, then clicks collapse-all and expand-all twice
+- **THEN** child rows disappear on collapse and reappear with the original
+  count on expand, after every toggle
+- **AND** a toggle that never flips (or flips only once) is recorded as a
+  defect, not a rendering quirk

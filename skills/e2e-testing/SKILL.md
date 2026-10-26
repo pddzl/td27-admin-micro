@@ -26,6 +26,12 @@ API layer, then this skill to prove the product a user actually experiences.
   payloads from the frontend API modules (e.g. `web/src/api/*.ts`) or
   captured network traffic — never hand-built JSON. A payload the frontend
   would never send proves nothing about the frontend path.
+- Pure client-side interactions (expand/collapse, sort, tab switches) get
+  their own journey step: click the control and assert the resulting state
+  change (rows appear/disappear), toggling both directions at least twice.
+  A control that renders but changes nothing is a defect — especially when
+  the behavior depends on a prop only read at mount (e.g. tree
+  `default-expand-all`), which a render-only check cannot catch.
 
 ## Phase 0 — Parameterize
 
@@ -116,6 +122,11 @@ green when one complete run of all journeys finishes with zero open bugs.
   key drops (e.g. `page_size` silently ignored) return `code:0` with an empty
   list, which renders cleanly. Cross-check the request payload keys against
   the frontend API modules before believing the page is "just empty".
+- A toggle control that exists but changes nothing is a defect: props like
+  `default-expand-all` are only read when rows are first created, so the
+  control can render fine while silently no-oping after initial mount. Never
+  judge a toggle by its presence — click it and assert the visible state
+  actually flips (e.g. tree children appear/disappear), both directions.
 
 ## Evidence format
 

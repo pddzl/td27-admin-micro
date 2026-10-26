@@ -27,6 +27,16 @@
 - [x] 3.1 Phase 3 matrix: apply the list-invariant block to list endpoints;
       add the payload-source-of-truth rule.
 
+## 5. Interaction journeys (added 2026-10-26)
+
+- [x] 5.1 SKILL.md ground rule: client-side interactions get a journey step
+      that flips visible state both directions, twice; mount-time-only props
+      called out (tree `default-expand-all`).
+- [x] 5.2 SKILL.md browser pitfall: "toggle control exists but changes
+      nothing is a defect".
+- [x] 5.3 Flow catalog: J12 — Tree expand/collapse journey (dept tree),
+      coverage-map row included.
+
 ## 4. Verification
 
 - [x] 4.1 Docs self-check: all rules present, J11 defined, coverage map

@@ -47,6 +47,15 @@ Docs-only changes to the two test skills:
 - `skills/api-regression-testing/SKILL.md`: same list-invariant block and
   payload-source-of-truth rule applied to the Phase 3 matrix for list
   endpoints.
+- `skills/e2e-testing/SKILL.md` + `references/flow-catalog.md` (added
+  2026-10-26): cover the sibling bug class — pure client-side interactions.
+  The dept page's expand/collapse toggle rendered but silently no-oped
+  because `default-expand-all` is only read when rows are created; API and
+  render-only checks both pass while the control is dead. Adds a ground
+  rule (interaction steps must flip visible state, both directions, twice),
+  a browser pitfall entry, and journey **J12 — Tree expand/collapse**
+  (dept tree: initial children visible → collapse hides them → expand
+  restores → toggle twice → per-row arrow check), with a coverage-map row.
 
 ## Impact
 
