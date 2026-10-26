@@ -132,6 +132,19 @@ function typeFilter(effect: number) {
   const key = String(effect)[0]
   return structure[key] || "info"
 }
+
+// Wire fields may be empty or non-JSON (e.g. '{}' or blank); render nothing
+// instead of throwing inside the expand row.
+function parseJsonSafe(value: string): unknown {
+  if (!value || value === "{}") {
+    return null
+  }
+  try {
+    return JSON.parse(value)
+  } catch {
+    return null
+  }
+}
 </script>
 
 <template>
@@ -198,19 +211,19 @@ function typeFilter(effect: number) {
                 <el-tabs>
                   <el-tab-pane label="请求信息">
                     <VueJsonPretty
-                      :data="props.row.reqParam !== '{}' ? JSON.parse(props.row.reqParam) : null"
+                      :data="parseJsonSafe(props.row.req_param)"
                       :show-line="true"
                     />
                   </el-tab-pane>
                   <el-tab-pane label="响应信息">
-                    <VueJsonPretty :data="JSON.parse(props.row.respData)" :show-line="true" />
+                    <VueJsonPretty :data="parseJsonSafe(props.row.resp_data)" :show-line="true" />
                   </el-tab-pane>
                 </el-tabs>
               </div>
             </template>
           </el-table-column>
           <el-table-column prop="id" label="ID" width="60" />
-          <el-table-column prop="userName" label="用户" />
+          <el-table-column prop="user_name" label="用户" />
           <el-table-column prop="ip" label="IP" width="120" />
           <!-- <el-table-column prop="userAgent" label="UserAgent" min-width="140" /> -->
           <el-table-column prop="path" label="路径" min-width="150" />
@@ -222,10 +235,10 @@ function typeFilter(effect: number) {
             </template>
           </el-table-column>
           <el-table-column prop="method" label="请求方法" />
-          <el-table-column prop="respTime" label="响应时间(ms)" min-width="120" />
-          <el-table-column prop="createdAt" label="创建时间" min-width="180">
+          <el-table-column prop="resp_time" label="响应时间(ms)" min-width="120" />
+          <el-table-column prop="created_at" label="创建时间" min-width="180">
             <template #default="scope">
-              {{ formatDateTime(scope.row.createdAt) }}
+              {{ formatDateTime(scope.row.created_at) }}
             </template>
           </el-table-column>
           <el-table-column label="操作" fixed="right" min-width="100">
