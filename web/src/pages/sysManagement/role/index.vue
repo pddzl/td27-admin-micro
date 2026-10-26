@@ -242,8 +242,8 @@ function getParentName(parentId?: number) {
           :layout="paginationData.layout"
           :page-sizes="paginationData.pageSizes"
           :total="paginationData.total"
-          :page-size="paginationData.pageSize"
-          :current-page="paginationData.currentPage"
+          v-model:page-size="paginationData.pageSize"
+          v-model:current-page="paginationData.currentPage"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
         />

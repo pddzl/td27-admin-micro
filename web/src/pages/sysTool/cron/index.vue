@@ -488,8 +488,8 @@ onMounted(() => {
       <div class="mt-20px flex justify-end">
         <el-pagination
           background
-          :current-page="paginationData.currentPage"
-          :page-size="paginationData.pageSize"
+          v-model:current-page="paginationData.currentPage"
+          v-model:page-size="paginationData.pageSize"
           :page-sizes="paginationData.pageSizes"
           :total="paginationData.total"
           :layout="paginationData.layout"
