@@ -15,10 +15,10 @@ defineOptions({
 const { paginationData, changeCurrentPage, changePageSize } = usePagination()
 
 const loading = ref(false)
-const searchFormData = reactive({
+const searchFormData = reactive<{ path: string; method: string; status: number | undefined }>({
   path: "",
   method: "",
-  status: 0
+  status: undefined
 })
 
 const methodOptions = [
@@ -26,6 +26,13 @@ const methodOptions = [
   { value: "POST", label: "POST" },
   { value: "PUT", label: "PUT" },
   { value: "DELETE", label: "DELETE" }
+]
+
+const statusGroups = [
+  { label: "2xx", codes: [200, 201, 204] },
+  { label: "3xx", codes: [301, 302, 304] },
+  { label: "4xx", codes: [400, 401, 403, 404, 405, 409, 415, 422, 429] },
+  { label: "5xx", codes: [500, 502, 503, 504] }
 ]
 
 function handleSearch() {
@@ -37,7 +44,7 @@ function handleSearch() {
 function resetSearch() {
   searchFormData.path = ""
   searchFormData.method = ""
-  searchFormData.status = 0
+  searchFormData.status = undefined
 }
 
 const tableData = ref<orDataModel[]>([])
@@ -159,14 +166,18 @@ function parseJsonSafe(value: string): unknown {
             <el-option v-for="item in methodOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item prop="group" label="状态值">
-          <el-input-number
+        <el-form-item prop="status" label="状态码">
+          <el-select
             v-model="searchFormData.status"
-            :min="0"
-            :max="600"
-            controls-position="right"
-            placeholder="状态值"
-          />
+            placeholder="状态码"
+            clearable
+            filterable
+            style="width: 120px"
+          >
+            <el-option-group v-for="group in statusGroups" :key="group.label" :label="group.label">
+              <el-option v-for="code in group.codes" :key="code" :label="String(code)" :value="code" />
+            </el-option-group>
+          </el-select>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" icon="Search" @click="handleSearch">
