@@ -38,6 +38,13 @@ message DictResp {
   string updated_at = 6;
 }
 
+message ListDictReq {
+  uint32 page = 1;
+  uint32 page_size = 2;
+  string cn_name = 3;
+  string en_name = 4;
+}
+
 message ListDictResp {
   repeated DictResp list = 1;
   int64 total = 2;
@@ -50,7 +57,7 @@ message GetDictByENNameReq {
 service Dict {
   rpc GetDict(basis.common.IdReq) returns (DictResp);
   rpc GetDictByENName(GetDictByENNameReq) returns (DictResp);
-  rpc ListDict(basis.common.PageReq) returns (ListDictResp);
+  rpc ListDict(ListDictReq) returns (ListDictResp);
   rpc CreateDict(CreateDictReq) returns (basis.common.SuccessResp);
   rpc UpdateDict(UpdateDictReq) returns (DictResp);
   rpc DeleteDict(basis.common.IdReq) returns (basis.common.SuccessResp);

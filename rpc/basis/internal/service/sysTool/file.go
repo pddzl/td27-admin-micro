@@ -33,8 +33,8 @@ func (s *FileService) GetByID(ctx context.Context, id uint) (*sysTool.FileModel,
 	return s.fileRepo.FindOne(ctx, id)
 }
 
-func (s *FileService) List(ctx context.Context, page *common.PageInfo) ([]*sysTool.FileModel, int64, error) {
-	return s.fileRepo.List(ctx, page)
+func (s *FileService) List(ctx context.Context, page *common.PageInfo, name *string) ([]*sysTool.FileModel, int64, error) {
+	return s.fileRepo.List(ctx, page, name)
 }
 
 func (s *FileService) Upload(ctx context.Context, fileName string, fileContent []byte) (*sysTool.FileModel, error) {

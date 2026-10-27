@@ -30,7 +30,7 @@ func (fs *FileServer) GetFile(ctx context.Context, in *common_pb.IdReq) (*file_p
 	return fl.GetFile(in)
 }
 
-func (fs *FileServer) ListFile(ctx context.Context, in *common_pb.PageReq) (*file_pb.ListFileResp, error) {
+func (fs *FileServer) ListFile(ctx context.Context, in *file_pb.ListFileReq) (*file_pb.ListFileResp, error) {
 	fl := sysTool.NewFileLogic(ctx, fs.svcCtx)
 	return fl.ListFile(in)
 }

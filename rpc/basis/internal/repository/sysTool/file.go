@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/jmoiron/sqlx"
 
@@ -16,7 +17,7 @@ type FileRepository interface {
 	FindOne(ctx context.Context, id uint) (*sysTool.FileModel, error)
 	Create(ctx context.Context, file *sysTool.FileModel) error
 	Delete(ctx context.Context, id uint) error
-	List(ctx context.Context, page *common.PageInfo) ([]*sysTool.FileModel, int64, error)
+	List(ctx context.Context, page *common.PageInfo, name *string) ([]*sysTool.FileModel, int64, error)
 }
 
 type fileRepository struct {
@@ -56,10 +57,17 @@ func (r *fileRepository) Delete(ctx context.Context, id uint) error {
 	return err
 }
 
-func (r *fileRepository) List(ctx context.Context, page *common.PageInfo) ([]*sysTool.FileModel, int64, error) {
+func (r *fileRepository) List(ctx context.Context, page *common.PageInfo, name *string) ([]*sysTool.FileModel, int64, error) {
+	where := "WHERE deleted_at IS NULL"
+	var args []interface{}
+	if name != nil && *name != "" {
+		where += " AND file_name ILIKE $1"
+		args = append(args, "%"+*name+"%")
+	}
+
 	var total int64
 	err := sqlx.GetContext(ctx, r.db, &total,
-		"SELECT COUNT(*) FROM sys_tool_file WHERE deleted_at IS NULL")
+		"SELECT COUNT(*) FROM sys_tool_file "+where, args...)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -67,8 +75,8 @@ func (r *fileRepository) List(ctx context.Context, page *common.PageInfo) ([]*sy
 	offset := (page.Page - 1) * page.PageSize
 	var files []*sysTool.FileModel
 	err = sqlx.SelectContext(ctx, r.db, &files,
-		"SELECT "+fileColumns+" FROM sys_tool_file WHERE deleted_at IS NULL ORDER BY created_at DESC LIMIT $1 OFFSET $2",
-		page.PageSize, offset)
+		"SELECT "+fileColumns+" FROM sys_tool_file "+where+" ORDER BY created_at DESC LIMIT $"+fmt.Sprintf("%d", len(args)+1)+" OFFSET $"+fmt.Sprintf("%d", len(args)+2),
+		append(args, page.PageSize, offset)...)
 	if err != nil {
 		return nil, 0, err
 	}

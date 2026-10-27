@@ -3,6 +3,7 @@ package sysManagement
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/jmoiron/sqlx"
 
@@ -15,7 +16,7 @@ type DictRepository interface {
 	FindOne(ctx context.Context, id uint) (*sysManagement.DictModel, error)
 	FindByENName(ctx context.Context, enName string) (*sysManagement.DictModel, error)
 	FindAll(ctx context.Context) ([]*sysManagement.DictModel, error)
-	List(ctx context.Context, page *common.PageInfo) ([]*sysManagement.DictModel, int64, error)
+	List(ctx context.Context, page *common.PageInfo, cnName, enName *string) ([]*sysManagement.DictModel, int64, error)
 	Create(ctx context.Context, dict *sysManagement.DictModel) error
 	Update(ctx context.Context, dict *sysManagement.DictModel) error
 	Delete(ctx context.Context, id uint) error
@@ -66,9 +67,20 @@ func (r *dictRepository) FindAll(ctx context.Context) ([]*sysManagement.DictMode
 	return dicts, nil
 }
 
-func (r *dictRepository) List(ctx context.Context, page *common.PageInfo) ([]*sysManagement.DictModel, int64, error) {
+func (r *dictRepository) List(ctx context.Context, page *common.PageInfo, cnName, enName *string) ([]*sysManagement.DictModel, int64, error) {
+	where := "WHERE deleted_at IS NULL"
+	var args []interface{}
+	if cnName != nil && *cnName != "" {
+		where += fmt.Sprintf(" AND cn_name ILIKE $%d", len(args)+1)
+		args = append(args, "%"+*cnName+"%")
+	}
+	if enName != nil && *enName != "" {
+		where += fmt.Sprintf(" AND en_name ILIKE $%d", len(args)+1)
+		args = append(args, "%"+*enName+"%")
+	}
+
 	var total int64
-	err := r.db.GetContext(ctx, &total, "SELECT COUNT(*) FROM "+dictTable+" WHERE deleted_at IS NULL")
+	err := r.db.GetContext(ctx, &total, "SELECT COUNT(*) FROM "+dictTable+" "+where, args...)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -76,8 +88,10 @@ func (r *dictRepository) List(ctx context.Context, page *common.PageInfo) ([]*sy
 	var dicts []*sysManagement.DictModel
 	offset := (page.Page - 1) * page.PageSize
 	err = r.db.SelectContext(ctx, &dicts,
-		"SELECT "+dictColumns+" FROM "+dictTable+" WHERE deleted_at IS NULL ORDER BY id LIMIT $1 OFFSET $2",
-		page.PageSize, offset)
+		"SELECT "+dictColumns+" FROM "+dictTable+" "+where+
+			" ORDER BY id LIMIT $"+fmt.Sprintf("%d", len(args)+1)+
+			" OFFSET $"+fmt.Sprintf("%d", len(args)+2),
+		append(args, page.PageSize, offset)...)
 	if err != nil {
 		return nil, 0, err
 	}

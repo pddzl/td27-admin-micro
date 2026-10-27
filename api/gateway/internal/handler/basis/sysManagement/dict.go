@@ -52,8 +52,10 @@ func (h *DictHandler) GetDictByENName(w http.ResponseWriter, r *http.Request) {
 
 func (h *DictHandler) ListDict(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		Page     int `json:"page"`
-		PageSize int `json:"page_size"`
+		Page     int    `json:"page"`
+		PageSize int    `json:"page_size"`
+		CnName   string `json:"cn_name"`
+		EnName   string `json:"en_name"`
 	}
 	if err := api.DecodeAndValidate(r.Body, &req); err != nil {
 		api.FailWithRequest(w, http.StatusBadRequest, "invalid request body")
@@ -66,9 +68,11 @@ func (h *DictHandler) ListDict(w http.ResponseWriter, r *http.Request) {
 		req.PageSize = 10
 	}
 
-	resp, err := h.svcCtx.DictClient.ListDict(context.Background(), &common_pb.PageReq{
+	resp, err := h.svcCtx.DictClient.ListDict(context.Background(), &dict_pb.ListDictReq{
 		Page:     uint32(req.Page),
 		PageSize: uint32(req.PageSize),
+		CnName:   req.CnName,
+		EnName:   req.EnName,
 	})
 	if err != nil {
 		api.FailWithMessage(w, err.Error())

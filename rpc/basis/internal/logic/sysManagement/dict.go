@@ -85,10 +85,18 @@ func (dl *DictLogic) GetDictByENName(in *dict_pb.GetDictByENNameReq) (*dict_pb.D
 	return dl.mapDictToResp(dict), nil
 }
 
-func (dl *DictLogic) ListDict(in *common_pb.PageReq) (*dict_pb.ListDictResp, error) {
+func (dl *DictLogic) ListDict(in *dict_pb.ListDictReq) (*dict_pb.ListDictResp, error) {
 	page := common.NewPageInfo(int(in.Page), int(in.PageSize))
 
-	dicts, countt, err := dl.svcCtx.DictService.List(dl.ctx, page)
+	var cnName, enName *string
+	if in.CnName != "" {
+		cnName = &in.CnName
+	}
+	if in.EnName != "" {
+		enName = &in.EnName
+	}
+
+	dicts, countt, err := dl.svcCtx.DictService.List(dl.ctx, page, cnName, enName)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "list dictionaries failed: %v", err)
 	}

@@ -48,6 +48,7 @@ function handleSearch() {
 function resetSearch() {
   searchFormData.cn_name = ""
   searchFormData.en_name = ""
+  getTableData()
 }
 
 const tableData = ref<ListData<DictModel[]>>({
@@ -61,6 +62,8 @@ async function getTableData() {
   loading.value = true
   try {
     const res = await dictListApi({
+      cn_name: searchFormData.cn_name || undefined,
+      en_name: searchFormData.en_name || undefined,
       page: paginationData.currentPage,
       pageSize: paginationData.pageSize
     })

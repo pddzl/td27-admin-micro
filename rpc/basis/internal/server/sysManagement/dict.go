@@ -30,7 +30,7 @@ func (ds *DictServer) GetDictByENName(ctx context.Context, in *dict_pb.GetDictBy
 	return dl.GetDictByENName(in)
 }
 
-func (ds *DictServer) ListDict(ctx context.Context, in *common_pb.PageReq) (*dict_pb.ListDictResp, error) {
+func (ds *DictServer) ListDict(ctx context.Context, in *dict_pb.ListDictReq) (*dict_pb.ListDictResp, error) {
 	dl := sysManagement.NewDictLogic(ctx, ds.svcCtx)
 	return dl.ListDict(in)
 }

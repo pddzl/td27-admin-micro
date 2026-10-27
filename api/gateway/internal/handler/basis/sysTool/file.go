@@ -61,12 +61,26 @@ func (h *FileHandler) GetFile(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *FileHandler) ListFile(w http.ResponseWriter, r *http.Request) {
-	var req common_pb.PageReq
+	var req struct {
+		Page     int    `json:"page"`
+		PageSize int    `json:"page_size"`
+		Name     string `json:"name"`
+	}
 	if err := api.DecodeAndValidate(r.Body, &req); err != nil {
 		api.FailWithRequest(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
-	resp, err := h.svcCtx.FileClient.ListFile(context.Background(), &req)
+	if req.Page <= 0 {
+		req.Page = 1
+	}
+	if req.PageSize <= 0 {
+		req.PageSize = 10
+	}
+	resp, err := h.svcCtx.FileClient.ListFile(context.Background(), &file_pb.ListFileReq{
+		Page:     uint32(req.Page),
+		PageSize: uint32(req.PageSize),
+		Name:     req.Name,
+	})
 	if err != nil {
 		api.FailWithMessage(w, err.Error())
 		return

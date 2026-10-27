@@ -31,8 +31,8 @@ func (s *DictService) GetAll(ctx context.Context) ([]*sysManagement.DictModel, e
 	return s.dictRepo.FindAll(ctx)
 }
 
-func (s *DictService) List(ctx context.Context, page *common.PageInfo) ([]*sysManagement.DictModel, int64, error) {
-	return s.dictRepo.List(ctx, page)
+func (s *DictService) List(ctx context.Context, page *common.PageInfo, cnName, enName *string) ([]*sysManagement.DictModel, int64, error) {
+	return s.dictRepo.List(ctx, page, cnName, enName)
 }
 
 func (s *DictService) Create(ctx context.Context, dict *sysManagement.DictModel) error {

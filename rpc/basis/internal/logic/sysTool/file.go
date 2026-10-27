@@ -71,10 +71,15 @@ func (fl *FileLogic) GetFile(in *common_pb.IdReq) (*file_pb.FileResp, error) {
 	return fl.mapFileToResp(file), nil
 }
 
-func (fl *FileLogic) ListFile(in *common_pb.PageReq) (*file_pb.ListFileResp, error) {
+func (fl *FileLogic) ListFile(in *file_pb.ListFileReq) (*file_pb.ListFileResp, error) {
 	page := common.NewPageInfo(int(in.Page), int(in.PageSize))
 
-	files, countt, err := fl.svcCtx.FileService.List(fl.ctx, page)
+	var name *string
+	if in.Name != "" {
+		name = &in.Name
+	}
+
+	files, countt, err := fl.svcCtx.FileService.List(fl.ctx, page, name)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "list files failed: %v", err)
 	}
